@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.58.0
+      - name: Install web deps
+        run: pnpm -C web install --frozen-lockfile
+      - name: Check
+        run: just check
+      - name: Test
+        run: just test
+
+  itest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        calibre: ["9.0.0", "latest"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: 1.58.0
+      - name: Install calibre headless libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libegl1 libopengl0 libxcb-cursor0 libxkbcommon0 libxkbcommon-x11-0 \
+            libgl1 libdbus-1-3 libfontconfig1 libxcb-icccm4 libxcb-image0 \
+            libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
+            libxcb-xinerama0 libxcb-xkb1 libxrender1 libxi6
+      - name: Install calibre (non-root, isolated)
+        run: |
+          if [ "${{ matrix.calibre }}" = "latest" ]; then
+            wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh \
+              | sh /dev/stdin install_dir=$HOME/calibre-bin isolated=y
+          else
+            wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh \
+              | sh /dev/stdin install_dir=$HOME/calibre-bin isolated=y version=${{ matrix.calibre }}
+          fi
+      - name: Report calibre's Python
+        run: $HOME/calibre-bin/calibre/calibre-debug -c "import sys; print(sys.version)"
+      - name: Integration smoke test
+        run: CALIBRE_BIN_DIR=$HOME/calibre-bin/calibre just itest

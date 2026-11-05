@@ -1,0 +1,32 @@
+[project]
+name = "tierlist"
+version = "0.1.0"
+description = "Calibre Tier List plugin (development only; ships zero runtime dependencies)"
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.9", "pyright>=1.1"]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+# calibre 9.0.0 ships CPython 3.14.2; see docs/adr/0006-calibre-python-version.md
+target-version = "py314"
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tools"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+stubPath = "typings"
+extraPaths = ["src", "tools"]
+include = ["src", "tools", "tests", "itest", "calibre_entry.py"]
+# calibre only ships compiled modules, so our stubs have no source to point at.
+reportMissingModuleSource = "none"

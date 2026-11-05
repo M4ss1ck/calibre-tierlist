@@ -1,0 +1,13 @@
+#!/bin/sh
+# Commit gate: `just gate`, with the web checks run in parallel with the
+# Python lane, and only when web/ files are staged (keeps the hook under 2s).
+set -e
+cd "$(git rev-parse --show-toplevel)"
+if git diff --cached --name-only --diff-filter=ACMR | grep -q '^web/'; then
+    (pnpm -C web check >/dev/null && pnpm -C web lint >/dev/null) &
+    web=$!
+    WEB_CHECKS=0 just gate
+    wait "$web"
+else
+    WEB_CHECKS=0 just gate
+fi
