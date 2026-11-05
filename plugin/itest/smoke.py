@@ -17,7 +17,9 @@ from calibre.gui2 import gprefs
 from calibre.gui2.actions import InterfaceAction
 
 NAME = 'Tier List'
-LAYOUT_KEYS = ('action-layout-toolbar', 'action-layout-context-menu')
+TOOLBAR = 'action-layout-toolbar'
+CONTEXT_MENU = 'action-layout-context-menu'
+LAYOUT_KEYS = (TOOLBAR, CONTEXT_MENU)
 
 
 def expect(ok: bool, message: object) -> None:
@@ -46,9 +48,9 @@ def check_layout_claim(action_class: Any) -> None:
     action_class.add_to_action_layouts(action)
     for key in LAYOUT_KEYS:
         expect(list(gprefs[key]).count(NAME) == 1, (key, gprefs[key]))
-    gprefs[LAYOUT_KEYS[1]] = tuple(x for x in gprefs[LAYOUT_KEYS[1]] if x != NAME)
+    gprefs[CONTEXT_MENU] = tuple(x for x in gprefs[CONTEXT_MENU] if x != NAME)
     action_class.add_to_action_layouts(action)
-    expect(NAME not in gprefs[LAYOUT_KEYS[1]], 're-added to the context menu after the user removed it')
+    expect(NAME not in gprefs[CONTEXT_MENU], 're-added to the context menu after the user removed it')
 
 
 def main() -> int:

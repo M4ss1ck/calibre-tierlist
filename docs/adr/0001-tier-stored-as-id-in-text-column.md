@@ -16,4 +16,4 @@ Book Tier lives in a calibre Text custom column holding the Tier id from Tier Co
 - Renaming, recolouring, describing, and reordering a Tier write no books.
 - A column value whose id is missing from Tier Config is a stale Book Tier. Removing a Tier that still holds books warns with the affected count, then clears those Book Tiers and leaves the books read.
 - Showing a tier anywhere requires Tier Config: the column alone does not name a tier.
-- Tier Config import/export must keep ids stable so books keep their tier when a scheme is reused.
+- Tier Config import/export must keep ids stable so books keep their tier when a Tier Config is reused.

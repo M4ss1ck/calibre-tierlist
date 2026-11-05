@@ -5,13 +5,15 @@ from typing import Any
 from calibre.gui2 import gprefs, info_dialog
 from calibre.gui2.actions import InterfaceAction
 
+load_translations()
+
 LAYOUTS = ('toolbar', 'context-menu')
 CLAIMED_KEY = 'tierlist-layouts-claimed'
 
 
 class TierListAction(InterfaceAction):
     name = 'Tier List'
-    action_spec = ('Tier List', None, 'Compile a tier list of your series', None)
+    action_spec = ('Tier List', None, _('Compile a tier list of your series'), None)
     action_type = 'current'
 
     def genesis(self) -> None:
@@ -19,7 +21,7 @@ class TierListAction(InterfaceAction):
         self.add_to_action_layouts()
 
     def show_dialog(self, *args: Any) -> None:
-        info_dialog(self.gui, self.name, 'Coming soon', show=True)
+        info_dialog(self.gui, self.name, _('Coming soon'), show=True)
 
     def add_to_action_layouts(self) -> None:
         """calibre only offers new plugins a place in the layouts via its

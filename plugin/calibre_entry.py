@@ -5,7 +5,7 @@ from calibre.customize import InterfaceActionBase
 
 class TierListPlugin(InterfaceActionBase):
     name = 'Tier List'
-    description = 'Assign books a tier and compile a single offline, interactive HTML tier list of your series.'
+    description = _('Assign books a tier and compile a single offline, interactive HTML tier list of your series.')
     supported_platforms = ('windows', 'osx', 'linux')
     author = 'Andy Palmero'
     version = (0, 1, 0)

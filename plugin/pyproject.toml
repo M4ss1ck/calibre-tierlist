@@ -2,6 +2,7 @@
 name = "tierlist"
 version = "0.1.0"
 description = "Calibre Tier List plugin (development only; ships zero runtime dependencies)"
+license = "GPL-3.0-only"
 requires-python = ">=3.14"
 dependencies = []
 
@@ -15,6 +16,8 @@ package = false
 # calibre 9.0.0 ships CPython 3.14.2; see docs/adr/0006-calibre-python-version.md
 target-version = "py314"
 line-length = 120
+# calibre injects `_` into builtins and `load_translations` into plugin modules.
+builtins = ["_", "load_translations"]
 
 [tool.ruff.format]
 quote-style = "single"

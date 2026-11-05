@@ -2,6 +2,7 @@
   "name": "calibre-tierlist-web",
   "version": "0.0.0",
   "private": true,
+  "license": "GPL-3.0-only",
   "type": "module",
   "packageManager": "pnpm@12.2.1",
   "scripts": {

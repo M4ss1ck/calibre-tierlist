@@ -13,7 +13,7 @@ check:
     cd {{plugin}} && uv run ruff check .
     cd {{plugin}} && uv run ruff format --check .
     cd {{plugin}} && uv run pyright
-    cd {{plugin}} && uv run python tools/check_file_length.py . ../web/src
+    cd {{plugin}} && uv run python tools/check_file_length.py . ../web
     @if [ -f web/package.json ] && [ "{{web_checks}}" = "1" ]; then \
         pnpm -C web check && pnpm -C web lint; \
     else \
