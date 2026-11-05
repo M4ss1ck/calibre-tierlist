@@ -1,0 +1,7 @@
+dist/
+.venv/
+node_modules/
+__pycache__/
+.env
+.env.*
+docs/plans/
