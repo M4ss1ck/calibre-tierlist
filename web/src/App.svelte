@@ -1,11 +1,15 @@
 <script lang="ts">
-  const heading = 'Tier List';
-  const status = 'Coming soon';
+  import Lane from './board/Lane.svelte';
+  import type { TierListData } from './contract/tierlist';
+
+  let { data }: { data: TierListData } = $props();
 </script>
 
 <main class="board">
-  <h1>{heading}</h1>
-  <p>{status}</p>
+  <h1>Tier List</h1>
+  {#each data.lanes as lane, index (index)}
+    <Lane {lane} tiers={data.tiers} books={data.books} />
+  {/each}
 </main>
 
 <style>
@@ -36,14 +40,9 @@
   }
 
   h1 {
-    margin: 0 0 0.5rem;
+    margin: 0 0 1.5rem;
     font-size: 1.75rem;
     letter-spacing: 0.01em;
-  }
-
-  p {
-    margin: 0;
-    color: var(--muted);
   }
 
   @media (prefers-color-scheme: dark) {

@@ -1,25 +1,35 @@
 """The application facade: every use case the calibre UI calls, over the ports."""
 
+import time
 from collections.abc import Callable, Iterable
 from dataclasses import replace
-from datetime import date
+from datetime import date, datetime
+from pathlib import Path
 
+from .compile import READ_COLUMN_TYPES, CompileRequest, Generated, TierListData, compile_data
 from .ports import Library, Prefs
+from .publish import write_html
 from .tiers import DEFAULT_TIER_CONFIG, TierConfig
 
 TIER_CONFIG_KEY = 'tier_config'
 TIER_COLUMN_OFFERED_KEY = 'tier_column_offered'
 READ_COLUMN_OFFERED_KEY = 'read_column_offered'
-READ_COLUMN_TYPES = ('datetime', 'bool')
 
 
 class TierList:
     """The use cases for one library, constructed with its Library and Prefs ports."""
 
-    def __init__(self, library: Library, prefs: Prefs, today: Callable[[], date] = date.today) -> None:
+    def __init__(
+        self,
+        library: Library,
+        prefs: Prefs,
+        today: Callable[[], date] = date.today,
+        now: Callable[[], datetime] = lambda: datetime.now().astimezone(),
+    ) -> None:
         self._library = library
         self._prefs = prefs
         self._today = today
+        self._now = now
 
     def tier_config(self) -> TierConfig:
         """The Tier Config stored for this library, or the default when absent."""
@@ -108,3 +118,30 @@ class TierList:
         values: dict[int, str | None] = {book_id: tier_id for book_id in book_ids}
         if values:
             self._library.write_field(config.tier_column, values)
+
+    def compile(self, request: CompileRequest) -> TierListData:
+        """Compile Tier List Data for one Compile Request."""
+        generated = Generated(self._now(), request.library_name, request.scope, request.plugin_version)
+        return compile_data(generated, self._library, self.tier_config(), request.book_ids)
+
+    def series_count(self, book_ids: Iterable[int]) -> int:
+        """The number of distinct non-empty series among these books."""
+        return len({value for value in self._library.read_field('series', list(book_ids)).values() if value})
+
+    def output_path(self) -> str:
+        """The remembered output path, or today's default."""
+        stored = self._prefs.get('output_path')
+        return str(stored or Path.home() / 'Tierlists' / f'tierlist-{self._today().isoformat()}.html')
+
+    def remember_output_path(self, path: str) -> None:
+        """Remember where the next compiled tier list should be written."""
+        self._prefs.set('output_path', path)
+
+    def compile_to_file(self, request: CompileRequest, template: str, path: Path, log: Callable[[str], None]) -> None:
+        """Compile, render, and write the HTML file, then log one summary line."""
+        started = time.perf_counter()
+        data = self.compile(request)
+        size = write_html(template, data, path)
+        seconds = time.perf_counter() - started
+        series = self.series_count([book.id for book in data.books])
+        log(f'Tier List compiled: {len(data.books)} books, {series} series in {seconds:.2f}s, {size} bytes -> {path}')

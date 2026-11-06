@@ -1,15 +1,86 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/M4ss1ck/calibre-tierlist/contract/tierlist.schema.json",
-  "title": "Tier List Data",
+  "title": "TierListData",
   "description": "The versioned payload the plugin embeds in the compiled tier list HTML.",
   "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generated", "tiers", "lanes", "books"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
       "const": 1,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
+    },
+    "generated": { "$ref": "#/$defs/Generated" },
+    "tiers": {
+      "type": "array",
+      "description": "Every Tier in Tier Config order.",
+      "items": { "$ref": "#/$defs/Tier" }
+    },
+    "lanes": {
+      "type": "array",
+      "description": "One Lane per Tier in config order, then the Unranked Lane last.",
+      "items": { "$ref": "#/$defs/Lane" }
+    },
+    "books": {
+      "type": "object",
+      "description": "Every book on the board, keyed by calibre book id as a string.",
+      "additionalProperties": { "$ref": "#/$defs/Book" }
     }
   },
-  "required": ["schemaVersion"]
+  "$defs": {
+    "Generated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "libraryName", "scope", "pluginVersion"],
+      "properties": {
+        "at": { "type": "string", "format": "date-time", "description": "When the compile ran, ISO 8601 with offset." },
+        "libraryName": { "type": "string" },
+        "scope": { "type": "string", "enum": ["library", "virtual_library", "selection"] },
+        "pluginVersion": { "type": "string" }
+      }
+    },
+    "Tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "colour", "description"],
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "colour": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "Lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tier", "cards"],
+      "properties": {
+        "tier": {
+          "type": ["string", "null"],
+          "description": "The Tier id of this Lane, or null for the Unranked Lane."
+        },
+        "cards": {
+          "type": "array",
+          "description": "Book ids (keys of books), ordered by date read ascending, undated last, then title.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "Book": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "tier", "dateRead"],
+      "properties": {
+        "title": { "type": "string" },
+        "tier": { "type": ["string", "null"], "description": "Book Tier id, or null when unranked." },
+        "dateRead": {
+          "type": ["string", "null"],
+          "format": "date",
+          "description": "Date read as YYYY-MM-DD, or null when Read State has no date (Yes/No column)."
+        }
+      }
+    }
+  }
 }
