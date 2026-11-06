@@ -10,6 +10,8 @@ class Plugin:
     supported_platforms: Sequence[str]
     type: str
     actual_plugin: str | None
+    site_customization: Any
+    def load_actual_plugin(self, gui: Any) -> Any: ...
 
 class InterfaceActionBase(Plugin):
     actual_plugin_: Any

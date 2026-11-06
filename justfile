@@ -42,6 +42,7 @@ itest: build
     export CALIBRE_CONFIG_DIRECTORY="$config" QT_QPA_PLATFORM=offscreen
     "{{calibre_bin_dir}}/calibre-customize" -a "{{plugin_zip}}"
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/smoke.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/book_tier.py
 
 # Point git at the versioned hooks.
 hooks:
