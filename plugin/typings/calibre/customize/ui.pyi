@@ -1,0 +1,3 @@
+from calibre.customize import Plugin
+
+def find_plugin(name: str) -> Plugin | None: ...

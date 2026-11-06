@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/M4ss1ck/calibre-tierlist/contract/tierlist.schema.json",
+  "title": "Tier List Data",
+  "description": "The versioned payload the plugin embeds in the compiled tier list HTML.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Contract version of this payload. Bumped whenever the shape changes."
+    }
+  },
+  "required": ["schemaVersion"]
+}
