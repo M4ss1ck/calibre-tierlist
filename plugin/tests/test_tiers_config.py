@@ -17,17 +17,26 @@ def test_default_tier_column_is_hash_tier() -> None:
     assert DEFAULT_TIER_CONFIG.tier_column == '#tier'
 
 
+def test_default_read_column_is_hash_date_read() -> None:
+    assert DEFAULT_TIER_CONFIG.read_column == '#date_read'
+
+
 def test_round_trip_through_dict() -> None:
     config = TierConfig(
         tiers=(Tier('s', 'S', '#ff7f7f', 'The best'), Tier('a', 'A', '#ffbf7f')),
         tier_column='#rank',
+        read_column='#read',
     )
     assert TierConfig.from_dict(config.to_dict()) == config
 
 
-def test_from_dict_fills_missing_description_and_tier_column() -> None:
+def test_to_dict_carries_the_read_column() -> None:
+    assert DEFAULT_TIER_CONFIG.to_dict()['read_column'] == '#date_read'
+
+
+def test_from_dict_fills_missing_description_tier_and_read_columns() -> None:
     config = TierConfig.from_dict({'tiers': [{'id': 's', 'label': 'S', 'colour': '#ff7f7f'}]})
-    assert config == TierConfig(tiers=(Tier('s', 'S', '#ff7f7f'),), tier_column='#tier')
+    assert config == TierConfig(tiers=(Tier('s', 'S', '#ff7f7f'),), tier_column='#tier', read_column='#date_read')
     assert config.tiers[0].description == ''
 
 

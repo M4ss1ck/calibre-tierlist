@@ -16,3 +16,17 @@ class QMenu(QWidget):
     def addAction(self, text: Any, triggered: Any = None) -> Any: ...
     def addSeparator(self) -> Any: ...
     def clear(self) -> None: ...
+    def removeAction(self, action: Any) -> None: ...
+
+class QInputDialog(QWidget):
+    @staticmethod
+    def getItem(
+        parent: Any,
+        title: str,
+        label: str,
+        items: list[str],
+        current: int = ...,
+        editable: bool = ...,
+        input_method_hints: Any = ...,
+        flags: Any = ...,
+    ) -> tuple[str, bool]: ...

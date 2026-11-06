@@ -1,7 +1,10 @@
 """calibre implementations of the Library and Prefs ports."""
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
+from datetime import date, datetime, time
 from typing import Any
+
+from calibre.utils.date import local_tz
 
 from ..app import TierList
 from ..ports import Library, Prefs
@@ -20,8 +23,23 @@ class CalibreLibrary(Library):
         column = metadata[lookup_name]
         return column['datatype'] == 'text' and not column['is_multiple']
 
-    def write_text(self, lookup_name: str, values: Mapping[int, str | None]) -> None:
-        self._db.new_api.set_field(lookup_name, dict(values))
+    def column_types(self) -> Mapping[str, str]:
+        metadata = self._db.field_metadata
+        return {key: metadata[key]['datatype'] for key in metadata.custom_field_keys()}
+
+    def read_field(self, lookup_name: str, book_ids: Iterable[int]) -> dict[int, object | None]:
+        return {book_id: self._db.new_api.field_for(lookup_name, book_id) for book_id in book_ids}
+
+    def write_field(self, lookup_name: str, values: Mapping[int, object | None]) -> None:
+        converted = {book_id: _calibre_value(value) for book_id, value in values.items()}
+        self._db.new_api.set_field(lookup_name, converted)
+
+
+def _calibre_value(value: object | None) -> object | None:
+    """Store a plain date at noon, the way calibre's date columns expect."""
+    if isinstance(value, date) and not isinstance(value, datetime):
+        return datetime.combine(value, time(12), tzinfo=local_tz)
+    return value
 
 
 class CalibrePrefs(Prefs):
