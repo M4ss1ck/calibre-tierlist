@@ -6,7 +6,7 @@ Defines Tier List Data once: the JSON schema the plugin produces and the TypeScr
 
 ## Public API
 
-- `TierListData`, `Generated`, `Tier`, `Lane`, `Book`: the typed shape of Tier List Data.
+- `TierListData`, `Generated`, `Tier`, `Lane`, `Book`, `Cover`: the typed shape of Tier List Data.
 - `loadTierListData(doc) -> TierListData`: reads the payload the plugin embedded in the page.
 
 ## Files

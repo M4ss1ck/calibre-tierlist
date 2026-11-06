@@ -1,11 +1,12 @@
 """Build Tier List Data from the books the library holds."""
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime
 
-from ..ports import Library
+from ..ports import Covers, Library
 from ..tiers import Tier, TierConfig
+from .covers import COVER_WIDTH
 from .data import Book, Generated, Lane, TierListData
 
 READ_COLUMN_TYPES = ('datetime', 'bool')
@@ -21,15 +22,24 @@ class Row:
     read: object | None
 
 
-def compile_data(generated: Generated, library: Library, config: TierConfig, book_ids: Iterable[int]) -> TierListData:
-    """Read these books from the library and build their Tier List Data."""
+def compile_data(
+    generated: Generated, library: Library, covers: Covers, fmt: str, config: TierConfig, book_ids: Iterable[int]
+) -> TierListData:
+    """Read these books from the library, build their Tier List Data, then attach their covers."""
     ids = list(book_ids)
     titles = library.read_field('title', ids)
     tiers = library.read_field(config.tier_column, ids) if library.has_column(config.tier_column) else {}
     datatype = library.column_types().get(config.read_column)
     reads = library.read_field(config.read_column, ids) if datatype in READ_COLUMN_TYPES else {}
     rows = [Row(book_id, str(titles.get(book_id) or ''), tiers.get(book_id), reads.get(book_id)) for book_id in ids]
-    return build(generated, config.tiers, rows, datatype == 'bool')
+    data = build(generated, config.tiers, rows, datatype == 'bool')
+    shots = {book.id: cover for book in data.books if (cover := covers.cover(book.id, fmt, COVER_WIDTH)) is not None}
+    return replace(data, covers=shots)
+
+
+def count_series(library: Library, book_ids: Iterable[int]) -> int:
+    """The number of distinct non-empty series among these books."""
+    return len({value for value in library.read_field('series', list(book_ids)).values() if value})
 
 
 def build(generated: Generated, tiers: tuple[Tier, ...], rows: Iterable[Row], read_is_bool: bool) -> TierListData:

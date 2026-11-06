@@ -5,11 +5,11 @@
   "description": "The versioned payload the plugin embeds in the compiled tier list HTML.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "generated", "tiers", "lanes", "books"],
+  "required": ["schemaVersion", "generated", "tiers", "lanes", "books", "covers"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 1,
+      "const": 2,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "generated": { "$ref": "#/$defs/Generated" },
@@ -27,6 +27,11 @@
       "type": "object",
       "description": "Every book on the board, keyed by calibre book id as a string.",
       "additionalProperties": { "$ref": "#/$defs/Book" }
+    },
+    "covers": {
+      "type": "object",
+      "description": "Each cover embedded once, keyed by book id as a string. A book with no entry has no cover and is drawn in the Placeholder style with a \"no cover\" mark.",
+      "additionalProperties": { "$ref": "#/$defs/Cover" }
     }
   },
   "$defs": {
@@ -79,6 +84,22 @@
           "type": ["string", "null"],
           "format": "date",
           "description": "Date read as YYYY-MM-DD, or null when Read State has no date (Yes/No column)."
+        }
+      }
+    },
+    "Cover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["src", "colour"],
+      "properties": {
+        "src": {
+          "type": "string",
+          "description": "data: URI of the 240 px wide thumbnail (AVIF, WebP, or JPEG)"
+        },
+        "colour": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$",
+          "description": "Dominant cover colour"
         }
       }
     }

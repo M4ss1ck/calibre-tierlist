@@ -1,8 +1,12 @@
 """In-memory Library and Prefs ports, so domain tests never touch calibre."""
 
+import base64
 from collections.abc import Iterable, Mapping
 
+from tierlist.compile.covers import Cover
+
 STANDARD_FIELDS = ('title', 'series')
+TINY_WEBP = base64.b64decode('UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==')
 
 
 class FakeLibrary:
@@ -49,3 +53,27 @@ class FakePrefs:
 
     def set(self, key: str, value: object) -> None:
         self.data[key] = value
+
+
+class FakeCovers:
+    """A Covers port where only the listed books have a tiny WebP thumbnail."""
+
+    def __init__(
+        self,
+        formats: frozenset[str] = frozenset({'webp', 'jpeg'}),
+        with_cover: Iterable[int] = (),
+        colours: Mapping[int, str] | None = None,
+    ) -> None:
+        self._formats = formats
+        self._with_cover = set(with_cover)
+        self._colours = dict(colours or {})
+        self.calls: list[tuple[int, str, int]] = []
+
+    def formats(self) -> frozenset[str]:
+        return self._formats
+
+    def cover(self, book_id: int, fmt: str, width: int) -> Cover | None:
+        self.calls.append((book_id, fmt, width))
+        if book_id not in self._with_cover:
+            return None
+        return Cover(fmt, TINY_WEBP, self._colours.get(book_id, '#336699'))

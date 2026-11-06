@@ -8,6 +8,7 @@ from fakes import FakeLibrary, FakePrefs
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
 from tierlist.compile import CompileRequest
+from tierlist.compile.build import count_series
 from tierlist.tiers import TierConfig
 
 NOW = datetime(2026, 11, 6, 12, 0, tzinfo=UTC)
@@ -133,7 +134,7 @@ def test_remember_output_path_round_trips() -> None:
 
 
 def test_series_count_counts_distinct_non_empty_values() -> None:
-    app, library, _ = facade()
+    library = FakeLibrary()
     library.values['series'] = {1: 'Dune', 2: 'Dune', 3: '', 4: None}
 
-    assert app.series_count([1, 2, 3, 4]) == 1
+    assert count_series(library, [1, 2, 3, 4]) == 1
