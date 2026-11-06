@@ -52,11 +52,12 @@ class TierConfig:
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> TierConfig:
         """Rebuild Tier Config from its JSON shape, the inverse of to_dict."""
+        depth = int(data.get('stack_depth', DEFAULT_STACK_DEPTH))
         return cls(
             tiers=tuple(_tier_from_dict(raw) for raw in data['tiers']),
             tier_column=data.get('tier_column', DEFAULT_TIER_COLUMN),
             read_column=data.get('read_column', DEFAULT_READ_COLUMN),
-            stack_depth=data.get('stack_depth', DEFAULT_STACK_DEPTH),
+            stack_depth=max(MIN_STACK_DEPTH, min(MAX_STACK_DEPTH, depth)),
             series_total_column=data.get('series_total_column', ''),
         )
 

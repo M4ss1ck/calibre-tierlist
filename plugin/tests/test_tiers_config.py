@@ -53,6 +53,20 @@ def test_from_dict_defaults_stack_depth_and_series_total_column() -> None:
     assert config.series_total_column == ''
 
 
+def test_from_dict_truncates_a_float_stack_depth() -> None:
+    config = TierConfig.from_dict({'tiers': [], 'stack_depth': 3.0})
+    assert config.stack_depth == 3
+    assert isinstance(config.stack_depth, int)
+
+
+def test_from_dict_clamps_stack_depth_above_the_max() -> None:
+    assert TierConfig.from_dict({'tiers': [], 'stack_depth': 99}).stack_depth == 6
+
+
+def test_from_dict_clamps_stack_depth_below_the_min() -> None:
+    assert TierConfig.from_dict({'tiers': [], 'stack_depth': -2}).stack_depth == 0
+
+
 def test_tier_returns_hit_and_miss() -> None:
     assert DEFAULT_TIER_CONFIG.tier('a') == Tier('a', 'A', '#ffbf7f')
     assert DEFAULT_TIER_CONFIG.tier('z') is None

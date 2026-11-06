@@ -39,7 +39,7 @@ def on_board(rows: Iterable[Row], read_is_bool: bool) -> list[Row]:
 
 def book_of(row: Row, known: set[str], read_is_bool: bool) -> Book:
     """Resolve one row into a Book on the board."""
-    raw = row.tier if isinstance(row.tier, str) and row.tier else None
+    raw = _raw_tier(row)
     return Book(
         row.id,
         row.title,
@@ -55,8 +55,12 @@ def series_name(row: Row) -> str | None:
     return value if isinstance(value, str) and value else None
 
 
+def _raw_tier(row: Row) -> str | None:
+    return row.tier if isinstance(row.tier, str) and row.tier else None
+
+
 def _qualifies(row: Row, read_is_bool: bool) -> bool:
-    return _is_read(row, read_is_bool) or (isinstance(row.tier, str) and bool(row.tier))
+    return _is_read(row, read_is_bool) or _raw_tier(row) is not None
 
 
 def _is_read(row: Row, read_is_bool: bool) -> bool:

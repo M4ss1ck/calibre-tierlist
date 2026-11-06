@@ -32,5 +32,5 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 ## Depends on
 
 - Ports: `Library` for titles, series, series index, Book Tier, Read State, and column readiness; `Covers` for cover thumbnails.
-- Slices: `tiers` for `Tier` and `TierConfig`.
+- Slices: `tiers` for `Tier`, `TierConfig`, and the Stack Depth bounds.
 - Imports nothing from calibre or Qt.
