@@ -6,8 +6,8 @@ from dataclasses import replace
 from datetime import date, datetime
 from pathlib import Path
 
-from .compile import READ_COLUMN_TYPES, CompileRequest, Generated, TierListData, choose_format, compile_data
-from .compile.build import count_series
+from .compile import READ_COLUMN_TYPES, CompileRequest, TierListData, choose_format, compile_data, count_series
+from .compile.data import Generated
 from .ports import NULL_COVERS, Covers, Library, Prefs
 from .publish import write_html
 from .tiers import DEFAULT_TIER_CONFIG, TierConfig

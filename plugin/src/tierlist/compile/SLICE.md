@@ -14,14 +14,16 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 - `Cover(format, data, colour)`: one book's cover thumbnail bytes, their image format, and its dominant colour.
 - `COVER_WIDTH`: the pixel width every embedded cover thumbnail is rendered at.
 - `choose_format(available) -> str`: the first preferred cover format the host encodes, or JPEG.
+- `dominant_colour(pixels) -> str`: the most common colour of these RGB pixels, or grey when there are none.
 - `READ_COLUMN_TYPES`: the calibre column datatypes that can hold Read State.
 - `compile_data(generated, library, covers, fmt, config, book_ids) -> TierListData`: reads title, Book Tier, and Read State through the Library port, builds the board, then reads a `fmt` cover at `COVER_WIDTH` for each book on it.
+- `count_series(library, book_ids) -> int`: the number of distinct non-empty series among these books.
 
 ## Files
 
 - `data.py`: the frozen data types and their JSON serialisation.
 - `build.py`: filters read books, resolves Book Tiers, orders Lanes, and reads the ports.
-- `covers.py`: the `Cover` type, its thumbnail width, and the format preference order.
+- `covers.py`: the thumbnail width, the format preference order, and the dominant colour.
 
 ## Depends on
 

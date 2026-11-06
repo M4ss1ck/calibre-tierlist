@@ -6,8 +6,8 @@ from typing import Any
 from calibre.utils.img import image_to_data
 from qt.core import QImage, QImageWriter, Qt
 
-from ..compile.covers import FORMATS, Cover
-from ..ports import Covers
+from ..compile.covers import FORMATS, dominant_colour
+from ..ports import Cover, Covers
 
 QUALITY = 80
 
@@ -21,7 +21,7 @@ class CalibreCovers(Covers):
         self._formats: frozenset[str] | None = None
 
     def formats(self) -> frozenset[str]:
-        """The preferred formats this calibre can write, in order of preference."""
+        """The preferred cover formats this calibre can write; choose_format applies the preference order."""
         if self._formats is None:
             qt = self._qt_formats()
             self._formats = frozenset(fmt for fmt in FORMATS if fmt in qt or (fmt == 'avif' and _pillow_writes_avif()))
@@ -32,8 +32,7 @@ class CalibreCovers(Covers):
         img: Any = self._db.new_api.cover(book_id, as_image=True)
         if img is None or img.isNull():
             return None
-        if img.width() > width:
-            img = img.scaledToWidth(width, Qt.TransformationMode.SmoothTransformation)
+        img = img.scaledToWidth(width, Qt.TransformationMode.SmoothTransformation)
         data = _qt_encode(img, fmt) if fmt in self._qt_formats() else _pillow_encode(img, fmt)
         return Cover(fmt, data, _dominant_colour(img))
 
@@ -68,6 +67,7 @@ def _pillow_encode(img: QImage, fmt: str) -> bytes:
 
 
 def _dominant_colour(img: QImage) -> str:
-    """The average colour of the whole image, as '#rrggbb'."""
-    one = img.scaled(1, 1, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
-    return one.pixelColor(0, 0).name()
+    """The most common colour of the image, sampled on a 16 by 16 grid, as '#rrggbb'."""
+    small = img.scaled(16, 16, Qt.AspectRatioMode.IgnoreAspectRatio, Qt.TransformationMode.SmoothTransformation)
+    pixels = [small.pixelColor(x, y) for x in range(16) for y in range(16)]
+    return dominant_colour((pixel.red(), pixel.green(), pixel.blue()) for pixel in pixels)

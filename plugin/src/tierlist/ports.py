@@ -1,12 +1,8 @@
 """The ports the calibre-free core needs, each with an adapter and an in-memory fake."""
 
-from __future__ import annotations
-
 from collections.abc import Iterable, Mapping
-from typing import TYPE_CHECKING, Any, Protocol
-
-if TYPE_CHECKING:
-    from .compile.covers import Cover
+from dataclasses import dataclass
+from typing import Any, Protocol
 
 
 class Library(Protocol):
@@ -40,6 +36,15 @@ class Prefs(Protocol):
     def set(self, key: str, value: Any) -> None:
         """Store a value for this library."""
         ...
+
+
+@dataclass(frozen=True)
+class Cover:
+    """One book's cover thumbnail: its image format, bytes, and dominant colour ('#rrggbb')."""
+
+    format: str
+    data: bytes
+    colour: str
 
 
 class Covers(Protocol):

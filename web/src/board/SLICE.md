@@ -18,5 +18,5 @@ Draws the compiled Tier List as Lanes of Cards: one Lane per Tier in config orde
 ## Depends on
 
 - Ports: none; it draws the Tier List Data passed as props.
-- Slices: `contract` for `TierListData`, `Tier`, `Lane`, and `Book` types.
+- Slices: `contract` for `TierListData`, `Tier`, `Lane`, `Book`, and `Cover` types.
 - Svelte only; no calibre or network access.

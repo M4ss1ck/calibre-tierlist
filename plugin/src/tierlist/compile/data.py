@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, Literal
 
+from ..ports import Cover
 from ..tiers import Tier
-from .covers import Cover
 
 SCHEMA_VERSION = 2
 

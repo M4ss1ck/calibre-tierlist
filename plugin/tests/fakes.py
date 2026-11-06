@@ -3,7 +3,7 @@
 import base64
 from collections.abc import Iterable, Mapping
 
-from tierlist.compile.covers import Cover
+from tierlist.ports import Cover
 
 STANDARD_FIELDS = ('title', 'series')
 TINY_WEBP = base64.b64decode('UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==')
