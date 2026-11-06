@@ -7,6 +7,7 @@ from calibre.gui2 import choose_save_file
 from qt.core import QDialog, QHBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QVBoxLayout
 
 from ..app import TierList
+from ..compile import Scope
 
 
 class CompileDialog(QDialog):
@@ -31,7 +32,13 @@ class CompileDialog(QDialog):
         cancel_button.clicked.connect(self.reject)
         self._layout(browse, compile_button, cancel_button)
 
-    def scope(self) -> str:
+    def accept(self) -> None:
+        """Close the dialog only when an output path was given."""
+        if not self.path().strip():
+            return
+        super().accept()
+
+    def scope(self) -> Scope:
         """The Compile Scope the user picked."""
         if self.virtual_radio.isChecked():
             return 'virtual_library'

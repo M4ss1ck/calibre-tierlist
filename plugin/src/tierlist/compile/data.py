@@ -2,11 +2,13 @@
 
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Literal
 
 from ..tiers import Tier
 
 SCHEMA_VERSION = 1
+
+Scope = Literal['library', 'virtual_library', 'selection']
 
 
 @dataclass(frozen=True)
@@ -15,7 +17,7 @@ class Generated:
 
     at: datetime
     library_name: str
-    scope: str
+    scope: Scope
     plugin_version: str
 
 
@@ -41,7 +43,7 @@ class Lane:
 class CompileRequest:
     """The inputs one compile needs: the Compile Scope, the books, the library, and the plugin version."""
 
-    scope: str
+    scope: Scope
     book_ids: tuple[int, ...]
     library_name: str
     plugin_version: str

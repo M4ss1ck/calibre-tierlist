@@ -15,13 +15,13 @@ class FakeLibrary:
         self.writes = 0
 
     def column_types(self) -> Mapping[str, str]:
-        return dict.fromkeys(STANDARD_FIELDS, 'text') | {name: 'text' for name in self.columns} | self.types
+        return {name: 'text' for name in self.columns} | self.types
 
     def has_column(self, lookup_name: str) -> bool:
-        return lookup_name not in STANDARD_FIELDS and self.column_types().get(lookup_name) == 'text'
+        return self.column_types().get(lookup_name) == 'text'
 
     def read_field(self, lookup_name: str, book_ids: Iterable[int]) -> dict[int, object | None]:
-        if lookup_name not in self.column_types():
+        if lookup_name not in self.column_types() and lookup_name not in STANDARD_FIELDS:
             raise KeyError(lookup_name)
         column = self.values.get(lookup_name, {})
         return {book_id: column.get(book_id) for book_id in book_ids}

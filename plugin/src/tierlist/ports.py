@@ -16,7 +16,8 @@ class Library(Protocol):
         ...
 
     def read_field(self, lookup_name: str, book_ids: Iterable[int]) -> dict[int, object | None]:
-        """The current value of a column for each book id, None where the field is empty."""
+        """The value of a column, or of the standard fields 'title' and 'series', for each book id;
+        None where the field is empty."""
         ...
 
     def write_field(self, lookup_name: str, values: Mapping[int, object | None]) -> None:

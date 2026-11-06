@@ -16,7 +16,7 @@
   const cards = $derived(
     lane.cards.flatMap((id) => {
       const book = books[id];
-      return book ? [book.title] : [];
+      return book ? [{ id, title: book.title }] : [];
     }),
   );
 </script>
@@ -24,8 +24,8 @@
 <section class="lane" aria-label={label}>
   <h2 class="label" style:background-color={colour}>{label}</h2>
   <div class="cards">
-    {#each cards as title, index (index)}
-      <Card {title} />
+    {#each cards as card (card.id)}
+      <Card title={card.title} />
     {/each}
   </div>
 </section>

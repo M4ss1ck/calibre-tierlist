@@ -144,4 +144,7 @@ class TierList:
         size = write_html(template, data, path)
         seconds = time.perf_counter() - started
         series = self.series_count([book.id for book in data.books])
-        log(f'Tier List compiled: {len(data.books)} books, {series} series in {seconds:.2f}s, {size} bytes -> {path}')
+        log(
+            f'Tier List compiled: {len(data.books)} of {len(request.book_ids)} books, {series} series '
+            f'in {seconds:.2f}s, {size} bytes -> {path}'
+        )

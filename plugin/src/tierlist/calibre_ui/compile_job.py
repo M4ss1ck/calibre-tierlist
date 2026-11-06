@@ -8,11 +8,11 @@ from calibre.gui2 import open_local_file
 from calibre.gui2.threaded_jobs import ThreadedJob
 
 from ..app import TierList
-from ..compile import CompileRequest
+from ..compile import CompileRequest, Scope
 from .adapters import tier_list
 
 
-def scope_book_ids(gui: Any, scope: str) -> tuple[int, ...]:
+def scope_book_ids(gui: Any, scope: Scope) -> tuple[int, ...]:
     """The book ids the Compile Scope covers, sorted."""
     db = gui.current_db
     if scope == 'virtual_library':
