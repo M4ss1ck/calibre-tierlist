@@ -17,6 +17,7 @@ from calibre.gui2 import Application
 from calibre.library import db as open_db
 from calibre.utils.img import image_from_data, image_to_data
 from calibre_plugins.tierlist.app import TierList
+from calibre_plugins.tierlist.calibre_ui import covers as covers_module
 from calibre_plugins.tierlist.calibre_ui.adapters import tier_list
 from calibre_plugins.tierlist.calibre_ui.compile_job import run_compile
 from calibre_plugins.tierlist.calibre_ui.covers import CalibreCovers
@@ -101,6 +102,26 @@ def check_compile(app: TierList, book_ids: tuple[int, ...], fmt: str) -> None:
     expect(f'data:image/{fmt};base64,' in html, f'no {fmt} data URI in the compiled HTML')
 
 
+def check_probe(db: Any) -> None:
+    """A format whose every encoder fails is not offered, even when Qt lists it (AVIF without an encoder)."""
+    real = covers_module.ENCODERS
+
+    def failing(encode: covers_module.Encoder) -> covers_module.Encoder:
+        def wrapped(img: Any, fmt: str) -> bytes:
+            if fmt == 'webp':
+                raise RuntimeError('Failed to encode image: No codec available')
+            return encode(img, fmt)
+
+        return wrapped
+
+    covers_module.ENCODERS = tuple(failing(encode) for encode in real)
+    try:
+        offered = CalibreCovers(db).formats()
+    finally:
+        covers_module.ENCODERS = real
+    expect('webp' not in offered and 'jpeg' in offered, f'a failing encoder was offered: {sorted(offered)}')
+
+
 def main() -> int:
     Application([])
     with tempfile.TemporaryDirectory() as tmp:
@@ -115,6 +136,7 @@ def main() -> int:
                 check_thumbnail(covers, covered, one, writable)
             expect(covers.cover(bare, fmt, COVER_WIDTH) is None, 'a book without a cover produced a thumbnail')
             check_compile(app, (covered, bare), fmt)
+            check_probe(db)
         finally:
             db.close()
     print(f'COVERS OK {fmt}')

@@ -1,15 +1,17 @@
 """calibre's Covers port: cover thumbnails as AVIF, WebP, or JPEG, with their dominant colour."""
 
 import io
+from collections.abc import Callable
 from typing import Any
 
 from calibre.utils.img import image_to_data
-from qt.core import QImage, QImageWriter, Qt
+from qt.core import QColor, QImage, Qt
 
 from ..compile.covers import FORMATS, dominant_colour
 from ..ports import Cover, Covers
 
 QUALITY = 80
+Encoder = Callable[[QImage, str], bytes]
 
 
 class CalibreCovers(Covers):
@@ -17,15 +19,11 @@ class CalibreCovers(Covers):
 
     def __init__(self, db: Any) -> None:
         self._db = db
-        self._qt: frozenset[str] | None = None
-        self._formats: frozenset[str] | None = None
+        self._encoders: dict[str, Encoder] | None = None
 
     def formats(self) -> frozenset[str]:
-        """The preferred cover formats this calibre can write; choose_format applies the preference order."""
-        if self._formats is None:
-            qt = self._qt_formats()
-            self._formats = frozenset(fmt for fmt in FORMATS if fmt in qt or (fmt == 'avif' and _pillow_writes_avif()))
-        return self._formats
+        """The cover formats this calibre can really encode; choose_format applies the preference order."""
+        return frozenset(self._working_encoders())
 
     def cover(self, book_id: int, fmt: str, width: int) -> Cover | None:
         """The book's cover `width` px wide, encoded as `fmt`, with its dominant colour."""
@@ -33,37 +31,50 @@ class CalibreCovers(Covers):
         if img is None or img.isNull():
             return None
         img = img.scaledToWidth(width, Qt.TransformationMode.SmoothTransformation)
-        data = _qt_encode(img, fmt) if fmt in self._qt_formats() else _pillow_encode(img, fmt)
-        return Cover(fmt, data, _dominant_colour(img))
+        return Cover(fmt, self._working_encoders()[fmt](img, fmt), _dominant_colour(img))
 
-    def _qt_formats(self) -> frozenset[str]:
-        """Every image format Qt can write, lowercased, computed once."""
-        if self._qt is None:
-            self._qt = frozenset(bytes(name).decode('ascii').lower() for name in QImageWriter.supportedImageFormats())
-        return self._qt
+    def _working_encoders(self) -> dict[str, Encoder]:
+        """The first encoder that writes a probe image in each format, found once.
+
+        Probing, not Qt's advertised list: some calibre builds list AVIF with only a decoder behind it.
+        """
+        if self._encoders is None:
+            probe = QImage(8, 8, QImage.Format.Format_RGB32)
+            probe.fill(QColor('#808080'))
+            self._encoders = {}
+            for fmt in FORMATS:
+                encoder = next((encode for encode in ENCODERS if _writes(encode, probe, fmt)), None)
+                if encoder is not None:
+                    self._encoders[fmt] = encoder
+        return self._encoders
 
 
-def _pillow_writes_avif() -> bool:
-    """True when Pillow is installed with AVIF support; some calibre builds ship it without."""
+def _writes(encode: Encoder, probe: QImage, fmt: str) -> bool:
+    """True when the encoder turns the probe into non-empty bytes.
+
+    calibre raises RuntimeError for a codec it lacks; Pillow raises ImportError, KeyError, OSError, or ValueError.
+    """
     try:
-        from PIL import features
-    except ImportError:
+        return len(encode(probe, fmt)) > 0
+    except ImportError, KeyError, OSError, RuntimeError, ValueError:
         return False
-    return bool(features.check('avif'))
 
 
 def _qt_encode(img: QImage, fmt: str) -> bytes:
-    """Encode the image at a fixed quality in a format Qt can write."""
+    """Encode the image at a fixed quality through Qt's image writers."""
     return image_to_data(img, compression_quality=QUALITY, fmt=fmt)
 
 
 def _pillow_encode(img: QImage, fmt: str) -> bytes:
-    """Encode the image with Pillow, the only writer for the formats Qt lacks, such as AVIF."""
+    """Encode the image with Pillow, for the formats Qt cannot write, such as AVIF on most builds."""
     from PIL import Image
 
     encoded = io.BytesIO()
     Image.open(io.BytesIO(image_to_data(img, fmt='PNG'))).save(encoded, format=fmt.upper(), quality=QUALITY)
     return encoded.getvalue()
+
+
+ENCODERS: tuple[Encoder, ...] = (_qt_encode, _pillow_encode)
 
 
 def _dominant_colour(img: QImage) -> str:
