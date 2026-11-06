@@ -1,6 +1,6 @@
 """The ports the calibre-free core needs, each with an adapter and an in-memory fake."""
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from typing import Any, Protocol
 
 
@@ -8,11 +8,19 @@ class Library(Protocol):
     """The custom columns and books of the current library."""
 
     def has_column(self, lookup_name: str) -> bool:
-        """True when the library has a custom column with this lookup name."""
+        """True when the library has a single-valued Text custom column with this lookup name."""
         ...
 
-    def write_text(self, lookup_name: str, values: Mapping[int, str | None]) -> None:
-        """Write a Text column for book ids, None clearing the field."""
+    def column_types(self) -> Mapping[str, str]:
+        """Every custom column lookup name mapped to its calibre datatype."""
+        ...
+
+    def read_field(self, lookup_name: str, book_ids: Iterable[int]) -> dict[int, object | None]:
+        """The current value of a column for each book id, None where the field is empty."""
+        ...
+
+    def write_field(self, lookup_name: str, values: Mapping[int, object | None]) -> None:
+        """Write a column for book ids, None clearing the field."""
         ...
 
 

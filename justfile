@@ -43,6 +43,7 @@ itest: build
     "{{calibre_bin_dir}}/calibre-customize" -a "{{plugin_zip}}"
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/smoke.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/book_tier.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/read_state.py
 
 # Point git at the versioned hooks.
 hooks:

@@ -7,20 +7,17 @@ Run with ``calibre-debug -e plugin/itest/book_tier.py`` after installing
 calibre runs Python with -OO, which strips ``assert``; use ``expect``.
 """
 
-import importlib
 import sys
 import tempfile
 from typing import Any
 
-from calibre.customize.ui import find_plugin
 from calibre.ebooks.metadata.book.base import Metadata
 from calibre.gui2 import Application
 from calibre.library import db as open_db
 from calibre_plugins.tierlist.app import TierList
 from calibre_plugins.tierlist.calibre_ui.adapters import tier_list
-from fake_gui import FakeGui
+from fake_gui import FakeGui, load_action, menu_shortcuts
 
-NAME = 'Tier List'
 TIER_NAMES = (*(f'Send to tier: {label}' for label in 'SABCDF'), 'Clear tier')
 
 
@@ -46,34 +43,18 @@ def check_adapters(path: str) -> tuple[Any, int]:
     app.clear_book_tier([ids[0]])
     expect(db.new_api.field_for('#tier', ids[0]) is None, 'clear did not remove the value')
     app.mark_tier_column_offered()
+    app.mark_read_column_offered()
     db.close()
     db = open_db(path)
     expect(tier_list(db).tier_column_offered(), 'the offer flag did not persist')
     return db, ids[2]
 
 
-def menu_shortcuts(gui: Any, action: Any) -> dict[str, dict[str, Any]]:
-    prefix = f'{action.unique_name} : menu action : '
-    return {name: shortcut for name, shortcut in gui.keyboard.shortcuts.items() if name.startswith(prefix)}
-
-
-def load_action(gui: Any) -> Any:
-    plugin = find_plugin(NAME)
-    if plugin is None or plugin.actual_plugin is None:
-        raise SystemExit('BOOK TIER FAIL: the Tier List plugin is not registered')
-    # load_actual_plugin caches one action per plugin; each check needs its own gui.
-    module_name, class_name = plugin.actual_plugin.split(':')
-    action = getattr(importlib.import_module(module_name), class_name)(gui, plugin.site_customization)
-    action.interface_action_base_plugin = plugin
-    action.do_genesis()
-    action.initialization_complete()
-    return action
-
-
 def check_missing_column(path: str) -> None:
     """Without a tier column the submenu only explains why and offers creation."""
     db = open_db(path)
-    tier_list(db).mark_tier_column_offered()  # skip the first-run question dialog
+    tier_list(db).mark_tier_column_offered()  # skip the first-run question dialogs
+    tier_list(db).mark_read_column_offered()
     gui = FakeGui(db, [])
     action = load_action(gui)
     expect(not menu_shortcuts(gui, action), 'tier shortcuts registered without a tier column')

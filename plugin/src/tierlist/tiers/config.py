@@ -1,10 +1,11 @@
-"""Tier Config: the ordered Tiers for one library and the column holding Book Tier."""
+"""Tier Config: the ordered Tiers for one library and the columns holding Book Tier and Read State."""
 
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
 DEFAULT_TIER_COLUMN = '#tier'
+DEFAULT_READ_COLUMN = '#date_read'
 
 
 @dataclass(frozen=True)
@@ -19,10 +20,12 @@ class Tier:
 
 @dataclass(frozen=True)
 class TierConfig:
-    """The ordered Tiers for one library and the lookup name of the Text column holding Book Tier."""
+    """The ordered Tiers for one library, plus the lookup names of the column holding Book Tier and of the column
+    holding Read State."""
 
     tiers: tuple[Tier, ...]
     tier_column: str = DEFAULT_TIER_COLUMN
+    read_column: str = DEFAULT_READ_COLUMN
 
     def tier(self, tier_id: str) -> Tier | None:
         """Return the Tier with this id, or None when Tier Config holds none."""
@@ -36,6 +39,7 @@ class TierConfig:
                 for tier in self.tiers
             ],
             'tier_column': self.tier_column,
+            'read_column': self.read_column,
         }
 
     @classmethod
@@ -44,6 +48,7 @@ class TierConfig:
         return cls(
             tiers=tuple(_tier_from_dict(raw) for raw in data['tiers']),
             tier_column=data.get('tier_column', DEFAULT_TIER_COLUMN),
+            read_column=data.get('read_column', DEFAULT_READ_COLUMN),
         )
 
 
