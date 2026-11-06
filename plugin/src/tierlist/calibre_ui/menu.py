@@ -1,10 +1,12 @@
 """The Tier List action's menu: Send to tier items and Clear tier."""
 
+from collections.abc import Iterable
 from functools import partial
 from typing import Any
 
 from qt.core import QMenu
 
+from ..tiers import Tier
 from .adapters import tier_list
 
 
@@ -23,7 +25,10 @@ class TierMenu:
         """Replace every item, re-registering its shortcut with calibre."""
         keyboard = self._action.gui.keyboard
         for created in self._created:
+            # create_menu_action also adds each item to the gui, so clear() alone
+            # would leave it alive, still holding the user's shortcut.
             keyboard.unregister_shortcut(created.calibre_shortcut_unique_name)
+            self._action.gui.removeAction(created)
         self._created.clear()
         self._submenu.clear()
         if db is None:
@@ -35,7 +40,7 @@ class TierMenu:
             self._add_missing(db)
         keyboard.finalize()
 
-    def _add_tiers(self, tiers: Any) -> None:
+    def _add_tiers(self, tiers: Iterable[Tier]) -> None:
         for tier in tiers:
             self._register(
                 f'send-to-tier-{tier.id}',

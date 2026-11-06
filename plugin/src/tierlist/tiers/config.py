@@ -4,6 +4,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
+DEFAULT_TIER_COLUMN = '#tier'
+
 
 @dataclass(frozen=True)
 class Tier:
@@ -20,7 +22,7 @@ class TierConfig:
     """The ordered Tiers for one library and the lookup name of the Text column holding Book Tier."""
 
     tiers: tuple[Tier, ...]
-    tier_column: str = '#tier'
+    tier_column: str = DEFAULT_TIER_COLUMN
 
     def tier(self, tier_id: str) -> Tier | None:
         """Return the Tier with this id, or None when Tier Config holds none."""
@@ -41,7 +43,7 @@ class TierConfig:
         """Rebuild Tier Config from its JSON shape, the inverse of to_dict."""
         return cls(
             tiers=tuple(_tier_from_dict(raw) for raw in data['tiers']),
-            tier_column=data.get('tier_column', '#tier'),
+            tier_column=data.get('tier_column', DEFAULT_TIER_COLUMN),
         )
 
 

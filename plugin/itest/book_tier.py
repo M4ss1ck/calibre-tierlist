@@ -15,11 +15,10 @@ from typing import Any
 from calibre.customize.ui import find_plugin
 from calibre.ebooks.metadata.book.base import Metadata
 from calibre.gui2 import Application
-from calibre.gui2.keyboard import Manager
 from calibre.library import db as open_db
 from calibre_plugins.tierlist.app import TierList
 from calibre_plugins.tierlist.calibre_ui.adapters import tier_list
-from qt.core import QMainWindow
+from fake_gui import FakeGui
 
 NAME = 'Tier List'
 TIER_NAMES = (*(f'Send to tier: {label}' for label in 'SABCDF'), 'Clear tier')
@@ -51,36 +50,6 @@ def check_adapters(path: str) -> tuple[Any, int]:
     db = open_db(path)
     expect(tier_list(db).tier_column_offered(), 'the offer flag did not persist')
     return db, ids[2]
-
-
-class FakeModel:
-    def __init__(self, db: Any) -> None:
-        self.db = db
-        self.refreshed: list[list[int]] = []
-
-    def refresh_ids(self, ids: list[int]) -> None:
-        self.refreshed.append(list(ids))
-
-
-class FakeLibraryView:
-    def __init__(self, db: Any, ids: list[int]) -> None:
-        self._ids = ids
-        self._model = FakeModel(db)
-
-    def get_selected_ids(self) -> list[int]:
-        return list(self._ids)
-
-    def model(self) -> FakeModel:
-        return self._model
-
-
-class FakeGui(QMainWindow):
-    def __init__(self, db: Any, ids: list[int]) -> None:
-        super().__init__()
-        self.keyboard = Manager(self)
-        self.current_db = db
-        self.library_view = FakeLibraryView(db, ids)
-        self.must_restart_before_config = False
 
 
 def menu_shortcuts(gui: Any, action: Any) -> dict[str, dict[str, Any]]:
@@ -120,11 +89,13 @@ def check_menu(db: Any, book_id: int) -> None:
     expect(len(shortcuts) == 7, f'expected 7 menu shortcuts, got {len(shortcuts)}')
     expect(sorted(item['name'] for item in shortcuts.values()) == sorted(TIER_NAMES), 'wrong shortcut names')
     expect(all(item['default_keys'] == () for item in shortcuts.values()), 'a menu shortcut has a default key')
+    live_actions = len(gui.actions())
     menu = action.qaction.menu()
     expect(menu is not None, 'the action has no menu')
     for _ in range(2):
         menu.aboutToShow.emit()
         expect(len(menu_shortcuts(gui, action)) == 7, 'rebuild left the wrong number of shortcuts')
+        expect(len(gui.actions()) == live_actions, 'rebuild left stale actions holding shortcuts on the gui')
     shortcuts = menu_shortcuts(gui, action)
     tier_s = next(item for item in shortcuts.values() if item['name'] == 'Send to tier: S')
     tier_s['action'].trigger()
