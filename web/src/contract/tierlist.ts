@@ -7,7 +7,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 1;
+  schemaVersion: 2;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -22,6 +22,12 @@ export interface TierListData {
    */
   books: {
     [k: string]: Book;
+  };
+  /**
+   * Each cover embedded once, keyed by book id as a string. A book with no entry has no cover and is drawn in the Placeholder style with a "no cover" mark.
+   */
+  covers: {
+    [k: string]: Cover;
   };
 }
 export interface Generated {
@@ -59,4 +65,14 @@ export interface Book {
    * Date read as YYYY-MM-DD, or null when Read State has no date (Yes/No column).
    */
   dateRead: string | null;
+}
+export interface Cover {
+  /**
+   * data: URI of the 240 px wide thumbnail (AVIF, WebP, or JPEG)
+   */
+  src: string;
+  /**
+   * Dominant cover colour
+   */
+  colour: string;
 }

@@ -1,12 +1,15 @@
 """Tier List Data: the versioned, schema-defined payload the plugin embeds in the HTML."""
 
-from dataclasses import dataclass
+import base64
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, Literal
 
+from ..ports import Cover
 from ..tiers import Tier
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 Scope = Literal['library', 'virtual_library', 'selection']
 
@@ -57,6 +60,7 @@ class TierListData:
     tiers: tuple[Tier, ...]
     lanes: tuple[Lane, ...]
     books: tuple[Book, ...]
+    covers: Mapping[int, Cover] = field(default_factory=dict[int, Cover])
 
     def to_dict(self) -> dict[str, Any]:
         """Serialise to the schema's camelCase JSON shape."""
@@ -80,5 +84,12 @@ class TierListData:
                     'dateRead': None if book.date_read is None else book.date_read.isoformat(),
                 }
                 for book in self.books
+            },
+            'covers': {
+                str(book_id): {
+                    'src': f'data:image/{cover.format};base64,{base64.b64encode(cover.data).decode()}',
+                    'colour': cover.colour,
+                }
+                for book_id, cover in sorted(self.covers.items())
             },
         }

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",
     "libraryName": "Fixture Library",
@@ -89,6 +89,20 @@
       "title": "Zulu",
       "tier": null,
       "dateRead": "2021-01-01"
+    }
+  },
+  "covers": {
+    "1": {
+      "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+      "colour": "#336699"
+    },
+    "3": {
+      "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+      "colour": "#336699"
+    },
+    "7": {
+      "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+      "colour": "#336699"
     }
   }
 }

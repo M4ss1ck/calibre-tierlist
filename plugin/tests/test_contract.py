@@ -6,7 +6,7 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any, Protocol, cast
 
-from fakes import FakeLibrary, FakePrefs
+from fakes import FakeCovers, FakeLibrary, FakePrefs
 from jsonschema import Draft202012Validator, FormatChecker
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
@@ -48,7 +48,7 @@ def fixture_payload() -> dict[str, Any]:
         8: date(2021, 1, 1),
     }
     prefs = FakePrefs({TIER_CONFIG_KEY: CONFIG.to_dict()})
-    app = TierList(library, prefs, lambda: NOW.date(), lambda: NOW)
+    app = TierList(library, prefs, lambda: NOW.date(), lambda: NOW, covers=FakeCovers(with_cover={1, 3, 7}))
     request = CompileRequest('library', tuple(range(1, 9)), 'Fixture Library', '0.1.0')
     return app.compile(request).to_dict()
 

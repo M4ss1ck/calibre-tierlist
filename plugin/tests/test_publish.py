@@ -17,7 +17,9 @@ NOW = datetime(2026, 11, 6, 12, 0, tzinfo=UTC)
 TODAY = date(2026, 11, 6)
 PREFIX = '<script>const DATA = '
 SUFFIX = ';</script>'
-LOG_LINE = re.compile(r'^Tier List compiled: \d+ of \d+ books, \d+ series in \d+\.\d{2}s, \d+ bytes -> .+$')
+LOG_LINE = re.compile(
+    r'^Tier List compiled: \d+ of \d+ books, \d+ series, \d+ covers as \w+ in \d+\.\d{2}s, \d+ bytes -> .+$'
+)
 
 
 def sample_data() -> TierListData:

@@ -6,8 +6,9 @@ from dataclasses import replace
 from datetime import date, datetime
 from pathlib import Path
 
-from .compile import READ_COLUMN_TYPES, CompileRequest, Generated, TierListData, compile_data
-from .ports import Library, Prefs
+from .compile import READ_COLUMN_TYPES, CompileRequest, TierListData, choose_format, compile_data, count_series
+from .compile.data import Generated
+from .ports import NULL_COVERS, Covers, Library, Prefs
 from .publish import write_html
 from .tiers import DEFAULT_TIER_CONFIG, TierConfig
 
@@ -25,11 +26,12 @@ class TierList:
         prefs: Prefs,
         today: Callable[[], date] = date.today,
         now: Callable[[], datetime] = lambda: datetime.now().astimezone(),
+        covers: Covers = NULL_COVERS,
     ) -> None:
         self._library = library
         self._prefs = prefs
-        self._today = today
-        self._now = now
+        self._today, self._now = today, now
+        self._covers = covers
 
     def tier_config(self) -> TierConfig:
         """The Tier Config stored for this library, or the default when absent."""
@@ -122,11 +124,8 @@ class TierList:
     def compile(self, request: CompileRequest) -> TierListData:
         """Compile Tier List Data for one Compile Request."""
         generated = Generated(self._now(), request.library_name, request.scope, request.plugin_version)
-        return compile_data(generated, self._library, self.tier_config(), request.book_ids)
-
-    def series_count(self, book_ids: Iterable[int]) -> int:
-        """The number of distinct non-empty series among these books."""
-        return len({value for value in self._library.read_field('series', list(book_ids)).values() if value})
+        fmt = choose_format(self._covers.formats())
+        return compile_data(generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids)
 
     def output_path(self) -> str:
         """The remembered output path, or today's default."""
@@ -141,10 +140,11 @@ class TierList:
         """Compile, render, and write the HTML file, then log one summary line."""
         started = time.perf_counter()
         data = self.compile(request)
+        fmt = choose_format(self._covers.formats())
         size = write_html(template, data, path)
         seconds = time.perf_counter() - started
-        series = self.series_count([book.id for book in data.books])
+        series = count_series(self._library, [book.id for book in data.books])
         log(
-            f'Tier List compiled: {len(data.books)} of {len(request.book_ids)} books, {series} series '
-            f'in {seconds:.2f}s, {size} bytes -> {path}'
+            f'Tier List compiled: {len(data.books)} of {len(request.book_ids)} books, {series} series, '
+            f'{len(data.covers)} covers as {fmt} in {seconds:.2f}s, {size} bytes -> {path}'
         )

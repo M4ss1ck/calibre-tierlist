@@ -9,6 +9,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `TierListAction`: the `InterfaceAction` that calibre instantiates through the zip root entry point.
 - `tier_list(db) -> TierList`: the facade over one calibre library database and its namespaced prefs.
 - `CalibreLibrary`, `CalibrePrefs`: the `Library` and `Prefs` port adapters.
+- `CalibreCovers`: the `Covers` port adapter, encoding cover thumbnails as AVIF, WebP, or JPEG.
 - `TierMenu(action)`: the "Send to tier" submenu and the Read State menu items, rebuilt on demand.
 - `offer_tier_column(gui, app) -> bool`: the first-run Tier offer, and whether a column was created.
 - `offer_read_column(gui, app, force=False) -> bool`: the Read State offer (new "Date read" column or an existing date/bool column), and whether a column was created.
@@ -23,6 +24,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 
 - `action.py`: the action, its toolbar dialog, the layout claim, and the send, clear, and mark read/unread handlers.
 - `adapters.py`: `CalibreLibrary` (including date conversion) and `CalibrePrefs` over calibre's database.
+- `covers.py`: `CalibreCovers`, the cover thumbnails and their dominant colour.
 - `menu.py`: the `TierMenu` submenu, Read State items, and their shortcut registration.
 - `column.py`: the first-run offers and the column creation flow.
 - `compile_dialog.py`: the Compile Scope and output path dialog.
@@ -30,6 +32,6 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 
 ## Depends on
 
-- Ports: `Library` and `Prefs`, implemented here by `CalibreLibrary` and `CalibrePrefs`.
+- Ports: `Library`, `Prefs`, and `Covers`, implemented here by `CalibreLibrary`, `CalibrePrefs`, and `CalibreCovers`.
 - Slices: `tierlist.app` and `tierlist.tiers` for the use cases and Tier Config.
 - Imports calibre and Qt; the only slice allowed to.
