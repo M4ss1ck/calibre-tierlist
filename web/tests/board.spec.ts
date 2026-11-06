@@ -20,6 +20,10 @@ function titles(ids: string[]): string[] {
   });
 }
 
+function onBoard(): string[] {
+  return data.lanes.flatMap((lane) => lane.cards);
+}
+
 test('shows one Lane per Tier in config order, then the Unranked Lane', async ({ page }) => {
   await page.goto(url);
 
@@ -42,8 +46,58 @@ test('shows each Lane its own Card titles in order', async ({ page }) => {
 
     await expect(cards).toHaveCount(expected.length);
     if (expected.length > 0) {
-      await expect(cards).toHaveText(expected);
+      await expect(cards.locator('.title')).toHaveText(expected);
     }
+  }
+});
+
+test('shows every book with a cover its embedded image', async ({ page }) => {
+  await page.goto(url);
+
+  const withCovers = onBoard().filter((id) => id in data.covers);
+  expect(withCovers.length).toBeGreaterThan(0);
+  await expect(page.locator('article img')).toHaveCount(withCovers.length);
+
+  for (const id of withCovers) {
+    const cover = data.covers[id];
+    const book = data.books[id];
+    if (!cover || !book) {
+      throw new Error(`Fixture is missing the cover or book for ${id}`);
+    }
+
+    const image = page
+      .locator('article')
+      .filter({ has: page.locator('.title', { hasText: book.title }) })
+      .locator('img');
+
+    await expect(image).toHaveCount(1);
+    await expect(image).toHaveAttribute('src', cover.src);
+    await expect
+      .poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0);
+  }
+});
+
+test('draws the Placeholder style for every book without a cover', async ({ page }) => {
+  await page.goto(url);
+
+  const withoutCovers = onBoard().filter((id) => !(id in data.covers));
+  expect(withoutCovers.length).toBeGreaterThan(0);
+
+  for (const id of withoutCovers) {
+    const book = data.books[id];
+    if (!book) {
+      throw new Error(`Fixture Lane references unknown book id ${id}`);
+    }
+
+    const card = page
+      .locator('article')
+      .filter({ has: page.locator('.title', { hasText: book.title }) });
+
+    await expect(card).toHaveCount(1);
+    await expect(card).toHaveClass(/\bplaceholder\b/);
+    await expect(card).toContainText('no cover');
+    await expect(card.locator('img')).toHaveCount(0);
   }
 });
 

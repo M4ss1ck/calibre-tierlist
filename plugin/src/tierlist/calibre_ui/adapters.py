@@ -1,4 +1,4 @@
-"""calibre implementations of the Library and Prefs ports."""
+"""calibre implementations of the Library, Prefs, and Covers ports."""
 
 from collections.abc import Iterable, Mapping
 from datetime import date, datetime, time
@@ -8,6 +8,7 @@ from calibre.utils.date import local_tz
 
 from ..app import TierList
 from ..ports import Library, Prefs
+from .covers import CalibreCovers
 
 
 class CalibreLibrary(Library):
@@ -57,4 +58,4 @@ class CalibrePrefs(Prefs):
 
 def tier_list(db: Any) -> TierList:
     """The facade over one calibre library database and its prefs."""
-    return TierList(CalibreLibrary(db), CalibrePrefs(db))
+    return TierList(CalibreLibrary(db), CalibrePrefs(db), covers=CalibreCovers(db))
