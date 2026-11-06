@@ -7,6 +7,16 @@ class Application:
 
 def question_dialog(parent: Any, title: str, msg: str, *args: Any, **kwargs: Any) -> bool: ...
 def error_dialog(parent: Any, title: str, msg: str, *args: Any, **kwargs: Any) -> Any: ...
+def choose_save_file(
+    window: Any,
+    name: str,
+    title: str,
+    filters: Any = ...,
+    all_files: bool = ...,
+    initial_path: Any = ...,
+    initial_filename: Any = ...,
+) -> str | None: ...
+def open_local_file(path: str) -> Any: ...
 def info_dialog(
     parent: Any,
     title: str,

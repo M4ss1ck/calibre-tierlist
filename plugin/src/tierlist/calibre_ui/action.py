@@ -1,14 +1,19 @@
 """The Tier List action: toolbar button and book list context menu entry."""
 
+import os
 from collections.abc import Callable
 from typing import Any
 
-from calibre.gui2 import gprefs, info_dialog
+from calibre.gui2 import error_dialog, gprefs
 from calibre.gui2.actions import InterfaceAction
+from qt.core import QDialog
 
 from ..app import TierList
+from ..compile import CompileRequest
 from . import column
 from .adapters import tier_list
+from .compile_dialog import CompileDialog
+from .compile_job import scope_book_ids, start_compile
 from .menu import TierMenu
 
 load_translations()
@@ -81,7 +86,29 @@ class TierListAction(InterfaceAction):
         self.gui.library_view.model().refresh_ids(ids)
 
     def show_dialog(self, *args: Any) -> None:
-        info_dialog(self.gui, self.name, _('Coming soon'), show=True)
+        db = self.gui.current_db
+        app = tier_list(db)
+        dialog = CompileDialog(self.gui, db, app)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return
+        app.remember_output_path(dialog.path())
+        template = self.load_resources(['template.html']).get('template.html')
+        if template is None:
+            error_dialog(
+                self.gui,
+                self.name,
+                _('This plugin was built without the web template, so it cannot compile a tier list.'),
+                show=True,
+            )
+            return
+        scope = dialog.scope()
+        request = CompileRequest(
+            scope,
+            scope_book_ids(self.gui, scope),
+            os.path.basename(db.library_path),
+            '.'.join(map(str, self.interface_action_base_plugin.version)),
+        )
+        start_compile(self, request, template.decode('utf-8'), dialog.path())
 
     def add_to_action_layouts(self) -> None:
         """calibre only offers new plugins a place in the layouts via its

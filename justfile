@@ -15,10 +15,15 @@ check:
     cd {{plugin}} && uv run pyright
     cd {{plugin}} && uv run python tools/check_file_length.py . ../web
     @if [ -f web/package.json ] && [ "{{web_checks}}" = "1" ]; then \
-        pnpm -C web check && pnpm -C web lint; \
+        pnpm -C web check && pnpm -C web lint && \
+        pnpm -C web gen:types && git diff --exit-code web/src/contract/tierlist.ts; \
     else \
         echo "skipping web checks"; \
     fi
+
+# Browser tests for the web board (builds the template first).
+webtest:
+    pnpm -C web test:e2e
 
 # Unit tests.
 test:
@@ -45,6 +50,8 @@ itest: build
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/book_tier.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/read_state.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/read_offer.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/compile.py
+    COMPILED_HTML="$PWD/dist/itest/compiled.html" pnpm -C web exec playwright test tests/compiled.spec.ts
 
 # Point git at the versioned hooks.
 hooks:

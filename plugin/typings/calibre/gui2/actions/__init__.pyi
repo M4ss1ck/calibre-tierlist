@@ -9,7 +9,9 @@ class InterfaceAction:
     gui: Any
     qaction: Any
     menuless_qaction: Any
+    interface_action_base_plugin: Any
     def __init__(self, parent: Any, site_customization: Any) -> None: ...
+    def load_resources(self, names: Any) -> dict[str, Any]: ...
     def genesis(self) -> None: ...
     def create_menu_action(
         self,

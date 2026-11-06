@@ -20,7 +20,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['*.config.{js,ts}', 'vite.config.ts'],
+    files: ['*.config.{js,ts}', 'vite.config.ts', 'playwright.config.ts', 'tests/**/*.ts'],
     languageOptions: {
       globals: { ...globals.node },
     },

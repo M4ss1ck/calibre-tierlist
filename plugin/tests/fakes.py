@@ -2,6 +2,8 @@
 
 from collections.abc import Iterable, Mapping
 
+STANDARD_FIELDS = ('title', 'series')
+
 
 class FakeLibrary:
     """A Library port holding custom columns and their values in memory."""
@@ -19,7 +21,7 @@ class FakeLibrary:
         return self.column_types().get(lookup_name) == 'text'
 
     def read_field(self, lookup_name: str, book_ids: Iterable[int]) -> dict[int, object | None]:
-        if lookup_name not in self.column_types():
+        if lookup_name not in self.column_types() and lookup_name not in STANDARD_FIELDS:
             raise KeyError(lookup_name)
         column = self.values.get(lookup_name, {})
         return {book_id: column.get(book_id) for book_id in book_ids}

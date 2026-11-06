@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "generated": {
+    "at": "2026-11-06T12:00:00+00:00",
+    "libraryName": "Fixture Library",
+    "scope": "library",
+    "pluginVersion": "0.1.0"
+  },
+  "tiers": [
+    {
+      "id": "s",
+      "label": "S",
+      "colour": "#ff7f7f",
+      "description": "The best"
+    },
+    {
+      "id": "a",
+      "label": "A",
+      "colour": "#ffbf7f",
+      "description": ""
+    },
+    {
+      "id": "b",
+      "label": "B",
+      "colour": "#ffdf7f",
+      "description": ""
+    }
+  ],
+  "lanes": [
+    {
+      "tier": "s",
+      "cards": [
+        "7",
+        "1",
+        "2"
+      ]
+    },
+    {
+      "tier": "a",
+      "cards": [
+        "3",
+        "4"
+      ]
+    },
+    {
+      "tier": "b",
+      "cards": []
+    },
+    {
+      "tier": null,
+      "cards": [
+        "8",
+        "5"
+      ]
+    }
+  ],
+  "books": {
+    "1": {
+      "title": "The </script> Problem",
+      "tier": "s",
+      "dateRead": "2024-01-10"
+    },
+    "2": {
+      "title": "Cien años de soledad",
+      "tier": "s",
+      "dateRead": "2024-02-20"
+    },
+    "3": {
+      "title": "Alpha",
+      "tier": "a",
+      "dateRead": "2023-05-01"
+    },
+    "4": {
+      "title": "Bravo",
+      "tier": "a",
+      "dateRead": null
+    },
+    "5": {
+      "title": "Read Unranked",
+      "tier": null,
+      "dateRead": "2022-12-31"
+    },
+    "7": {
+      "title": "Another S",
+      "tier": "s",
+      "dateRead": "2024-01-10"
+    },
+    "8": {
+      "title": "Zulu",
+      "tier": null,
+      "dateRead": "2021-01-01"
+    }
+  }
+}
