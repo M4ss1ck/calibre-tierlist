@@ -52,7 +52,7 @@ def check_date_column(path: str) -> tuple[Any, list[int]]:
     expect(db.new_api.field_for('#tier', ids[0]) == 'a', 'first book not tiered')
     expect(db.new_api.field_for('#tier', ids[2]) == 'a', 'third book not tiered')
     kept = db.new_api.field_for('#date_read', ids[0])
-    expect(kept is not None and kept.year == 2000, f'pre-seeded read date changed: {kept}')
+    expect(kept is not None and kept.astimezone(local_tz).year == 2000, f'pre-seeded read date changed: {kept}')
     first = db.new_api.field_for('#date_read', ids[1])
     expect(first is not None and first.astimezone(local_tz).date() == date.today(), f'read date not today: {first}')
     app.set_book_tier(ids, 'a')

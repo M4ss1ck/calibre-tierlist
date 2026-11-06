@@ -16,7 +16,7 @@ class TierMenu:
     def __init__(self, action: Any) -> None:
         self._action = action
         self._created: list[Any] = []
-        self._added: list[Any] = []
+        self._unregistered: list[Any] = []
         self._menu = QMenu()
         self._submenu = self._menu.addMenu(_('Send to tier'))
         self._menu.aboutToShow.connect(self.rebuild)
@@ -32,9 +32,9 @@ class TierMenu:
             self._action.gui.removeAction(created)
             self._menu.removeAction(created)
         self._created.clear()
-        for added in self._added:
+        for added in self._unregistered:
             self._menu.removeAction(added)
-        self._added.clear()
+        self._unregistered.clear()
         self._submenu.clear()
         if db is None:
             db = self._action.gui.current_db
@@ -43,7 +43,7 @@ class TierMenu:
             self._add_tiers(app.tier_config().tiers)
         else:
             self._add_missing(db)
-        self._add_read_state(app)
+        self._add_read_state(app, db)
         keyboard.finalize()
 
     def _add_tiers(self, tiers: Iterable[Tier]) -> None:
@@ -58,16 +58,20 @@ class TierMenu:
         self._submenu.addSeparator()
         self._register(self._submenu, 'clear-tier', _('Clear tier'), _('Clear tier'), self._clear)
 
-    def _add_read_state(self, app: Any) -> None:
+    def _add_read_state(self, app: Any, db: Any) -> None:
         if app.read_column_ready():
             self._register(self._menu, 'mark-read', _('Mark read'), _('Mark read'), self._mark_read)
             self._register(self._menu, 'mark-unread', _('Mark unread'), _('Mark unread'), self._mark_unread)
         else:
-            explanation = self._menu.addAction(_('This library has no read column'))
+            if db.library_path in self._action.read_column_created_paths:
+                text = _('Restart calibre to finish adding the read column')
+            else:
+                text = _('This library has no read column')
+            explanation = self._menu.addAction(text)
             explanation.setEnabled(False)
-            self._added.append(explanation)
+            self._unregistered.append(explanation)
             setup = self._menu.addAction(_('Set up read column…'), self._action.setup_read_column)
-            self._added.append(setup)
+            self._unregistered.append(setup)
 
     def _send(self, tier_id: str, *_: Any) -> None:
         self._action.send_to_tier(tier_id)

@@ -68,12 +68,13 @@ class TierList:
         """Mark every book id read, filling the Read State column only where it is still empty."""
         config = self.tier_config()
         ids = list(book_ids)
-        if not ids or not self.read_column_ready():
+        datatype = self._library.column_types().get(config.read_column)
+        if not ids or datatype not in READ_COLUMN_TYPES:
             return
         current = self._library.read_field(config.read_column, ids)
-        if self._library.column_types()[config.read_column] == 'datetime':
+        if datatype == 'datetime':
             values = {book_id: self._today() for book_id in ids if current.get(book_id) is None}
-        else:
+        else:  # 'bool'
             values = {book_id: True for book_id in ids if current.get(book_id) is not True}
         if values:
             self._library.write_field(config.read_column, values)

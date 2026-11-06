@@ -24,6 +24,7 @@ class TierListAction(InterfaceAction):
 
     def genesis(self) -> None:
         self.column_created_paths: set[str] = set()
+        self.read_column_created_paths: set[str] = set()
         self.tier_menu = TierMenu(self)
         self.qaction.triggered.connect(self.show_dialog)
         self.add_to_action_layouts()
@@ -47,7 +48,7 @@ class TierListAction(InterfaceAction):
 
     def offer_read_column(self, db: Any) -> None:
         if column.offer_read_column(self.gui, tier_list(db)):
-            self.column_created_paths.add(db.library_path)
+            self.read_column_created_paths.add(db.library_path)
 
     def create_tier_column(self) -> None:
         db = self.gui.current_db
@@ -55,7 +56,9 @@ class TierListAction(InterfaceAction):
             self.column_created_paths.add(db.library_path)
 
     def setup_read_column(self) -> None:
-        column.offer_read_column(self.gui, tier_list(self.gui.current_db), force=True)
+        db = self.gui.current_db
+        if column.offer_read_column(self.gui, tier_list(db), force=True):
+            self.read_column_created_paths.add(db.library_path)
         self.rebuild_menu()
 
     def send_to_tier(self, tier_id: str) -> None:

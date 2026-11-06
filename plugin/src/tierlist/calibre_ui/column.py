@@ -24,6 +24,8 @@ def offer_read_column(gui: Any, app: TierList, force: bool = False) -> bool:
     """Offer to track Read State in a date or bool column, returning True when one was created."""
     if not force and (app.read_column_ready() or app.read_column_offered()):
         return False
+    if not force and CreateNewCustomColumn(gui).must_restart():
+        return False  # another column awaits a restart; offer again on the next start
     app.mark_read_column_offered()
     metadata = gui.current_db.field_metadata
     candidates = {f'{metadata[lookup]["name"]} ({lookup})': lookup for lookup in app.read_column_candidates()}
@@ -35,7 +37,7 @@ def offer_read_column(gui: Any, app: TierList, force: bool = False) -> bool:
     if not accepted:
         return False
     if choice == new_column:
-        return create_column(gui, app.tier_config().read_column[1:], _('Date read'), 'datetime')
+        return create_column(gui, app.tier_config().read_column, _('Date read'), 'datetime')
     app.map_read_column(candidates[choice])
     return False
 
