@@ -1,0 +1,3 @@
+from typing import Any
+
+def db(path: str | None = None, read_only: bool = False) -> Any: ...
