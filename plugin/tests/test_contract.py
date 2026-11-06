@@ -22,18 +22,20 @@ CONFIG = TierConfig(
         Tier('s', 'S', '#ff7f7f', 'The best'),
         Tier('a', 'A', '#ffbf7f'),
         Tier('b', 'B', '#ffdf7f'),
-    )
+    ),
+    stack_depth=3,
+    series_total_column='#series_total',
 )
 
 
 def fixture_payload() -> dict[str, Any]:
-    library = FakeLibrary(types={'#date_read': 'datetime'})
+    library = FakeLibrary(types={'#date_read': 'datetime', '#series_total': 'int'})
     library.values['title'] = {
         1: 'The </script> Problem',
         2: 'Cien años de soledad',
         3: 'Alpha',
         4: 'Bravo',
-        5: 'Read Unranked',
+        5: 'Owned Unread',
         6: 'Unread Excluded',
         7: 'Another S',
         8: 'Zulu',
@@ -43,12 +45,14 @@ def fixture_payload() -> dict[str, Any]:
         1: datetime(2024, 1, 10, 20, 0),
         2: date(2024, 2, 20),
         3: date(2023, 5, 1),
-        5: date(2022, 12, 31),
         7: datetime(2024, 1, 10, 20, 0),
         8: date(2021, 1, 1),
     }
+    library.values['series'] = {2: 'Dune', 3: 'Dune', 5: 'Dune'}
+    library.values['series_index'] = {2: 2.0, 3: 3.0, 5: 4.0}
+    library.values['#series_total'] = {2: 7}
     prefs = FakePrefs({TIER_CONFIG_KEY: CONFIG.to_dict()})
-    app = TierList(library, prefs, lambda: NOW.date(), lambda: NOW, covers=FakeCovers(with_cover={1, 3, 7}))
+    app = TierList(library, prefs, lambda: NOW.date(), lambda: NOW, covers=FakeCovers(with_cover={1, 2, 3, 7}))
     request = CompileRequest('library', tuple(range(1, 9)), 'Fixture Library', '0.1.0')
     return app.compile(request).to_dict()
 

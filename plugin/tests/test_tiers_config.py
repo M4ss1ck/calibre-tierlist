@@ -26,8 +26,15 @@ def test_round_trip_through_dict() -> None:
         tiers=(Tier('s', 'S', '#ff7f7f', 'The best'), Tier('a', 'A', '#ffbf7f')),
         tier_column='#rank',
         read_column='#read',
+        stack_depth=5,
+        series_total_column='#total',
     )
     assert TierConfig.from_dict(config.to_dict()) == config
+
+
+def test_to_dict_carries_stack_depth_and_series_total_column() -> None:
+    assert DEFAULT_TIER_CONFIG.to_dict()['stack_depth'] == 3
+    assert DEFAULT_TIER_CONFIG.to_dict()['series_total_column'] == ''
 
 
 def test_to_dict_carries_the_read_column() -> None:
@@ -38,6 +45,12 @@ def test_from_dict_fills_missing_description_tier_and_read_columns() -> None:
     config = TierConfig.from_dict({'tiers': [{'id': 's', 'label': 'S', 'colour': '#ff7f7f'}]})
     assert config == TierConfig(tiers=(Tier('s', 'S', '#ff7f7f'),), tier_column='#tier', read_column='#date_read')
     assert config.tiers[0].description == ''
+
+
+def test_from_dict_defaults_stack_depth_and_series_total_column() -> None:
+    config = TierConfig.from_dict({'tiers': []})
+    assert config.stack_depth == 3
+    assert config.series_total_column == ''
 
 
 def test_tier_returns_hit_and_miss() -> None:

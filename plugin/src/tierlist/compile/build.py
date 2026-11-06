@@ -1,25 +1,17 @@
 """Build Tier List Data from the books the library holds."""
 
-from collections.abc import Iterable
-from dataclasses import dataclass, replace
-from datetime import date, datetime
+from collections.abc import Iterable, Mapping
+from dataclasses import replace
+from datetime import date
 
 from ..ports import Covers, Library
-from ..tiers import Tier, TierConfig
+from ..tiers import MAX_STACK_DEPTH, MIN_STACK_DEPTH, TierConfig
 from .covers import COVER_WIDTH
 from .data import Book, Generated, Lane, TierListData
+from .rows import Row, book_of, on_board, series_name
+from .series import auto_tier, build_series, earliest, stacks_for
 
 READ_COLUMN_TYPES = ('datetime', 'bool')
-
-
-@dataclass(frozen=True)
-class Row:
-    """One book as read from the library, before compile filters and sorts it."""
-
-    id: int
-    title: str
-    tier: object | None
-    read: object | None
 
 
 def compile_data(
@@ -31,10 +23,18 @@ def compile_data(
     tiers = library.read_field(config.tier_column, ids) if library.has_column(config.tier_column) else {}
     datatype = library.column_types().get(config.read_column)
     reads = library.read_field(config.read_column, ids) if datatype in READ_COLUMN_TYPES else {}
-    rows = [Row(book_id, str(titles.get(book_id) or ''), tiers.get(book_id), reads.get(book_id)) for book_id in ids]
-    data = build(generated, config.tiers, rows, datatype == 'bool')
-    shots = {book.id: cover for book in data.books if (cover := covers.cover(book.id, fmt, COVER_WIDTH)) is not None}
-    return replace(data, covers=shots)
+    series = library.read_field('series', ids)
+    indexes = library.read_field('series_index', ids)
+    column = config.series_total_column
+    totals = library.read_field(column, ids) if library.column_types().get(column) == 'int' else {}
+    rows = [
+        Row(i, str(titles.get(i) or ''), tiers.get(i), reads.get(i), series.get(i), indexes.get(i), totals.get(i))
+        for i in ids
+    ]
+    board = on_board(rows, datatype == 'bool')
+    shots = {row.id: cover for row in board if (cover := covers.cover(row.id, fmt, COVER_WIDTH)) is not None}
+    colours = {book_id: cover.colour for book_id, cover in shots.items()}
+    return replace(build(generated, config, board, datatype == 'bool', colours), covers=shots)
 
 
 def count_series(library: Library, book_ids: Iterable[int]) -> int:
@@ -42,34 +42,43 @@ def count_series(library: Library, book_ids: Iterable[int]) -> int:
     return len({value for value in library.read_field('series', list(book_ids)).values() if value})
 
 
-def build(generated: Generated, tiers: tuple[Tier, ...], rows: Iterable[Row], read_is_bool: bool) -> TierListData:
-    """Keep read books, resolve their Book Tier, and place them in ordered Lanes."""
-    known = {tier.id for tier in tiers}
-    books: list[Book] = []
-    for row in rows:
-        raw_tier = row.tier if isinstance(row.tier, str) else None
-        read = row.read is True if read_is_bool else row.read is not None
-        if not (read or raw_tier):
-            continue
-        tier = raw_tier if raw_tier in known else None
-        books.append(Book(row.id, row.title, tier, _date_read(row.read, read_is_bool)))
-    ordered = tuple(sorted(books, key=lambda book: book.id))
-    lanes = tuple(Lane(tier.id, _cards(books, tier.id)) for tier in tiers)
-    return TierListData(generated, tiers, (*lanes, Lane(None, _cards(books, None))), ordered)
+def build(
+    generated: Generated,
+    config: TierConfig,
+    board: Iterable[Row],
+    read_is_bool: bool,
+    colours: Mapping[int, str],
+) -> TierListData:
+    """Resolve the board rows into Books and place them in ordered Lanes and Series Stacks."""
+    known = {tier.id for tier in config.tiers}
+    pairs = [(row, book_of(row, known, read_is_bool)) for row in board]
+    books = tuple(sorted((book for _, book in pairs), key=lambda book: book.id))
+    groups: dict[str, list[tuple[Row, Book]]] = {}
+    standalone: list[Book] = []
+    for row, book in pairs:
+        name = series_name(row)
+        if name is None:
+            standalone.append(book)
+        else:
+            groups.setdefault(name, []).append((row, book))
+    depth = max(MIN_STACK_DEPTH, min(MAX_STACK_DEPTH, config.stack_depth))
+    series = {
+        name: build_series({row.id: row.index for row, _ in group}, (row.total for row, _ in group), depth, colours)
+        for name, group in groups.items()
+    }
+    stacks = {
+        name: (
+            auto_tier([book.tier for _, book in group], config.tiers),
+            earliest([book.date_read for _, book in group if book.read]),
+        )
+        for name, group in groups.items()
+    }
+    lanes = tuple(Lane(tier.id, _cards(standalone, tier.id), stacks_for(stacks, tier.id)) for tier in config.tiers)
+    unranked = Lane(None, _cards(standalone, None), stacks_for(stacks, None))
+    return TierListData(generated, config.tiers, (*lanes, unranked), books, series=series)
 
 
 def _cards(books: list[Book], tier: str | None) -> tuple[int, ...]:
-    matches = (book for book in books if book.tier == tier)
-    return tuple(book.id for book in sorted(matches, key=_sort_key))
-
-
-def _sort_key(book: Book) -> tuple[bool, date, str, int]:
-    return (book.date_read is None, book.date_read or date.min, book.title.casefold(), book.id)
-
-
-def _date_read(value: object, read_is_bool: bool) -> date | None:
-    if read_is_bool or not isinstance(value, (date, datetime)):
-        return None
-    if isinstance(value, datetime):
-        return value.astimezone().date() if value.tzinfo is not None else value.date()
-    return value
+    matches = [book for book in books if book.tier == tier]
+    matches.sort(key=lambda book: (book.date_read is None, book.date_read or date.min, book.title.casefold(), book.id))
+    return tuple(book.id for book in matches)

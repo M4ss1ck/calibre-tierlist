@@ -17,7 +17,7 @@ class Library(Protocol):
         ...
 
     def read_field(self, lookup_name: str, book_ids: Iterable[int]) -> dict[int, object | None]:
-        """The value of a column, or of the standard fields 'title' and 'series', for each book id;
+        """The value of a column, or of the standard fields 'title', 'series', and 'series_index', for each book id;
         None where the field is empty."""
         ...
 

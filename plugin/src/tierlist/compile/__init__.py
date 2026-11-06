@@ -4,6 +4,7 @@ from ..ports import Cover
 from .build import READ_COLUMN_TYPES, compile_data, count_series
 from .covers import COVER_WIDTH, choose_format, dominant_colour
 from .data import Book, CompileRequest, Generated, Lane, Scope, TierListData
+from .series import Position, Series
 
 __all__ = [
     'COVER_WIDTH',
@@ -13,7 +14,9 @@ __all__ = [
     'Cover',
     'Generated',
     'Lane',
+    'Position',
     'Scope',
+    'Series',
     'TierListData',
     'choose_format',
     'compile_data',
