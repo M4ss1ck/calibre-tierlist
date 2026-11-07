@@ -14,7 +14,7 @@ Draws the compiled Tier List as Lanes of Stacks and Cards: one Lane per Tier in 
 ## Files
 
 - `Card.svelte`: one book's cover with its title caption, or the Placeholder style when it has no cover.
-- `Stack.svelte`: one Stack; draws each position, dims unread books, draws the Placeholder style for positions with no book or no cover, and labels owned positions with their Book Tier.
+- `Stack.svelte`: one Stack; draws each position, dims unread books, draws the Placeholder style for positions with no book or no cover, labels owned positions with their Book Tier, and marks an Override Series Tier with a pin badge (top corner) plus `data-override="true"`.
 - `Lane.svelte`: one Lane; resolves its Tier, skips card and series names missing from Tier List Data, and passes each book's cover.
 
 ## Depends on
