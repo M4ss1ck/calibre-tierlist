@@ -10,7 +10,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `tier_list(db) -> TierList`: the facade over one calibre library database and its namespaced prefs.
 - `CalibreLibrary`, `CalibrePrefs`: the `Library` and `Prefs` port adapters.
 - `CalibreCovers`: the `Covers` port adapter, encoding cover thumbnails as AVIF, WebP, or JPEG.
-- `TierMenu(action)`: the "Send to tier" submenu and the Read State menu items, rebuilt on demand.
+- `TierMenu(action)`: the "Send to tier" and "Set series tier" submenus and the Read State menu items, rebuilt on demand.
 - `offer_tier_column(gui, app) -> bool`: the first-run Tier offer, and whether a column was created.
 - `offer_read_column(gui, app, force=False) -> bool`: the Read State offer (new "Date read" column or an existing date/bool column), and whether a column was created.
 - `create_column(gui, lookup, heading, datatype) -> bool`: creates any custom column; True means restart calibre.
@@ -25,7 +25,8 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `action.py`: the action, its toolbar dialog, the layout claim, and the send, clear, and mark read/unread handlers.
 - `adapters.py`: `CalibreLibrary` (including date conversion) and `CalibrePrefs` over calibre's database.
 - `covers.py`: `CalibreCovers`, the cover thumbnails and their dominant colour.
-- `menu.py`: the `TierMenu` submenu, Read State items, and their shortcut registration.
+- `menu.py`: the `TierMenu` submenus, Read State items, and their shortcut registration.
+- `series_menu.py`: the Set series tier submenu's Override and Auto items.
 - `column.py`: the first-run offers and the column creation flow.
 - `compile_dialog.py`: the Compile Scope and output path dialog.
 - `compile_job.py`: Compile Scope book ids, the background job, and opening the written file.

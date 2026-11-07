@@ -96,7 +96,7 @@ def check_menu(db: Any, book_id: int) -> None:
     gui = FakeGui(db, [book_id])
     action = load_action(gui)
     shortcuts = menu_shortcuts(gui, action)
-    expect(len(shortcuts) == 9, f'expected 9 menu shortcuts, got {len(shortcuts)}')
+    expect(len(shortcuts) == 16, f'expected 16 menu shortcuts, got {len(shortcuts)}')
     names = {item['name'] for item in shortcuts.values()}
     expect(set(READ_NAMES) <= names, f'missing read shortcuts: {sorted(names)}')
     live_actions = len(gui.actions())
@@ -104,7 +104,7 @@ def check_menu(db: Any, book_id: int) -> None:
     expect(menu is not None, 'the action has no menu')
     for _ in range(2):
         menu.aboutToShow.emit()
-        expect(len(menu_shortcuts(gui, action)) == 9, 'rebuild left the wrong number of shortcuts')
+        expect(len(menu_shortcuts(gui, action)) == 16, 'rebuild left the wrong number of shortcuts')
         expect(len(gui.actions()) == live_actions, 'rebuild left stale actions holding shortcuts on the gui')
     mark_read = next(item for item in menu_shortcuts(gui, action).values() if item['name'] == 'Mark read')
     mark_read['action'].trigger()

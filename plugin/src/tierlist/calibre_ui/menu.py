@@ -1,4 +1,4 @@
-"""The Tier List action's menu: Send to tier items, Clear tier, and Read State."""
+"""The Tier List action's menu: Send to tier items, Clear tier, Set series tier, and Read State."""
 
 from collections.abc import Iterable
 from functools import partial
@@ -8,6 +8,7 @@ from qt.core import QMenu
 
 from ..tiers import Tier
 from .adapters import tier_list
+from .series_menu import add_items as add_series_items
 
 
 class TierMenu:
@@ -19,6 +20,7 @@ class TierMenu:
         self._unregistered: list[Any] = []
         self._menu = QMenu()
         self._submenu = self._menu.addMenu(_('Send to tier'))
+        self._series_submenu = self._menu.addMenu(_('Set series tier'))
         self._menu.aboutToShow.connect(self.rebuild)
         action.qaction.setMenu(self._menu)
 
@@ -36,6 +38,7 @@ class TierMenu:
             self._menu.removeAction(added)
         self._unregistered.clear()
         self._submenu.clear()
+        self._series_submenu.clear()
         if db is None:
             db = self._action.gui.current_db
         app = tier_list(db)
@@ -43,6 +46,8 @@ class TierMenu:
             self._add_tiers(app.tier_config().tiers)
         else:
             self._add_missing(db)
+        # Overrides live in prefs, so this submenu does not need the tier column.
+        add_series_items(self._series_submenu, app.tier_config().tiers, self._action, self._register)
         self._add_read_state(app, db)
         keyboard.finalize()
 
