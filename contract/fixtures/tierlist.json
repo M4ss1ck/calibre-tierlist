@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",
     "libraryName": "Fixture Library",
@@ -31,68 +31,106 @@
       "tier": "s",
       "cards": [
         "7",
-        "1",
-        "2"
-      ]
+        "1"
+      ],
+      "stacks": []
     },
     {
       "tier": "a",
       "cards": [
-        "3",
         "4"
+      ],
+      "stacks": [
+        "Dune"
       ]
     },
     {
       "tier": "b",
-      "cards": []
+      "cards": [],
+      "stacks": []
     },
     {
       "tier": null,
       "cards": [
-        "8",
-        "5"
-      ]
+        "8"
+      ],
+      "stacks": []
     }
   ],
   "books": {
     "1": {
       "title": "The </script> Problem",
       "tier": "s",
-      "dateRead": "2024-01-10"
+      "dateRead": "2024-01-10",
+      "read": true
     },
     "2": {
       "title": "Cien años de soledad",
       "tier": "s",
-      "dateRead": "2024-02-20"
+      "dateRead": "2024-02-20",
+      "read": true
     },
     "3": {
       "title": "Alpha",
       "tier": "a",
-      "dateRead": "2023-05-01"
+      "dateRead": "2023-05-01",
+      "read": true
     },
     "4": {
       "title": "Bravo",
       "tier": "a",
-      "dateRead": null
+      "dateRead": null,
+      "read": false
     },
     "5": {
-      "title": "Read Unranked",
+      "title": "Owned Unread",
       "tier": null,
-      "dateRead": "2022-12-31"
+      "dateRead": null,
+      "read": false
     },
     "7": {
       "title": "Another S",
       "tier": "s",
-      "dateRead": "2024-01-10"
+      "dateRead": "2024-01-10",
+      "read": true
     },
     "8": {
       "title": "Zulu",
       "tier": null,
-      "dateRead": "2021-01-01"
+      "dateRead": "2021-01-01",
+      "read": true
+    }
+  },
+  "series": {
+    "Dune": {
+      "colour": "#336699",
+      "positions": [
+        {
+          "number": "1",
+          "book": null
+        },
+        {
+          "number": "2",
+          "book": "2"
+        },
+        {
+          "number": "3",
+          "book": "3"
+        },
+        {
+          "number": "4",
+          "book": "5"
+        }
+      ],
+      "more": 3
     }
   },
   "covers": {
     "1": {
+      "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
+      "colour": "#336699"
+    },
+    "2": {
       "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
       "colour": "#336699"
     },

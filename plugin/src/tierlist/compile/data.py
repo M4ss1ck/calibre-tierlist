@@ -8,8 +8,9 @@ from typing import Any, Literal
 
 from ..ports import Cover
 from ..tiers import Tier
+from .series import Series
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 Scope = Literal['library', 'virtual_library', 'selection']
 
@@ -26,20 +27,22 @@ class Generated:
 
 @dataclass(frozen=True)
 class Book:
-    """One book on the board: its title, Book Tier, and date read, if any."""
+    """One book on the board: its title, Book Tier, date read if any, and whether it is read."""
 
     id: int
     title: str
     tier: str | None
     date_read: date | None
+    read: bool = False
 
 
 @dataclass(frozen=True)
 class Lane:
-    """One row of the board: a Tier id, or None for the Unranked Lane, and its cards in order."""
+    """One row of the board: a Tier id, or None for the Unranked Lane, its cards in order, and its Stacks."""
 
     tier: str | None
     cards: tuple[int, ...]
+    stacks: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -54,13 +57,14 @@ class CompileRequest:
 
 @dataclass(frozen=True)
 class TierListData:
-    """The compiled board: generation metadata, Tiers, Lanes, and every book on the board."""
+    """The compiled board: generation metadata, Tiers, Lanes, every book on the board, and its Series Stacks."""
 
     generated: Generated
     tiers: tuple[Tier, ...]
     lanes: tuple[Lane, ...]
     books: tuple[Book, ...]
     covers: Mapping[int, Cover] = field(default_factory=dict[int, Cover])
+    series: Mapping[str, Series] = field(default_factory=dict[str, Series])
 
     def to_dict(self) -> dict[str, Any]:
         """Serialise to the schema's camelCase JSON shape."""
@@ -76,14 +80,29 @@ class TierListData:
                 {'id': tier.id, 'label': tier.label, 'colour': tier.colour, 'description': tier.description}
                 for tier in self.tiers
             ],
-            'lanes': [{'tier': lane.tier, 'cards': [str(card) for card in lane.cards]} for lane in self.lanes],
+            'lanes': [
+                {'tier': lane.tier, 'cards': [str(card) for card in lane.cards], 'stacks': list(lane.stacks)}
+                for lane in self.lanes
+            ],
             'books': {
                 str(book.id): {
                     'title': book.title,
                     'tier': book.tier,
                     'dateRead': None if book.date_read is None else book.date_read.isoformat(),
+                    'read': book.read,
                 }
                 for book in self.books
+            },
+            'series': {
+                name: {
+                    'colour': series.colour,
+                    'positions': [
+                        {'number': position.number, 'book': None if position.book is None else str(position.book)}
+                        for position in series.positions
+                    ],
+                    'more': series.more,
+                }
+                for name, series in sorted(self.series.items())
             },
             'covers': {
                 str(book_id): {

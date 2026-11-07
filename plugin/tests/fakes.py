@@ -5,7 +5,7 @@ from collections.abc import Iterable, Mapping
 
 from tierlist.ports import Cover
 
-STANDARD_FIELDS = ('title', 'series')
+STANDARD_FIELDS = ('title', 'series', 'series_index')
 TINY_WEBP = base64.b64decode('UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==')
 
 

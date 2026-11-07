@@ -8,7 +8,13 @@
 <main class="board">
   <h1>Tier List</h1>
   {#each data.lanes as lane (lane.tier ?? 'unranked')}
-    <Lane {lane} tiers={data.tiers} books={data.books} covers={data.covers} />
+    <Lane
+      {lane}
+      tiers={data.tiers}
+      books={data.books}
+      covers={data.covers}
+      series={data.series}
+    />
   {/each}
 </main>
 

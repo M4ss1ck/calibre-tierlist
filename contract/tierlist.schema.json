@@ -5,11 +5,11 @@
   "description": "The versioned payload the plugin embeds in the compiled tier list HTML.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "generated", "tiers", "lanes", "books", "covers"],
+  "required": ["schemaVersion", "generated", "tiers", "lanes", "books", "series", "covers"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 2,
+      "const": 3,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "generated": { "$ref": "#/$defs/Generated" },
@@ -27,6 +27,11 @@
       "type": "object",
       "description": "Every book on the board, keyed by calibre book id as a string.",
       "additionalProperties": { "$ref": "#/$defs/Book" }
+    },
+    "series": {
+      "type": "object",
+      "description": "Each series on the board, keyed by series name.",
+      "additionalProperties": { "$ref": "#/$defs/Series" }
     },
     "covers": {
       "type": "object",
@@ -60,7 +65,7 @@
     "Lane": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["tier", "cards"],
+      "required": ["tier", "cards", "stacks"],
       "properties": {
         "tier": {
           "type": ["string", "null"],
@@ -68,7 +73,12 @@
         },
         "cards": {
           "type": "array",
-          "description": "Book ids (keys of books), ordered by date read ascending, undated last, then title.",
+          "description": "Book ids (keys of books) of the standalone Cards in this Lane, ordered by date read ascending, undated last, then title.",
+          "items": { "type": "string" }
+        },
+        "stacks": {
+          "type": "array",
+          "description": "Series names (keys of series) whose Stack sits in this Lane, ordered by earliest date read, undated last, then name.",
           "items": { "type": "string" }
         }
       }
@@ -76,7 +86,7 @@
     "Book": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["title", "tier", "dateRead"],
+      "required": ["title", "tier", "dateRead", "read"],
       "properties": {
         "title": { "type": "string" },
         "tier": { "type": ["string", "null"], "description": "Book Tier id, or null when unranked." },
@@ -84,6 +94,47 @@
           "type": ["string", "null"],
           "format": "date",
           "description": "Date read as YYYY-MM-DD, or null when Read State has no date (Yes/No column)."
+        },
+        "read": {
+          "type": "boolean",
+          "description": "Whether the book is read, from Read State."
+        }
+      }
+    },
+    "Series": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colour", "positions", "more"],
+      "properties": {
+        "colour": {
+          "type": "string",
+          "pattern": "^#[0-9a-f]{6}$",
+          "description": "Dominant colour of the first owned book with a cover, used to draw this series' Placeholders."
+        },
+        "positions": {
+          "type": "array",
+          "description": "The Stack's positions, index 1 first, truncated to fit; a position with no owned book is a Placeholder.",
+          "items": { "$ref": "#/$defs/Position" }
+        },
+        "more": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "How many further positions were cut from this Stack."
+        }
+      }
+    },
+    "Position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "book"],
+      "properties": {
+        "number": {
+          "type": "string",
+          "description": "The series index as a reader sees it, e.g. \"1\" or \"2.5\"."
+        },
+        "book": {
+          "type": ["string", "null"],
+          "description": "Book id (key of books) at this position, or null for a Placeholder."
         }
       }
     },

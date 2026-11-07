@@ -38,7 +38,7 @@ An Override whose series name matches no series in the library, usually after a 
 ## Board
 
 **Stack**
-The visual group for one series inside a Tier row. It lists every position in index order, index 1 in front, with remaining books fanned behind.
+The visual group for one series inside a Tier row. It lists the series positions in index order, index 1 in front, with up to Stack Depth more fanned behind and the rest counted as "+N".
 Avoid: pile, deck.
 
 **Card**
@@ -46,8 +46,16 @@ The visual unit for a standalone book, shown on its own in its Tier.
 Avoid: tile, chip.
 
 **Placeholder**
-A simulated cover for a series position the user does not own, drawn in the series' dominant cover colour with the series name and number. An owned book without a cover uses the Placeholder style with a "no cover" mark.
+A simulated cover for a series position the user does not own, drawn in the series colour (the dominant cover colour of its first covered book in index order) with the series name and number. An owned book without a cover uses the Placeholder style with a "no cover" mark.
 Avoid: ghost cover, missing book (that is the position, not the drawing).
+
+**Stack Depth**
+How many positions a Stack shows behind its front, 0 to 6, default 3. Part of Tier Config.
+Avoid: stack size, fan count.
+
+**Series Total**
+The number of books a series has, read from an optional Integer column. When set, every missing whole position up to it becomes a Placeholder; otherwise only gaps up to the highest owned whole index do.
+Avoid: series length, series count.
 
 **Lane**
 A row on the board. Each Tier is a Lane, plus the Unranked Lane.

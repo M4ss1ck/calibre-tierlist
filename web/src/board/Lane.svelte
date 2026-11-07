@@ -1,17 +1,20 @@
 <script lang="ts">
-  import type { Book, Cover, Lane, Tier } from '../contract/tierlist';
+  import type { Book, Cover, Lane, Series, Tier } from '../contract/tierlist';
   import Card from './Card.svelte';
+  import Stack from './Stack.svelte';
 
   let {
     lane,
     tiers,
     books,
     covers,
+    series,
   }: {
     lane: Lane;
     tiers: Tier[];
     books: Record<string, Book>;
     covers: Record<string, Cover>;
+    series: Record<string, Series>;
   } = $props();
 
   const tier = $derived(
@@ -25,11 +28,26 @@
       return book ? [{ id, title: book.title, cover: covers[id] }] : [];
     }),
   );
+  const stacks = $derived(
+    lane.stacks.flatMap((name) => {
+      const entry = series[name];
+      return entry ? [{ name, series: entry }] : [];
+    }),
+  );
 </script>
 
 <section class="lane" aria-label={label}>
   <h2 class="label" style:background-color={colour}>{label}</h2>
   <div class="cards">
+    {#each stacks as stack (stack.name)}
+      <Stack
+        name={stack.name}
+        series={stack.series}
+        {books}
+        {covers}
+        {tiers}
+      />
+    {/each}
     {#each cards as card (card.id)}
       <Card title={card.title} cover={card.cover} />
     {/each}
