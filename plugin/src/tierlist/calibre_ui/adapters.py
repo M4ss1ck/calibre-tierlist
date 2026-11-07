@@ -35,6 +35,9 @@ class CalibreLibrary(Library):
         converted = {book_id: _calibre_value(value) for book_id, value in values.items()}
         self._db.new_api.set_field(lookup_name, converted)
 
+    def series_names(self) -> frozenset[str]:
+        return frozenset(name for name in self._db.new_api.all_field_names('series') if name)
+
 
 def _calibre_value(value: object | None) -> object | None:
     """Store a plain date at noon, the way calibre's date columns expect."""
