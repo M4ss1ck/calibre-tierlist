@@ -9,7 +9,7 @@
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 3,
+      "const": 4,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "generated": { "$ref": "#/$defs/Generated" },
@@ -104,7 +104,7 @@
     "Series": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["colour", "positions", "more"],
+      "required": ["colour", "positions", "more", "override"],
       "properties": {
         "colour": {
           "type": "string",
@@ -120,6 +120,10 @@
           "type": "integer",
           "minimum": 0,
           "description": "How many further positions were cut from this Stack."
+        },
+        "override": {
+          "type": "boolean",
+          "description": "True when this series' Series Tier is an Override, false when it is Auto."
         }
       }
     },

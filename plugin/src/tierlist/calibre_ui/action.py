@@ -72,6 +72,12 @@ class TierListAction(InterfaceAction):
     def clear_tier(self) -> None:
         self._on_selection(TierList.clear_book_tier)
 
+    def set_series_tier(self, tier_id: str, *_: Any) -> None:
+        self._on_selection(lambda app, ids: app.set_series_tier(ids, tier_id))
+
+    def clear_series_tier(self, *_: Any) -> None:
+        self._on_selection(TierList.clear_series_tier)
+
     def mark_read(self) -> None:
         self._on_selection(TierList.mark_read)
 

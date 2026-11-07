@@ -10,7 +10,7 @@ from ..ports import Cover
 from ..tiers import Tier
 from .series import Series
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 Scope = Literal['library', 'virtual_library', 'selection']
 
@@ -101,6 +101,7 @@ class TierListData:
                         for position in series.positions
                     ],
                     'more': series.more,
+                    'override': series.override,
                 }
                 for name, series in sorted(self.series.items())
             },

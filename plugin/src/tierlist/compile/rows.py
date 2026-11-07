@@ -18,13 +18,14 @@ class Row:
     total: object | None = None
 
 
-def on_board(rows: Iterable[Row], read_is_bool: bool) -> list[Row]:
-    """The rows whose books belong on the board: standalone qualifiers and every member of an appearing series."""
+def on_board(rows: Iterable[Row], read_is_bool: bool, overridden: set[str]) -> list[Row]:
+    """The rows whose books belong on the board: standalone qualifiers and every member of a series that qualifies or
+    has an applicable Override."""
     rows = list(rows)
     appearing: set[str] = set()
     for row in rows:
         name = series_name(row)
-        if name is not None and _qualifies(row, read_is_bool):
+        if name is not None and (name in overridden or _qualifies(row, read_is_bool)):
             appearing.add(name)
     board: list[Row] = []
     for row in rows:

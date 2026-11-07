@@ -25,6 +25,10 @@ class Library(Protocol):
         """Write a column for book ids, None clearing the field."""
         ...
 
+    def series_names(self) -> frozenset[str]:
+        """Every non-empty series name in the library."""
+        ...
+
 
 class Prefs(Protocol):
     """Per-library plugin prefs, already namespaced by the adapter."""

@@ -30,6 +30,10 @@ class FakeLibrary:
         column = self.values.get(lookup_name, {})
         return {book_id: column.get(book_id) for book_id in book_ids}
 
+    def series_names(self) -> frozenset[str]:
+        stored = self.values.get('series', {})
+        return frozenset(name for name in stored.values() if isinstance(name, str) and name)
+
     def write_field(self, lookup_name: str, values: Mapping[int, object | None]) -> None:
         if lookup_name not in self.column_types():
             raise KeyError(lookup_name)

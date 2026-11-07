@@ -2,11 +2,11 @@
 
 import time
 from collections.abc import Callable, Iterable
-from dataclasses import replace
 from datetime import date, datetime
 from pathlib import Path
 
-from .compile import READ_COLUMN_TYPES, CompileRequest, TierListData, choose_format, compile_data, count_series
+from . import read_state, series_tiers
+from .compile import CompileRequest, TierListData, choose_format, compile_data, count_series
 from .compile.data import Generated
 from .ports import NULL_COVERS, Covers, Library, Prefs
 from .publish import write_html
@@ -54,18 +54,15 @@ class TierList:
 
     def read_column_ready(self) -> bool:
         """True when the column Tier Config names for Read State is a Date or Yes/No column."""
-        return self._library.column_types().get(self.tier_config().read_column) in READ_COLUMN_TYPES
+        return read_state.column_ready(self._library, self.tier_config())
 
     def read_column_candidates(self) -> list[str]:
         """The lookup names of every Date and Yes/No column in this library, sorted."""
-        types = self._library.column_types()
-        return sorted(lookup for lookup, datatype in types.items() if datatype in READ_COLUMN_TYPES)
+        return read_state.column_candidates(self._library)
 
     def map_read_column(self, lookup_name: str) -> None:
         """Store the Date or Yes/No column that holds Read State."""
-        if lookup_name not in self.read_column_candidates():
-            raise ValueError(f'not a Read State column: {lookup_name!r}')
-        config = replace(self.tier_config(), read_column=lookup_name)
+        config = read_state.mapped(self._library, self.tier_config(), lookup_name)
         self._prefs.set(TIER_CONFIG_KEY, config.to_dict())
 
     def read_column_offered(self) -> bool:
@@ -78,30 +75,11 @@ class TierList:
 
     def mark_read(self, book_ids: Iterable[int]) -> None:
         """Mark every book id read, filling the Read State column only where it is still empty."""
-        config = self.tier_config()
-        ids = list(book_ids)
-        datatype = self._library.column_types().get(config.read_column)
-        if not ids or datatype not in READ_COLUMN_TYPES:
-            return
-        current = self._library.read_field(config.read_column, ids)
-        if datatype == 'datetime':
-            values = {book_id: self._today() for book_id in ids if current.get(book_id) is None}
-        else:  # 'bool'
-            values = {book_id: True for book_id in ids if current.get(book_id) is not True}
-        if values:
-            self._library.write_field(config.read_column, values)
+        read_state.mark_read(self._library, self.tier_config(), book_ids, self._today())
 
     def mark_unread(self, book_ids: Iterable[int]) -> None:
         """Clear Book Tier and Read State for every book id, one write per ready column."""
-        config = self.tier_config()
-        ids = list(book_ids)
-        if not ids:
-            return
-        cleared: dict[int, None] = {book_id: None for book_id in ids}
-        if self.tier_column_ready():
-            self._library.write_field(config.tier_column, cleared)
-        if self.read_column_ready():
-            self._library.write_field(config.read_column, cleared)
+        read_state.mark_unread(self._library, self.tier_config(), book_ids)
 
     def set_book_tier(self, book_ids: Iterable[int], tier_id: str) -> None:
         """Set the Book Tier of every book id to this Tier id, in one write, and mark them read."""
@@ -116,6 +94,24 @@ class TierList:
         """Clear the Book Tier of every book id, in one write, keeping Read State."""
         self._write_tier(self.tier_config(), book_ids, None)
 
+    def set_series_tier(self, book_ids: Iterable[int], tier_id: str) -> None:
+        """Give every distinct series these book ids belong to this Series Tier as an Override."""
+        if self.tier_config().tier(tier_id) is None:
+            raise ValueError(f'unknown Tier id: {tier_id!r}')
+        series_tiers.set_series_tier(self._library, self._prefs, book_ids, tier_id)
+
+    def clear_series_tier(self, book_ids: Iterable[int]) -> None:
+        """Return every series these book ids belong to to Auto, by dropping its Override."""
+        series_tiers.clear_series_tier(self._library, self._prefs, book_ids)
+
+    def series_tier_overrides(self) -> dict[str, str]:
+        """Every Override in this library, by series name."""
+        return series_tiers.load_overrides(self._prefs)
+
+    def series_tier_orphans(self) -> list[str]:
+        """The Override series names that match no series in the library, sorted."""
+        return series_tiers.orphans(self.series_tier_overrides(), self._library.series_names())
+
     def _write_tier(self, config: TierConfig, book_ids: Iterable[int], tier_id: str | None) -> None:
         values: dict[int, str | None] = {book_id: tier_id for book_id in book_ids}
         if values:
@@ -125,7 +121,10 @@ class TierList:
         """Compile Tier List Data for one Compile Request."""
         generated = Generated(self._now(), request.library_name, request.scope, request.plugin_version)
         fmt = choose_format(self._covers.formats())
-        return compile_data(generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids)
+        overrides = self.series_tier_overrides()
+        return compile_data(
+            generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids, overrides
+        )
 
     def output_path(self) -> str:
         """The remembered output path, or today's default."""

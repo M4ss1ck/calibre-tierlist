@@ -35,6 +35,8 @@ def test_a_directly_built_stack_depth_above_the_max_shows_at_most_seven_position
     library.values['#tier'] = cast(dict[int, object], dict.fromkeys(indexes, 's'))
     config = TierConfig(tiers=CONFIG.tiers, stack_depth=99)
 
-    data = compile_data(Generated(NOW, 'Lib', 'library', '0.1.0'), library, FakeCovers(), 'webp', config, range(1, 11))
+    data = compile_data(
+        Generated(NOW, 'Lib', 'library', '0.1.0'), library, FakeCovers(), 'webp', config, range(1, 11), {}
+    )
 
     assert len(data.series['Dune'].positions) == 7

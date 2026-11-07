@@ -5,7 +5,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date
 
-from ..tiers import Tier
+from ..tiers import Tier, TierConfig
 from .covers import EMPTY_COLOUR
 
 
@@ -19,11 +19,21 @@ class Position:
 
 @dataclass(frozen=True)
 class Series:
-    """One series on the board: its Placeholder colour, the positions shown, and how many were cut."""
+    """One series on the board: its Placeholder colour, positions shown, how many were cut, and whether it is an
+    Override."""
 
     colour: str
     positions: tuple[Position, ...]
     more: int
+    override: bool
+
+
+@dataclass(frozen=True)
+class SeriesTier:
+    """The Tier a series is shown in, and whether that Tier comes from an Override."""
+
+    tier_id: str | None
+    override: bool
 
 
 def build_series(
@@ -31,6 +41,7 @@ def build_series(
     totals: Iterable[object | None],
     stack_depth: int,
     colours: Mapping[int, str],
+    override: bool,
 ) -> Series:
     """Build the Stack for one series from each member's series index and colour, truncated to `stack_depth` behind."""
     owned = {book: _index(index) for book, index in indexes.items()}
@@ -40,6 +51,7 @@ def build_series(
         _colour(ordered, colours),
         tuple(Position(_number(index), book) for index, book in shown),
         len(ordered) - len(shown),
+        override,
     )
 
 
@@ -54,6 +66,16 @@ def auto_tier(tier_ids: Iterable[str | None], tiers: tuple[Tier, ...]) -> str | 
     order = {tier.id: index for index, tier in enumerate(tiers)}
     counts = Counter(tier_id for tier_id in tier_ids if tier_id is not None)
     return max(counts, key=lambda tier_id: (counts[tier_id], order[tier_id])) if counts else None
+
+
+def series_tier(
+    name: str, tier_ids: Iterable[str | None], config: TierConfig, overrides: Mapping[str, str]
+) -> SeriesTier:
+    """This series' Series Tier and whether it is an Override: an Override naming a missing Tier falls back to Auto."""
+    override = overrides.get(name)
+    if override is not None and config.tier(override) is not None:
+        return SeriesTier(override, True)
+    return SeriesTier(auto_tier(tier_ids, config.tiers), False)
 
 
 def earliest(dates: Iterable[date | None]) -> date | None:
