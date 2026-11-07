@@ -5,7 +5,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date
 
-from ..tiers import Tier
+from ..tiers import Tier, TierConfig
 from .covers import EMPTY_COLOUR
 
 
@@ -25,7 +25,15 @@ class Series:
     colour: str
     positions: tuple[Position, ...]
     more: int
-    override: bool = False
+    override: bool
+
+
+@dataclass(frozen=True)
+class SeriesTier:
+    """The Tier a series is shown in, and whether that Tier comes from an Override."""
+
+    tier_id: str | None
+    override: bool
 
 
 def build_series(
@@ -33,7 +41,7 @@ def build_series(
     totals: Iterable[object | None],
     stack_depth: int,
     colours: Mapping[int, str],
-    override: bool = False,
+    override: bool,
 ) -> Series:
     """Build the Stack for one series from each member's series index and colour, truncated to `stack_depth` behind."""
     owned = {book: _index(index) for book, index in indexes.items()}
@@ -61,13 +69,13 @@ def auto_tier(tier_ids: Iterable[str | None], tiers: tuple[Tier, ...]) -> str | 
 
 
 def series_tier(
-    name: str, tier_ids: Iterable[str | None], tiers: tuple[Tier, ...], overrides: Mapping[str, str]
-) -> tuple[str | None, bool]:
+    name: str, tier_ids: Iterable[str | None], config: TierConfig, overrides: Mapping[str, str]
+) -> SeriesTier:
     """This series' Series Tier and whether it is an Override: an Override naming a missing Tier falls back to Auto."""
     override = overrides.get(name)
-    if override is not None and any(tier.id == override for tier in tiers):
-        return override, True
-    return auto_tier(tier_ids, tiers), False
+    if override is not None and config.tier(override) is not None:
+        return SeriesTier(override, True)
+    return SeriesTier(auto_tier(tier_ids, config.tiers), False)
 
 
 def earliest(dates: Iterable[date | None]) -> date | None:

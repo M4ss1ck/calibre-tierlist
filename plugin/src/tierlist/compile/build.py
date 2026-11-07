@@ -21,7 +21,7 @@ def compile_data(
     fmt: str,
     config: TierConfig,
     book_ids: Iterable[int],
-    overrides: Mapping[str, str] = {},
+    overrides: Mapping[str, str],
 ) -> TierListData:
     """Read these books from the library, build their Tier List Data, then attach their covers."""
     ids = list(book_ids)
@@ -37,7 +37,7 @@ def compile_data(
         Row(i, str(titles.get(i) or ''), tiers.get(i), reads.get(i), series.get(i), indexes.get(i), totals.get(i))
         for i in ids
     ]
-    board = on_board(rows, datatype == 'bool')
+    board = on_board(rows, datatype == 'bool', _overridden(config, overrides))
     shots = {row.id: cover for row in board if (cover := covers.cover(row.id, fmt, COVER_WIDTH)) is not None}
     colours = {book_id: cover.colour for book_id, cover in shots.items()}
     return replace(build(generated, config, board, datatype == 'bool', colours, overrides), covers=shots)
@@ -54,7 +54,7 @@ def build(
     board: Iterable[Row],
     read_is_bool: bool,
     colours: Mapping[int, str],
-    overrides: Mapping[str, str] = {},
+    overrides: Mapping[str, str],
 ) -> TierListData:
     """Resolve the board rows into Books and place them in ordered Lanes and Series Stacks."""
     known = {tier.id for tier in config.tiers}
@@ -70,8 +70,7 @@ def build(
             groups.setdefault(name, []).append((row, book))
     depth = max(MIN_STACK_DEPTH, min(MAX_STACK_DEPTH, config.stack_depth))
     resolved = {
-        name: series_tier(name, [book.tier for _, book in group], config.tiers, overrides)
-        for name, group in groups.items()
+        name: series_tier(name, [book.tier for _, book in group], config, overrides) for name, group in groups.items()
     }
     series = {
         name: build_series(
@@ -79,12 +78,12 @@ def build(
             (row.total for row, _ in group),
             depth,
             colours,
-            resolved[name][1],
+            resolved[name].override,
         )
         for name, group in groups.items()
     }
     stacks = {
-        name: (resolved[name][0], earliest([book.date_read for _, book in group if book.read]))
+        name: (resolved[name].tier_id, earliest([book.date_read for _, book in group if book.read]))
         for name, group in groups.items()
     }
     lanes = tuple(Lane(tier.id, _cards(standalone, tier.id), stacks_for(stacks, tier.id)) for tier in config.tiers)
@@ -96,3 +95,7 @@ def _cards(books: list[Book], tier: str | None) -> tuple[int, ...]:
     matches = [book for book in books if book.tier == tier]
     matches.sort(key=lambda book: (book.date_read is None, book.date_read or date.min, book.title.casefold(), book.id))
     return tuple(book.id for book in matches)
+
+
+def _overridden(config: TierConfig, overrides: Mapping[str, str]) -> set[str]:
+    return {name for name, tier_id in overrides.items() if config.tier(tier_id) is not None}

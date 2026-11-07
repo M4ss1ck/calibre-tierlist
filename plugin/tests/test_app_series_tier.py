@@ -102,10 +102,9 @@ def compile_lanes(app: TierList, *book_ids: int) -> TierListData:
     return app.compile(CompileRequest('library', book_ids, 'Lib', '0.1.0'))
 
 
-def test_set_series_tier_puts_the_stack_in_the_override_lane() -> None:
+def test_set_series_tier_puts_an_unread_untiered_stack_on_the_board() -> None:
     app, library, _ = facade()
     shelve(library, {1: 'Dune', 2: 'Dune'})
-    library.values['#tier'] = {1: 's', 2: 's'}
     app.set_series_tier([1], 'a')
 
     data = compile_lanes(app, 1, 2)
