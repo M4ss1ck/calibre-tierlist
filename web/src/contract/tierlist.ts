@@ -7,7 +7,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 3;
+  schemaVersion: 4;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -93,6 +93,10 @@ export interface Series {
    * How many further positions were cut from this Stack.
    */
   more: number;
+  /**
+   * True when this series' Series Tier is an Override, false when it is Auto.
+   */
+  override: boolean;
 }
 export interface Position {
   /**

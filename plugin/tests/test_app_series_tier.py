@@ -4,6 +4,7 @@ import pytest
 from fakes import FakeLibrary, FakePrefs
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
+from tierlist.compile import CompileRequest, TierListData
 from tierlist.series_tiers import SERIES_TIER_OVERRIDES_KEY
 from tierlist.tiers import Tier, TierConfig
 
@@ -95,3 +96,50 @@ def test_non_string_override_entries_are_ignored() -> None:
     app, _, prefs = facade()
     prefs.data[SERIES_TIER_OVERRIDES_KEY] = {'Dune': 's', 'Earthsea': None, 7: 's', 'Foundation': ''}
     assert app.series_tier_overrides() == {'Dune': 's'}
+
+
+def compile_lanes(app: TierList, *book_ids: int) -> TierListData:
+    return app.compile(CompileRequest('library', book_ids, 'Lib', '0.1.0'))
+
+
+def test_set_series_tier_puts_the_stack_in_the_override_lane() -> None:
+    app, library, _ = facade()
+    shelve(library, {1: 'Dune', 2: 'Dune'})
+    library.values['#tier'] = {1: 's', 2: 's'}
+    app.set_series_tier([1], 'a')
+
+    data = compile_lanes(app, 1, 2)
+
+    assert data.lanes[0].stacks == ()
+    assert data.lanes[1].stacks == ('Dune',)
+    assert data.series['Dune'].override is True
+
+
+def test_clear_series_tier_returns_the_stack_to_the_auto_lane() -> None:
+    app, library, _ = facade()
+    shelve(library, {1: 'Dune', 2: 'Dune'})
+    library.values['#tier'] = {1: 's', 2: 's'}
+    app.set_series_tier([1], 'a')
+    app.clear_series_tier([1])
+
+    data = compile_lanes(app, 1, 2)
+
+    assert data.lanes[0].stacks == ('Dune',)
+    assert data.lanes[1].stacks == ()
+    assert data.series['Dune'].override is False
+
+
+def test_a_book_added_after_the_override_joins_the_override_lane() -> None:
+    app, library, _ = facade()
+    shelve(library, {1: 'Dune'})
+    library.values['#tier'] = {1: 'a'}
+    app.set_series_tier([1], 's')
+    shelve(library, {1: 'Dune', 2: 'Dune'})
+    library.values['series_index'] = {1: 1.0, 2: 2.0}
+    library.values['#tier'] = {1: 'a', 2: 'a'}
+
+    data = compile_lanes(app, 1, 2)
+
+    assert data.lanes[0].stacks == ('Dune',)
+    assert data.series['Dune'].override is True
+    assert [position.book for position in data.series['Dune'].positions] == [1, 2]

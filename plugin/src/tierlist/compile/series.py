@@ -19,11 +19,13 @@ class Position:
 
 @dataclass(frozen=True)
 class Series:
-    """One series on the board: its Placeholder colour, the positions shown, and how many were cut."""
+    """One series on the board: its Placeholder colour, positions shown, how many were cut, and whether it is an
+    Override."""
 
     colour: str
     positions: tuple[Position, ...]
     more: int
+    override: bool = False
 
 
 def build_series(
@@ -31,6 +33,7 @@ def build_series(
     totals: Iterable[object | None],
     stack_depth: int,
     colours: Mapping[int, str],
+    override: bool = False,
 ) -> Series:
     """Build the Stack for one series from each member's series index and colour, truncated to `stack_depth` behind."""
     owned = {book: _index(index) for book, index in indexes.items()}
@@ -40,6 +43,7 @@ def build_series(
         _colour(ordered, colours),
         tuple(Position(_number(index), book) for index, book in shown),
         len(ordered) - len(shown),
+        override,
     )
 
 
@@ -54,6 +58,16 @@ def auto_tier(tier_ids: Iterable[str | None], tiers: tuple[Tier, ...]) -> str | 
     order = {tier.id: index for index, tier in enumerate(tiers)}
     counts = Counter(tier_id for tier_id in tier_ids if tier_id is not None)
     return max(counts, key=lambda tier_id: (counts[tier_id], order[tier_id])) if counts else None
+
+
+def series_tier(
+    name: str, tier_ids: Iterable[str | None], tiers: tuple[Tier, ...], overrides: Mapping[str, str]
+) -> tuple[str | None, bool]:
+    """This series' Series Tier and whether it is an Override: an Override naming a missing Tier falls back to Auto."""
+    override = overrides.get(name)
+    if override is not None and any(tier.id == override for tier in tiers):
+        return override, True
+    return auto_tier(tier_ids, tiers), False
 
 
 def earliest(dates: Iterable[date | None]) -> date | None:

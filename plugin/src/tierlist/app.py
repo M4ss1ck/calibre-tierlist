@@ -121,7 +121,10 @@ class TierList:
         """Compile Tier List Data for one Compile Request."""
         generated = Generated(self._now(), request.library_name, request.scope, request.plugin_version)
         fmt = choose_format(self._covers.formats())
-        return compile_data(generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids)
+        overrides = self.series_tier_overrides()
+        return compile_data(
+            generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids, overrides
+        )
 
     def output_path(self) -> str:
         """The remembered output path, or today's default."""

@@ -9,13 +9,19 @@ from ..tiers import MAX_STACK_DEPTH, MIN_STACK_DEPTH, TierConfig
 from .covers import COVER_WIDTH
 from .data import Book, Generated, Lane, TierListData
 from .rows import Row, book_of, on_board, series_name
-from .series import auto_tier, build_series, earliest, stacks_for
+from .series import build_series, earliest, series_tier, stacks_for
 
 READ_COLUMN_TYPES = ('datetime', 'bool')
 
 
 def compile_data(
-    generated: Generated, library: Library, covers: Covers, fmt: str, config: TierConfig, book_ids: Iterable[int]
+    generated: Generated,
+    library: Library,
+    covers: Covers,
+    fmt: str,
+    config: TierConfig,
+    book_ids: Iterable[int],
+    overrides: Mapping[str, str] = {},
 ) -> TierListData:
     """Read these books from the library, build their Tier List Data, then attach their covers."""
     ids = list(book_ids)
@@ -34,7 +40,7 @@ def compile_data(
     board = on_board(rows, datatype == 'bool')
     shots = {row.id: cover for row in board if (cover := covers.cover(row.id, fmt, COVER_WIDTH)) is not None}
     colours = {book_id: cover.colour for book_id, cover in shots.items()}
-    return replace(build(generated, config, board, datatype == 'bool', colours), covers=shots)
+    return replace(build(generated, config, board, datatype == 'bool', colours, overrides), covers=shots)
 
 
 def count_series(library: Library, book_ids: Iterable[int]) -> int:
@@ -48,6 +54,7 @@ def build(
     board: Iterable[Row],
     read_is_bool: bool,
     colours: Mapping[int, str],
+    overrides: Mapping[str, str] = {},
 ) -> TierListData:
     """Resolve the board rows into Books and place them in ordered Lanes and Series Stacks."""
     known = {tier.id for tier in config.tiers}
@@ -62,15 +69,22 @@ def build(
         else:
             groups.setdefault(name, []).append((row, book))
     depth = max(MIN_STACK_DEPTH, min(MAX_STACK_DEPTH, config.stack_depth))
+    resolved = {
+        name: series_tier(name, [book.tier for _, book in group], config.tiers, overrides)
+        for name, group in groups.items()
+    }
     series = {
-        name: build_series({row.id: row.index for row, _ in group}, (row.total for row, _ in group), depth, colours)
+        name: build_series(
+            {row.id: row.index for row, _ in group},
+            (row.total for row, _ in group),
+            depth,
+            colours,
+            resolved[name][1],
+        )
         for name, group in groups.items()
     }
     stacks = {
-        name: (
-            auto_tier([book.tier for _, book in group], config.tiers),
-            earliest([book.date_read for _, book in group if book.read]),
-        )
+        name: (resolved[name][0], earliest([book.date_read for _, book in group if book.read]))
         for name, group in groups.items()
     }
     lanes = tuple(Lane(tier.id, _cards(standalone, tier.id), stacks_for(stacks, tier.id)) for tier in config.tiers)
