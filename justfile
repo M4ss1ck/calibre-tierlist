@@ -52,6 +52,8 @@ itest: build
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/read_state.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/read_offer.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/config_admin.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/config_dialog.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/config_import.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/compile.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/covers.py
     COMPILED_HTML="$PWD/dist/itest/compiled.html" pnpm -C web exec playwright test tests/compiled.spec.ts

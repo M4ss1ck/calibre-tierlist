@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Adapts the calibre-free core to calibre's GUI: it registers the Tier List action, sends books to a Tier, marks books read or unread, and offers to create the Tier and Read columns. It is separate so the core stays importable, and testable, without calibre or Qt.
+Adapts the calibre-free core to calibre's GUI: it registers the Tier List action, sends books to a Tier, marks books read or unread, offers to create the Tier and Read columns, and hosts the Tier Config dialog calibre shows under Preferences > Plugins. It is separate so the core stays importable, and testable, without calibre or Qt.
 
 ## Public API
 
@@ -18,6 +18,9 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `create_column(gui, lookup, heading, datatype) -> bool`: creates any custom column; True means restart calibre.
 - `create_tier_column(gui, lookup) -> bool`: creates the Text Tier column; True means restart calibre.
 - `CompileDialog(gui, db, app)`: the Compile dialog; `scope()` returns `'library'`, `'virtual_library'`, or `'selection'`, and `path()` the output file.
+- `ConfigWidget(gui)`: the plugin config dialog's widget; `build_config()` reads the Tier Config the widgets show, `validate()` returns False after showing why an invalid one cannot be saved, `import_json()` asks first when an import drops Tiers books still hold, and `save()` stores it and refreshes saved searches and the Tier menu.
+- `TierTable(parent)`: the Tier rows; `tiers()` and `set_tiers()` convert to and from `Tier`s, `add()`, `remove(row)`, and `move(row, offset)` edit them.
+- `OrphanPanel(admin, series_names, parent)`: the Orphaned Overrides list, reattaching and deleting immediately.
 - `scope_book_ids(gui, scope) -> tuple[int, ...]`: the sorted book ids a Compile Scope covers.
 - `run_compile(app, request, template, path, log) -> str`: compiles to a file through the facade; shared by the job and the integration test.
 - `start_compile(action, request, template, path)`: runs `run_compile` in a calibre background job, then opens the HTML.
@@ -32,6 +35,11 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `column.py`: the first-run offers and the column creation flow.
 - `compile_dialog.py`: the Compile Scope and output path dialog.
 - `compile_job.py`: Compile Scope book ids, the background job, and opening the written file.
+- `config_widget.py`: the plugin config dialog widget: Tier table wiring, column mapping, orphaned Overrides, and saving.
+- `tier_table.py`: the Tier table rows and their colour swatch button.
+- `config_extras.py`: the column mapping combos and the Orphaned Overrides panel.
+- `config_form.py`: the button row and mapping form layout pieces.
+- `config_io.py`: importing and exporting Tier Config JSON.
 
 ## Depends on
 
