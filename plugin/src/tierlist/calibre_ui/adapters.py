@@ -38,6 +38,9 @@ class CalibreLibrary(Library):
     def series_names(self) -> frozenset[str]:
         return frozenset(name for name in self._db.new_api.all_field_names('series') if name)
 
+    def all_book_ids(self) -> frozenset[int]:
+        return frozenset(self._db.new_api.all_book_ids())
+
 
 def _calibre_value(value: object | None) -> object | None:
     """Store a plain date at noon, the way calibre's date columns expect."""

@@ -34,6 +34,9 @@ class FakeLibrary:
         stored = self.values.get('series', {})
         return frozenset(name for name in stored.values() if isinstance(name, str) and name)
 
+    def all_book_ids(self) -> frozenset[int]:
+        return frozenset(book_id for column in self.values.values() for book_id in column)
+
     def write_field(self, lookup_name: str, values: Mapping[int, object | None]) -> None:
         if lookup_name not in self.column_types():
             raise KeyError(lookup_name)
@@ -57,6 +60,28 @@ class FakePrefs:
 
     def set(self, key: str, value: object) -> None:
         self.data[key] = value
+
+
+class FakeSavedSearches:
+    """A SavedSearches port backed by a dict of names to queries."""
+
+    def __init__(self, searches: Mapping[str, str] | None = None) -> None:
+        self.searches: dict[str, str] = dict(searches or {})
+
+    def names(self) -> frozenset[str]:
+        return frozenset(self.searches)
+
+    def query(self, name: str) -> str | None:
+        return self.searches.get(name)
+
+    def add(self, name: str, query: str) -> None:
+        self.searches[name] = query
+
+    def remove(self, name: str) -> None:
+        self.searches.pop(name, None)
+
+    def rename(self, old: str, new: str) -> None:
+        self.searches[new] = self.searches.pop(old)
 
 
 class FakeCovers:

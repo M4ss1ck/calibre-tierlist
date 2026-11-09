@@ -29,6 +29,34 @@ class Library(Protocol):
         """Every non-empty series name in the library."""
         ...
 
+    def all_book_ids(self) -> frozenset[int]:
+        """Every book id in the library."""
+        ...
+
+
+class SavedSearches(Protocol):
+    """The library's saved searches, by name."""
+
+    def names(self) -> frozenset[str]:
+        """Every saved search name."""
+        ...
+
+    def query(self, name: str) -> str | None:
+        """The saved search's query, or None when no search has this name."""
+        ...
+
+    def add(self, name: str, query: str) -> None:
+        """Create or replace the saved search with this name."""
+        ...
+
+    def remove(self, name: str) -> None:
+        """Delete the saved search with this name, if any."""
+        ...
+
+    def rename(self, old: str, new: str) -> None:
+        """Rename the saved search `old` to `new`."""
+        ...
+
 
 class Prefs(Protocol):
     """Per-library plugin prefs, already namespaced by the adapter."""

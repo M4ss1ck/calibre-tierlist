@@ -8,6 +8,7 @@ from .config import (
     Tier,
     TierConfig,
 )
+from .validate import TierConfigError, dump_config, parse_config, validate
 
 __all__ = [
     'DEFAULT_STACK_DEPTH',
@@ -16,4 +17,8 @@ __all__ = [
     'MIN_STACK_DEPTH',
     'Tier',
     'TierConfig',
+    'TierConfigError',
+    'dump_config',
+    'parse_config',
+    'validate',
 ]
