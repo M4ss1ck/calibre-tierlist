@@ -8,7 +8,9 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 
 - `TierListAction`: the `InterfaceAction` that calibre instantiates through the zip root entry point.
 - `tier_list(db) -> TierList`: the facade over one calibre library database and its namespaced prefs.
+- `config_admin(db) -> ConfigAdmin`: the config-dialog use cases over one calibre library database.
 - `CalibreLibrary`, `CalibrePrefs`: the `Library` and `Prefs` port adapters.
+- `CalibreSavedSearches`: the `SavedSearches` port adapter over calibre's saved searches.
 - `CalibreCovers`: the `Covers` port adapter, encoding cover thumbnails as AVIF, WebP, or JPEG.
 - `TierMenu(action)`: the "Send to tier" and "Set series tier" submenus and the Read State menu items, rebuilt on demand.
 - `offer_tier_column(gui, app) -> bool`: the first-run Tier offer, and whether a column was created.
@@ -23,7 +25,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 ## Files
 
 - `action.py`: the action, its toolbar dialog, the layout claim, and the send, clear, and mark read/unread handlers.
-- `adapters.py`: `CalibreLibrary` (including date conversion) and `CalibrePrefs` over calibre's database.
+- `adapters.py`: `CalibreLibrary` (including date conversion), `CalibrePrefs`, and `CalibreSavedSearches` over calibre's database, plus the `tier_list` and `config_admin` factories.
 - `covers.py`: `CalibreCovers`, the cover thumbnails and their dominant colour.
 - `menu.py`: the `TierMenu` submenus, Read State items, and their shortcut registration.
 - `series_menu.py`: the Set series tier submenu's Override and Auto items.
@@ -33,6 +35,6 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 
 ## Depends on
 
-- Ports: `Library`, `Prefs`, and `Covers`, implemented here by `CalibreLibrary`, `CalibrePrefs`, and `CalibreCovers`.
-- Slices: `tierlist.app` and `tierlist.tiers` for the use cases and Tier Config.
+- Ports: `Library`, `Prefs`, `SavedSearches`, and `Covers`, implemented here by `CalibreLibrary`, `CalibrePrefs`, `CalibreSavedSearches`, and `CalibreCovers`.
+- Slices: `tierlist.app`, `tierlist.config_admin`, and `tierlist.tiers` for the use cases and Tier Config.
 - Imports calibre and Qt; the only slice allowed to.
