@@ -1,4 +1,4 @@
-"""calibre implementations of the Library, Prefs, and Covers ports."""
+"""calibre implementations of the Library, Prefs, SavedSearches, and Covers ports."""
 
 from collections.abc import Iterable, Mapping
 from datetime import date, datetime, time
@@ -7,7 +7,8 @@ from typing import Any
 from calibre.utils.date import local_tz
 
 from ..app import TierList
-from ..ports import Library, Prefs
+from ..config_admin import ConfigAdmin
+from ..ports import Library, Prefs, SavedSearches
 from .covers import CalibreCovers
 
 
@@ -38,6 +39,9 @@ class CalibreLibrary(Library):
     def series_names(self) -> frozenset[str]:
         return frozenset(name for name in self._db.new_api.all_field_names('series') if name)
 
+    def all_book_ids(self) -> frozenset[int]:
+        return frozenset(self._db.new_api.all_book_ids())
+
 
 def _calibre_value(value: object | None) -> object | None:
     """Store a plain date at noon, the way calibre's date columns expect."""
@@ -62,3 +66,30 @@ class CalibrePrefs(Prefs):
 def tier_list(db: Any) -> TierList:
     """The facade over one calibre library database and its prefs."""
     return TierList(CalibreLibrary(db), CalibrePrefs(db), covers=CalibreCovers(db))
+
+
+class CalibreSavedSearches(SavedSearches):
+    """The current library's saved searches, as the SavedSearches port."""
+
+    def __init__(self, db: Any) -> None:
+        self._db = db
+
+    def names(self) -> frozenset[str]:
+        return frozenset(self._db.new_api.saved_search_names())
+
+    def query(self, name: str) -> str | None:
+        return self._db.new_api.saved_search_lookup(name)
+
+    def add(self, name: str, query: str) -> None:
+        self._db.new_api.saved_search_add(name, query)
+
+    def remove(self, name: str) -> None:
+        self._db.new_api.saved_search_delete(name)
+
+    def rename(self, old: str, new: str) -> None:
+        self._db.new_api.saved_search_rename(old, new)
+
+
+def config_admin(db: Any) -> ConfigAdmin:
+    """The config-dialog use cases over one calibre library database and its prefs."""
+    return ConfigAdmin(CalibreLibrary(db), CalibrePrefs(db), CalibreSavedSearches(db))
