@@ -91,6 +91,13 @@ def test_renaming_a_tier_renames_its_search() -> None:
     assert searches.searches == {'Tier S+': '#tier:"=s"', 'Tier A': '#tier:"=a"'}
 
 
+def test_swapping_two_labels_keeps_both_searches() -> None:
+    swapped = config(Tier('s', 'A', '#ff7f7f'), Tier('a', 'S', '#ffbf7f'))
+    admin, _, _, searches = make(searches=dict(SEARCHES))
+    admin.save(swapped)
+    assert searches.searches == {'Tier A': '#tier:"=s"', 'Tier S': '#tier:"=a"'}
+
+
 def test_removing_a_tier_removes_its_search() -> None:
     admin, _, _, searches = make(searches=dict(SEARCHES))
     admin.save(KEPT)

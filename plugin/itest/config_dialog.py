@@ -19,7 +19,7 @@ from calibre.ebooks.metadata.book.base import Metadata
 from calibre.gui2 import Application
 from calibre.library import db as open_db
 from calibre.utils.date import local_tz
-from calibre_plugins.tierlist.calibre_ui import config_widget
+from calibre_plugins.tierlist.calibre_ui import config_io, config_widget
 from calibre_plugins.tierlist.calibre_ui.adapters import config_admin
 from calibre_plugins.tierlist.calibre_ui.config_widget import ConfigWidget
 from calibre_plugins.tierlist.tiers import DEFAULT_TIER_CONFIG
@@ -58,7 +58,7 @@ class ErrorDialog:
 
 
 def widget_for(db: Any) -> Any:
-    config_widget.QMessageBox, config_widget.error_dialog = YesBox, ErrorDialog()
+    config_io.QMessageBox, config_widget.error_dialog = YesBox, ErrorDialog()
     return ConfigWidget(FakeGui(db, []))
 
 
@@ -127,7 +127,7 @@ def check_mapped(tmp: str) -> None:
         table.selectRow(row_of(table, 'f'))
         widget.remove_tier()
         expect('f' not in {tier.id for tier in table.tiers()}, 'the removed Tier stayed in the table')
-        expect('1 books hold this Tier' in YesBox.asked[-1], YesBox.asked)
+        expect('1 book holds this Tier' in YesBox.asked[-1], YesBox.asked)
         widget.save()
         expect(db.new_api.field_for('#tier', book) is None, 'the removed Tier kept its book')
         kept = db.new_api.field_for('#date_read', book)

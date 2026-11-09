@@ -5,3 +5,6 @@ from tierlist.tiers import MIN_STACK_DEPTH as MIN_STACK_DEPTH
 from tierlist.tiers import Tier as Tier
 from tierlist.tiers import TierConfig as TierConfig
 from tierlist.tiers import TierConfigError as TierConfigError
+from tierlist.tiers import dump_config as dump_config
+from tierlist.tiers import parse_config as parse_config
+from tierlist.tiers import validate as validate

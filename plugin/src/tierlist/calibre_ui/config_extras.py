@@ -6,16 +6,15 @@ from typing import Any
 from qt.core import (
     QAbstractItemView,
     QComboBox,
-    QHBoxLayout,
     QInputDialog,
     QLabel,
     QListWidget,
-    QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
 from ..config_admin import ConfigAdmin
+from .config_form import button_row
 
 
 def fill_column_combo(
@@ -48,16 +47,11 @@ class OrphanPanel(QWidget):
         self.list = QListWidget(self)
         self.list.setSelectionMode(QAbstractItemView.SelectionMode.ExtendedSelection)
         self.empty = QLabel(_('No orphaned series overrides'), self)
-        buttons = QHBoxLayout()
-        for text, slot in ((_('Reattach…'), self.reattach), (_('Delete'), self.delete)):
-            button = QPushButton(text, self)
-            button.clicked.connect(slot)
-            buttons.addWidget(button)
         layout = QVBoxLayout(self)
         layout.addWidget(QLabel(_('Orphaned Overrides'), self))
         layout.addWidget(self.empty)
         layout.addWidget(self.list)
-        layout.addLayout(buttons)
+        layout.addLayout(button_row(self, ((_('Reattach…'), self.reattach), (_('Delete'), self.delete))))
         self.refresh()
 
     def refresh(self) -> None:

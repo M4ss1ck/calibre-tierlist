@@ -1,6 +1,7 @@
-"""Names calibre injects: `_` into builtins, `load_translations` into every
-module it loads from a plugin zip. Declared here so strict type checking sees
-them inside plugin code."""
+"""Names calibre injects: `_` and `ngettext` into builtins, `load_translations`
+into every module it loads from a plugin zip. Declared here so strict type
+checking sees them inside plugin code."""
 
 def _(s: str, /) -> str: ...
+def ngettext(singular: str, plural: str, n: int, /) -> str: ...
 def load_translations() -> None: ...

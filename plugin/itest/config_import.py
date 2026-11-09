@@ -70,9 +70,9 @@ def open_library(tmp: str) -> Any:
 
 
 def incoming(stored: Any) -> Any:
-    """The stored config without 'f', with 's' renamed to 'Top': the import the test feeds."""
+    """The stored config without 'f', with 's' renamed to 'Top' and other column names: the import the test feeds."""
     tiers = tuple(replace(tier, label='Top') if tier.id == 's' else tier for tier in stored.tiers if tier.id != 'f')
-    return replace(stored, tiers=tiers)
+    return replace(stored, tiers=tiers, tier_column='#rank', read_column='#read', series_total_column='#total')
 
 
 def check_import(tmp: str) -> None:
@@ -92,7 +92,7 @@ def check_import(tmp: str) -> None:
         no = Answer(Answer.StandardButton.No)
         config_io.QMessageBox = no
         widget.import_json()
-        expect(bool(no.asked) and '1 books hold Tiers this import removes' in no.asked[-1], no.asked)
+        expect(bool(no.asked) and '1 book holds a Tier this import removes' in no.asked[-1], no.asked)
         expect({tier.id for tier in widget.table.tiers()} == DEFAULT_IDS, 'declining the import changed the table')
         expect({tier.id: tier.label for tier in widget.table.tiers()}['s'] == 'S', 'declining renamed a Tier')
 
@@ -102,6 +102,9 @@ def check_import(tmp: str) -> None:
         expect(len(yes.asked) == 1, yes.asked)
         labels = {tier.id: tier.label for tier in widget.table.tiers()}
         expect('f' not in labels and labels['s'] == 'Top', f'the import did not load: {labels}')
+        expect(widget.tier_column.currentData() == '#tier', 'the import changed the Tier column')
+        expect(widget.read_column.currentData() == '#date_read', 'the import changed the Read column')
+        expect(widget.total_column.currentData() == '', 'the import changed the Series total column')
         expect(db.new_api.field_for('#tier', book) == 'f', 'the import touched the book before save')
     finally:
         db.close()

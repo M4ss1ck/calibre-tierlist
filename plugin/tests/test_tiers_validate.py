@@ -31,6 +31,13 @@ def test_duplicate_ids_are_rejected() -> None:
         validate(config)
 
 
+@pytest.mark.parametrize('label', ['S', ' s ', 'S '])
+def test_duplicate_labels_are_rejected_ignoring_case_and_space(label: str) -> None:
+    config = TierConfig(tiers=(Tier('s', 'S', '#ff7f7f'), Tier('a', label, '#ffbf7f')))
+    with pytest.raises(TierConfigError, match='Duplicate'):
+        validate(config)
+
+
 @pytest.mark.parametrize('tier_id', ['', '   '])
 def test_an_empty_tier_id_is_rejected(tier_id: str) -> None:
     with pytest.raises(TierConfigError, match='id'):

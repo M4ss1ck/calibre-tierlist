@@ -1,11 +1,11 @@
 """The use cases behind the config dialog: Tier Config edits, saved-search sync, and orphaned Overrides."""
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 
 from . import series_tiers
 from .app import TIER_CONFIG_KEY, TierList
 from .ports import Library, Prefs, SavedSearches
-from .tiers import Tier, TierConfig, dump_config, parse_config, validate
+from .tiers import TierConfig, dump_config, parse_config, validate
 
 
 class ConfigAdmin:
@@ -22,11 +22,16 @@ class ConfigAdmin:
 
     def book_count(self, tier_id: str) -> int:
         """How many books hold this Tier id, zero when the tier column is missing."""
-        config = self.tier_config()
-        if not self._library.has_column(config.tier_column):
-            return 0
-        values = self._library.read_field(config.tier_column, self._library.all_book_ids())
+        values = self._column_values(self.tier_config().tier_column)
         return sum(1 for value in values.values() if value == tier_id)
+
+    def column_types(self) -> Mapping[str, str]:
+        """Every custom column lookup name mapped to its datatype."""
+        return self._library.column_types()
+
+    def series_names(self) -> list[str]:
+        """Every series name in the library, sorted."""
+        return sorted(self._library.series_names())
 
     def save(self, new: TierConfig) -> None:
         """Validate and store Tier Config, clear removed Tiers' books, and sync their saved searches."""
@@ -59,38 +64,34 @@ class ConfigAdmin:
 
     def delete_orphans(self, names: Iterable[str]) -> None:
         """Drop these orphaned Overrides."""
-        ids = list(names)
-        if ids:
-            series_tiers.clear_overrides(self._prefs, ids)
+        names = list(names)
+        if names:
+            series_tiers.clear_overrides(self._prefs, names)
+
+    def _column_values(self, lookup_name: str) -> dict[int, object | None]:
+        if not self._library.has_column(lookup_name):
+            return {}
+        return self._library.read_field(lookup_name, self._library.all_book_ids())
 
     def _clear_removed(self, old: TierConfig, new: TierConfig) -> None:
         removed = {tier.id for tier in old.tiers} - {tier.id for tier in new.tiers}
-        if not removed or not self._library.has_column(old.tier_column):
+        if not removed:
             return
-        values = self._library.read_field(old.tier_column, self._library.all_book_ids())
+        values = self._column_values(old.tier_column)
         clearing = {book_id: None for book_id, value in values.items() if value in removed}
         if clearing:
             self._library.write_field(old.tier_column, clearing)
 
     def _sync_searches(self, old: TierConfig, new: TierConfig) -> None:
-        old_by_id = {tier.id: tier for tier in old.tiers}
-        new_by_id = {tier.id: tier for tier in new.tiers}
-        for tier_id in old_by_id.keys() - new_by_id.keys():
-            self._searches.remove(f'Tier {old_by_id[tier_id].label}')
-        names = self._searches.names()
-        for tier_id, tier in new_by_id.items():
-            name = f'Tier {tier.label}'
-            query = f'{new.tier_column}:"={tier_id}"'
-            old_name = _search_name(old_by_id.get(tier_id))
-            if old_name is not None and old_name != name and old_name in names:
-                self._searches.rename(old_name, name)
-                names = self._searches.names()
-            if name in names and self._searches.query(name) == query:
+        target = {f'Tier {tier.label}': f'{new.tier_column}:"={tier.id}"' for tier in new.tiers}
+        labels = {f'Tier {tier.label}' for tier in (*old.tiers, *new.tiers)}
+        existing = self._searches.names()
+        for name in existing:
+            if name in labels and name not in target:
+                self._searches.remove(name)
+        for name, query in target.items():
+            if self._searches.query(name) == query:
                 continue
-            if name in names:
+            if name in existing:
                 self._searches.remove(name)
             self._searches.add(name, query)
-
-
-def _search_name(tier: Tier | None) -> str | None:
-    return None if tier is None else f'Tier {tier.label}'

@@ -16,7 +16,7 @@ def button_row(parent: QWidget, buttons: Sequence[tuple[str, Callable[[], Any]]]
     return row
 
 
-def mapping_form(parent: QWidget, combos: Sequence[tuple[str, QComboBox]], depth: QSpinBox) -> QFormLayout:
+def mapping_form(combos: Sequence[tuple[str, QComboBox]], depth: QSpinBox) -> QFormLayout:
     """The column mapping combos and the Stack depth spin box, labelled."""
     form = QFormLayout()
     for label, combo in combos:

@@ -3,15 +3,15 @@
 from typing import Any
 
 from calibre.gui2 import error_dialog
-from qt.core import QComboBox, QLabel, QMessageBox, QSpinBox, QVBoxLayout, QWidget
+from qt.core import QComboBox, QLabel, QSpinBox, QVBoxLayout, QWidget
 
 from ..compile import READ_COLUMN_TYPES
 from ..config_admin import ConfigAdmin
 from ..tiers import MAX_STACK_DEPTH, MIN_STACK_DEPTH, TierConfig, TierConfigError, validate
-from .adapters import CalibreLibrary, config_admin
+from .adapters import config_admin
 from .config_extras import OrphanPanel, fill_column_combo
 from .config_form import button_row, mapping_form
-from .config_io import confirm_import, export_config, import_config
+from .config_io import confirm_import, confirm_remove, export_config, import_config
 from .tier_table import TierTable
 
 load_translations()
@@ -26,14 +26,13 @@ class ConfigWidget(QWidget):
         super().__init__()
         self.gui = gui
         self.admin: ConfigAdmin = config_admin(gui.current_db)
-        self.library = CalibreLibrary(gui.current_db)
         self.table = TierTable(self)
         self.depth = QSpinBox(self)
         self.depth.setRange(MIN_STACK_DEPTH, MAX_STACK_DEPTH)
         self.tier_column = QComboBox(self)
         self.read_column = QComboBox(self)
         self.total_column = QComboBox(self)
-        self.orphans = OrphanPanel(self.admin, self._series_names, self)
+        self.orphans = OrphanPanel(self.admin, self.admin.series_names, self)
         self._build_layout()
         self._load(self.admin.tier_config())
 
@@ -54,7 +53,6 @@ class ConfigWidget(QWidget):
         )
         layout.addLayout(
             mapping_form(
-                self,
                 (
                     (_('Tier column'), self.tier_column),
                     (_('Read column'), self.read_column),
@@ -76,12 +74,8 @@ class ConfigWidget(QWidget):
         row = self.table.selected_row()
         if row is None:
             return
-        count = self.admin.book_count(self.table.tier_id(row))
-        if count:
-            question = _('%d books hold this Tier. They will lose their Book Tier and stay read. Remove it?') % count
-            if QMessageBox.question(self, _('Remove Tier'), question) != QMessageBox.StandardButton.Yes:
-                return
-        self.table.remove(row)
+        if confirm_remove(self, self.admin.book_count(self.table.tier_id(row))):
+            self.table.remove(row)
 
     def move_up(self) -> None:
         """Move the selected Tier one row up."""
@@ -97,10 +91,10 @@ class ConfigWidget(QWidget):
             self.table.move(row, offset)
 
     def import_json(self) -> None:
-        """Load a JSON Tier Config into the widgets; it is not stored until save."""
+        """Load a JSON Tier Config's Tiers into the widgets; the column mapping and save come later."""
         config = import_config(self, self.admin)
         if config is not None and confirm_import(self, self.admin, self.table.tiers(), config):
-            self._load(config)
+            self._load_tiers(config)
 
     def export_json(self) -> None:
         """Write the Tier Config the widgets currently show to a JSON file."""
@@ -137,12 +131,12 @@ class ConfigWidget(QWidget):
             action.rebuild_menu()
 
     def _load(self, config: TierConfig) -> None:
-        self.table.set_tiers(config.tiers)
-        self.depth.setValue(config.stack_depth)
-        types = self.library.column_types()
+        self._load_tiers(config)
+        types = self.admin.column_types()
         fill_column_combo(self.tier_column, types, ('text',), config.tier_column)
         fill_column_combo(self.read_column, types, READ_COLUMN_TYPES, config.read_column)
         fill_column_combo(self.total_column, types, TOTAL_COLUMN_TYPES, config.series_total_column, _('None'))
 
-    def _series_names(self) -> list[str]:
-        return sorted(self.library.series_names())
+    def _load_tiers(self, config: TierConfig) -> None:
+        self.table.set_tiers(config.tiers)
+        self.depth.setValue(config.stack_depth)
