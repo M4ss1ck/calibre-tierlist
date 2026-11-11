@@ -7,9 +7,24 @@ export function systemTheme(): Theme {
 }
 
 /**
- * Pin the theme for this session: `data-theme` on the root picks the colour
- * tokens, and its `color-scheme` rule makes the browser's own controls follow.
+ * Call `onTheme` whenever the system theme changes, so the page can follow it
+ * live; returns the matching unsubscribe.
+ */
+export function watchSystemTheme(onTheme: (theme: Theme) => void): () => void {
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  const listener = () => onTheme(media.matches ? 'dark' : 'light');
+  media.addEventListener('change', listener);
+  return () => media.removeEventListener('change', listener);
+}
+
+/**
+ * Show `theme`: `data-theme` on the root picks the colour tokens, and its
+ * `color-scheme` rule makes the browser's own controls follow. Choosing the
+ * theme the system already asks for removes the attribute instead, so the
+ * board goes back to following the system.
  */
 export function applyTheme(theme: Theme): void {
-  document.documentElement.dataset['theme'] = theme;
+  const root = document.documentElement;
+  if (theme === systemTheme()) delete root.dataset['theme'];
+  else root.dataset['theme'] = theme;
 }

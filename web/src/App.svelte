@@ -4,18 +4,24 @@
   import type { TierListData } from './contract/tierlist';
   import type { Filters } from './filter/filter';
   import FilterBar from './filter/FilterBar.svelte';
-  import { applyTheme, systemTheme } from './theme/theme';
+  import { applyTheme, systemTheme, watchSystemTheme, type Theme } from './theme/theme';
 
   let { data }: { data: TierListData } = $props();
   let selection = $state<Selection | undefined>();
   let unranked = $state(true);
-  let dark = $state(systemTheme() === 'dark');
+  let systemDark = $state(systemTheme() === 'dark');
+  /** The theme the toggle chose, or null while the board follows the system. */
+  let pinned = $state<Theme | null>(null);
   let filters = $state<Filters>({ query: '', author: null, tag: null, year: null });
   const lanes = $derived(data.lanes.filter((lane) => unranked || lane.tier !== null));
+  const dark = $derived(pinned === null ? systemDark : pinned === 'dark');
+
+  $effect(() => watchSystemTheme((theme) => (systemDark = theme === 'dark')));
 
   function toggleTheme() {
-    dark = !dark;
-    applyTheme(dark ? 'dark' : 'light');
+    const next: Theme = dark ? 'light' : 'dark';
+    applyTheme(next);
+    pinned = next === systemTheme() ? null : next;
   }
 </script>
 

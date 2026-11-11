@@ -17,21 +17,28 @@ const background = (page: Page) =>
 const pinned = (page: Page) =>
   page.evaluate(() => document.documentElement.dataset['theme'] ?? null);
 
-test('follows the system dark preference without pinning a theme', async ({ page }) => {
+test('follows a live change of the system preference without pinning a theme', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto(url);
   const light = await background(page);
-  await expect(darkToggle(page)).toHaveAttribute('aria-pressed', 'false');
+  const toggle = darkToggle(page);
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
   expect(await pinned(page)).toBeNull();
 
   await page.emulateMedia({ colorScheme: 'dark' });
-  await page.reload();
-  await expect(darkToggle(page)).toHaveAttribute('aria-pressed', 'true');
-  expect(await background(page)).not.toBe(light);
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => background(page)).not.toBe(light);
+  expect(await pinned(page)).toBeNull();
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  expect(await pinned(page)).toBe('light');
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   expect(await pinned(page)).toBeNull();
 });
 
-test('flips aria-pressed, data-theme and the background on each click', async ({ page }) => {
+test('pins the theme the system does not ask for and unpins it again', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto(url);
   const light = await background(page);
@@ -49,7 +56,7 @@ test('flips aria-pressed, data-theme and the background on each click', async ({
 
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-  expect(await pinned(page)).toBe('light');
+  expect(await pinned(page)).toBeNull();
   await expect(root).toHaveCSS('color-scheme', 'light');
   expect(await background(page)).toBe(light);
 });

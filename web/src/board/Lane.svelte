@@ -39,7 +39,10 @@
     lane.stacks.flatMap((name) => {
       const entry = series[name];
       if (!entry) return [];
-      const owned = Object.values(books).filter((book) => book.series === name);
+      const owned = entry.positions.flatMap((position) => {
+        const book = position.book === null ? undefined : books[position.book];
+        return book ? [book] : [];
+      });
       return matchesSeries(name, owned, filters) ? [{ name, series: entry }] : [];
     }),
   );

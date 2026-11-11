@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Decides whether a book or a whole Stack survives the board's filters. It is separate so the filtering is a pure, testable function of Tier List Data, with no UI or DOM.
+Decides whether a book or a whole Stack survives the board's filters, and draws the control that sets them. Its predicates are pure, testable functions of Tier List Data; `FilterBar.svelte` is the Svelte control that edits `Filters`. It is separate so the board asks one place whether something is visible, and the reader sets the criteria in one place.
 
 ## Public API
 
@@ -22,4 +22,4 @@ Decides whether a book or a whole Stack survives the board's filters. It is sepa
 
 - Ports: none.
 - Slices: `contract` for the `Book` type; `theme` for the colour tokens its controls are drawn with.
-- Svelte and the DOM are not involved.
+- Svelte for `FilterBar.svelte`; the predicates themselves touch no DOM.
