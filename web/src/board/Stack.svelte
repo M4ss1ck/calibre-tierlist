@@ -1,92 +1,122 @@
 <script lang="ts">
-  import type { Book, Cover, Series, Tier } from '../contract/tierlist';
+  import type { Book, Cover, Series } from '../contract/tierlist';
   import type { Selection } from './Detail.svelte';
   import OverrideMark from './OverrideMark.svelte';
-  import Position from './Position.svelte';
+  import { frontOf, resolve, sheetsBehind } from './stack';
 
   type Props = {
     name: string;
     series: Series;
     books: Record<string, Book>;
     covers: Record<string, Cover>;
-    tiers: Tier[];
     onopen: (selection: Selection) => void;
   };
+  let { name, series, books, covers, onopen }: Props = $props();
 
-  let { name, series, books, covers, tiers, onopen }: Props = $props();
-  let expanded = $state(false);
-
-  const all = $derived(
-    series.positions.map((position) => {
-      const book = position.book === null ? undefined : books[position.book];
-      const tier = tiers.find((candidate) => candidate.id === (book?.tier ?? ''));
-      return {
-        number: position.number,
-        book,
-        cover: position.book === null ? undefined : covers[position.book],
-        label: tier?.label ?? '-',
-        colour: tier?.colour ?? '#8a8a94',
-      };
-    }),
-  );
-  const shown = $derived(expanded ? all : all.slice(0, all.length - series.more));
-  const owned = $derived(shown.filter((position) => position.book !== undefined));
-  const gradient = $derived(
-    `linear-gradient(160deg, ${series.colour}, color-mix(in srgb, ${series.colour} 45%, #000))`,
-  );
+  const all = $derived(resolve(series, books, covers));
+  const front = $derived(frontOf(all));
+  const owned = $derived(all.filter((entry) => entry.book !== undefined).length);
+  const behind = $derived(Array.from({ length: sheetsBehind(all) }, (_, index) => index + 1));
+  const shade = (amount: number) => `color-mix(in srgb, ${series.colour} ${amount}%, #000)`;
 </script>
 
 <figure class="stack" aria-label={name} data-override={series.override ? 'true' : undefined}>
-  <div class="positions" class:expanded>
-    {#each shown as position, index (index)}
-      <Position
-        {name}
-        number={position.number}
-        book={position.book}
-        cover={position.cover}
-        background={gradient}
-        layer={shown.length - index}
-        onopen={() =>
-          onopen(position.book ? { book: position.book } : { series: name, number: position.number })}
-      />
-    {/each}
-    {#if series.more > 0 && !expanded}
-      <span class="more">+{series.more}</span>
+  {#each behind as depth (depth)}
+    <span class="behind" style:--depth={depth} style:background={shade(depth === 1 ? 70 : 45)}></span>
+  {/each}
+  <button
+    type="button"
+    class="front"
+    class:unread={front?.book !== undefined && !front.book.read}
+    style:background={front?.cover ? undefined : `linear-gradient(160deg, ${series.colour}, ${shade(45)})`}
+    aria-label={`${name}, ${owned} of ${all.length} books`}
+    onclick={() => onopen({ stack: name })}
+  >
+    {#if front?.cover}
+      <img class="cover" src={front.cover.src} alt="" />
     {/if}
-    {#if series.override}
-      <OverrideMark />
-    {/if}
-  </div>
-  <div class="badges">
-    {#each owned as position, index (index)}
-      <span class="tier-badge" style:background-color={position.colour}>{position.label}</span>
-    {/each}
-    {#if series.more > 0}
-      <button type="button" class="toggle" aria-expanded={expanded} onclick={() => (expanded = !expanded)}>
-        {expanded ? 'Show fewer' : `Show all ${all.length}`}
-      </button>
-    {/if}
-  </div>
+    <span class="count">{owned}/{all.length}</span>
+    <span class="name">{name}</span>
+  </button>
+  {#if series.override}
+    <OverrideMark />
+  {/if}
 </figure>
 
 <style>
-  .stack { display: flex; flex-direction: column; gap: 0.3rem; margin: 0; max-width: 100%; min-width: 0; }
-  .positions { position: relative; display: flex; align-items: flex-start; }
-  .positions:not(.expanded) > :global(.position + .position) { margin-left: -3.5rem; }
-  .positions.expanded { flex-wrap: wrap; gap: 0.5rem; }
-  .more {
-    position: absolute; right: 0.25rem; bottom: 0.25rem; z-index: 99; padding: 0 0.35rem;
-    border: 1px solid var(--bg); border-radius: 999px; color: var(--bg); font-size: 0.7rem;
-    background: color-mix(in srgb, var(--fg) 82%, var(--bg)); line-height: 1.5;
+  .stack {
+    position: relative;
+    flex: none;
+    width: 7.75rem;
+    height: 11.25rem;
+    margin: 0;
   }
-  .badges { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; }
-  .tier-badge {
-    padding: 0 0.35rem; border-radius: 0.25rem; color: var(--tier-ink); font-size: 0.7rem; line-height: 1.5;
+  .behind,
+  .front {
+    position: absolute;
+    left: 0;
+    top: 0.75rem;
+    width: 7rem;
+    height: 10.5rem;
+    box-sizing: border-box;
+    border-radius: 0.375rem;
   }
-  .toggle {
-    margin-left: auto; padding: 0 0.4rem; border: 1px solid var(--border-strong);
-    border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 0.7rem;
-    line-height: 1.5; cursor: pointer;
+  .behind {
+    transform: translate(calc(var(--depth) * 0.375rem), calc(var(--depth) * -0.375rem));
+    border: 1px solid rgb(255 255 255 / 15%);
   }
-  .toggle:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+  .front {
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 35%);
+    font: inherit;
+    cursor: pointer;
+  }
+  .front:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+  .front.unread .cover {
+    filter: grayscale(1);
+    opacity: 0.55;
+  }
+  .cover {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .count {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.375rem;
+    padding: 0 0.45rem;
+    border-radius: 999px;
+    background: var(--on-series);
+    color: var(--tier-ink);
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  .name {
+    position: absolute;
+    right: 0.375rem;
+    bottom: 0.375rem;
+    left: 0.375rem;
+    display: -webkit-box;
+    overflow: hidden;
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.3rem;
+    background: var(--caption-bg);
+    color: var(--on-series);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: start;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
 </style>

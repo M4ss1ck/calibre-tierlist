@@ -24,50 +24,52 @@
   }
 </script>
 
-<div class="export">
-  <button type="button" class="toggle" disabled={busy} onclick={run}>
-    {busy ? 'Exporting…' : 'Export PNG'}
-  </button>
-  <p class="status" role="status">{status}</p>
-</div>
+<button type="button" class="primary" disabled={busy} onclick={run}>
+  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+    <path d="M12 3v12M7 10l5 5 5-5M4 21h16" />
+  </svg>
+  {busy ? 'Exporting…' : 'Download PNG'}
+</button>
+<p class="status" role="status">{status}</p>
 
 <style>
-  .export {
+  .primary {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.25rem;
-  }
-
-  .toggle {
-    padding: 0.2rem 0.6rem;
-    border: 1px solid var(--border-strong);
-    border-radius: 999px;
-    background: none;
-    color: var(--muted);
+    align-items: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1rem;
+    border: 0;
+    border-radius: 0.625rem;
+    background: var(--fg);
+    color: var(--bg);
     font: inherit;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 600;
     cursor: pointer;
   }
-
-  .toggle:disabled {
+  .primary:disabled {
     cursor: progress;
     opacity: 0.6;
   }
-
-  .toggle:focus-visible {
+  .primary:focus-visible {
     outline: 2px solid var(--fg);
     outline-offset: 2px;
   }
-
+  svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
   .status {
+    order: 99;
+    flex-basis: 100%;
     margin: 0;
-    max-width: 22rem;
     color: var(--muted);
     font-size: 0.8rem;
-    text-align: end;
   }
-
   .status:empty {
     display: none;
   }
