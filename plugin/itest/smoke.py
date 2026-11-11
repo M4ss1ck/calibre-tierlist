@@ -8,7 +8,9 @@ calibre runs Python with -OO, which strips ``assert``; use ``expect``.
 """
 
 import importlib
+import json
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
@@ -20,6 +22,7 @@ NAME = 'Tier List'
 TOOLBAR = 'action-layout-toolbar'
 CONTEXT_MENU = 'action-layout-context-menu'
 LAYOUT_KEYS = (TOOLBAR, CONTEXT_MENU)
+MANIFEST = Path(__file__).resolve().parents[2] / '.release-please-manifest.json'
 
 
 def expect(ok: bool, message: object) -> None:
@@ -31,7 +34,8 @@ def check() -> None:
     plugin = find_plugin(NAME)
     if plugin is None or plugin.actual_plugin is None:
         raise SystemExit('SMOKE FAIL: the Tier List plugin is not registered')
-    expect(plugin.version == (0, 1, 0), f'unexpected version: {plugin.version}')
+    release = tuple(int(part) for part in json.loads(MANIFEST.read_text(encoding='utf-8'))['.'].split('.'))
+    expect(plugin.version == release, f'version {plugin.version} is not the release {release}')
     expect(plugin.minimum_calibre_version == (9, 0, 0), f'unexpected minimum: {plugin.minimum_calibre_version}')
     module_name, class_name = plugin.actual_plugin.split(':')
     action_class = getattr(importlib.import_module(module_name), class_name)
