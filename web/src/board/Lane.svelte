@@ -77,7 +77,7 @@
     margin: 0;
     padding: 0.5rem 0;
     border-radius: 0.375rem;
-    color: #1b1b1f;
+    color: var(--tier-ink);
     font-size: 1rem;
     text-align: center;
   }
@@ -87,6 +87,13 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     flex: 1 1 auto;
+    min-width: 0;
     min-height: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    .lane {
+      gap: 0.5rem;
+    }
   }
 </style>

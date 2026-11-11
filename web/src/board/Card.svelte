@@ -49,7 +49,7 @@
     display: block;
     width: 100%;
     aspect-ratio: 2 / 3;
-    border: 1px solid color-mix(in srgb, var(--fg) 18%, var(--bg));
+    border: 1px solid var(--border);
     border-radius: 0.375rem;
     background: color-mix(in srgb, var(--fg) 6%, var(--bg));
   }

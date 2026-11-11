@@ -61,6 +61,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .caption {
@@ -72,8 +74,9 @@
 
   input,
   select {
+    max-width: 100%;
     padding: 0.2rem 0.4rem;
-    border: 1px solid color-mix(in srgb, var(--fg) 30%, var(--bg));
+    border: 1px solid var(--border-strong);
     border-radius: 0.375rem;
     background: none;
     color: var(--fg);

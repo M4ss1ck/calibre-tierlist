@@ -70,7 +70,7 @@
 </figure>
 
 <style>
-  .stack { display: flex; flex-direction: column; gap: 0.3rem; margin: 0; }
+  .stack { display: flex; flex-direction: column; gap: 0.3rem; margin: 0; max-width: 100%; min-width: 0; }
   .positions { position: relative; display: flex; align-items: flex-start; }
   .positions:not(.expanded) > :global(.position + .position) { margin-left: -3.5rem; }
   .positions.expanded { flex-wrap: wrap; gap: 0.5rem; }
@@ -81,10 +81,10 @@
   }
   .badges { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; }
   .tier-badge {
-    padding: 0 0.35rem; border-radius: 0.25rem; color: #1b1b1f; font-size: 0.7rem; line-height: 1.5;
+    padding: 0 0.35rem; border-radius: 0.25rem; color: var(--tier-ink); font-size: 0.7rem; line-height: 1.5;
   }
   .toggle {
-    margin-left: auto; padding: 0 0.4rem; border: 1px solid color-mix(in srgb, var(--fg) 30%, var(--bg));
+    margin-left: auto; padding: 0 0.4rem; border: 1px solid var(--border-strong);
     border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 0.7rem;
     line-height: 1.5; cursor: pointer;
   }

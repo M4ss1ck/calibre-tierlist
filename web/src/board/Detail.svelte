@@ -67,16 +67,18 @@
 
 <style>
   .detail {
+    box-sizing: border-box;
     width: min(32rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
     padding: 1.25rem;
-    border: 1px solid color-mix(in srgb, var(--fg) 18%, var(--bg));
+    border: 1px solid var(--border);
     border-radius: 0.5rem;
     background: var(--bg);
     color: var(--fg);
   }
-  .detail::backdrop { background: rgb(0 0 0 / 45%); }
+  .detail::backdrop { background: var(--scrim); }
   header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-  h2 { margin: 0 0 0.75rem; font-size: 1.25rem; }
+  h2 { margin: 0 0 0.75rem; font-size: 1.25rem; overflow-wrap: anywhere; }
   .close {
     padding: 0 0.5rem; border: 0; border-radius: 0.25rem; background: transparent;
     color: var(--muted); font-size: 1.5rem; line-height: 1; cursor: pointer;
@@ -84,7 +86,7 @@
   .close:hover, .close:focus-visible { color: var(--fg); }
   dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin: 0; }
   dt { color: var(--muted); font-size: 0.85rem; }
-  dd { margin: 0; }
-  .badge { padding: 0 0.4rem; border-radius: 0.25rem; color: #1b1b1f; font-size: 0.8rem; }
-  .blurb { margin: 1rem 0 0; white-space: pre-line; }
+  dd { margin: 0; overflow-wrap: anywhere; }
+  .badge { padding: 0 0.4rem; border-radius: 0.25rem; color: var(--tier-ink); font-size: 0.8rem; }
+  .blurb { margin: 1rem 0 0; white-space: pre-line; overflow-wrap: anywhere; }
 </style>

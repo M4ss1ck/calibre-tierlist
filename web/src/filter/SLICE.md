@@ -21,5 +21,5 @@ Decides whether a book or a whole Stack survives the board's filters. It is sepa
 ## Depends on
 
 - Ports: none.
-- Slices: `contract` for the `Book` type.
+- Slices: `contract` for the `Book` type; `theme` for the colour tokens its controls are drawn with.
 - Svelte and the DOM are not involved.
