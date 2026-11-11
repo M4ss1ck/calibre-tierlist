@@ -73,6 +73,10 @@ Avoid: modal, popup, info box.
 A book's description, calibre's HTML comments sanitised to plain text and trimmed at a word boundary, shown in the Detail Panel.
 Avoid: summary, synopsis.
 
+**Board Filter**
+The search text plus the author, tag and year-read criteria that hide Cards and Stacks on the compiled page. It is set on the page and not saved; Compile Scope is what decides which books the page holds.
+Avoid: compile scope, library filter.
+
 ## Compile
 
 **Compile Scope**

@@ -42,10 +42,10 @@
 
 <style>
   .position {
-    width: 8rem; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 0.375rem;
-    border: 1px solid color-mix(in srgb, var(--fg) 18%, var(--bg));
+    width: 8rem; max-width: 100%; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 0.375rem;
+    border: 1px solid var(--border);
     background: color-mix(in srgb, var(--fg) 6%, var(--bg));
-    flex: none; padding: 0; font: inherit; cursor: pointer;
+    flex: 0 1 auto; min-width: 0; padding: 0; font: inherit; cursor: pointer;
   }
   .position:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   .position.unread { opacity: 0.4; filter: grayscale(1); }
@@ -59,7 +59,7 @@
     -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
   }
   .mark { color: var(--muted); font-size: 0.625rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  .series-name, .number { color: #fff; text-shadow: 0 1px 2px rgb(0 0 0 / 45%); }
+  .series-name, .number { color: var(--on-series); text-shadow: 0 1px 2px rgb(0 0 0 / 45%); }
   .series-name { font-size: 0.8rem; font-weight: 600; }
   .number { font-size: 0.7rem; }
 </style>

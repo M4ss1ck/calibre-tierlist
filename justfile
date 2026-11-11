@@ -28,6 +28,11 @@ webtest:
 # Unit tests.
 test:
     cd {{plugin}} && uv run pytest
+    @if [ -f web/package.json ]; then \
+        pnpm -C web test:unit; \
+    else \
+        echo "skipping web unit tests"; \
+    fi
 
 # Build the plugin zip, with template.html when the web package is built.
 build:

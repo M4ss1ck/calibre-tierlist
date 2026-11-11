@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Book, Cover, Lane, Series, Tier } from '../contract/tierlist';
+  import type { Filters } from '../filter/filter';
+  import { matchesBook, matchesSeries } from '../filter/filter';
   import Card from './Card.svelte';
   import type { Selection } from './Detail.svelte';
   import Stack from './Stack.svelte';
@@ -10,6 +12,7 @@
     books,
     covers,
     series,
+    filters,
     onopen,
   }: {
     lane: Lane;
@@ -17,6 +20,7 @@
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     series: Record<string, Series>;
+    filters: Filters;
     onopen: (selection: Selection) => void;
   } = $props();
 
@@ -28,13 +32,18 @@
   const cards = $derived(
     lane.cards.flatMap((id) => {
       const book = books[id];
-      return book ? [{ id, book, cover: covers[id] }] : [];
+      return book && matchesBook(book, filters) ? [{ id, book, cover: covers[id] }] : [];
     }),
   );
   const stacks = $derived(
     lane.stacks.flatMap((name) => {
       const entry = series[name];
-      return entry ? [{ name, series: entry }] : [];
+      if (!entry) return [];
+      const owned = entry.positions.flatMap((position) => {
+        const book = position.book === null ? undefined : books[position.book];
+        return book ? [book] : [];
+      });
+      return matchesSeries(name, owned, filters) ? [{ name, series: entry }] : [];
     }),
   );
 </script>
@@ -71,7 +80,7 @@
     margin: 0;
     padding: 0.5rem 0;
     border-radius: 0.375rem;
-    color: #1b1b1f;
+    color: var(--tier-ink);
     font-size: 1rem;
     text-align: center;
   }
@@ -81,6 +90,13 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     flex: 1 1 auto;
+    min-width: 0;
     min-height: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    .lane {
+      gap: 0.5rem;
+    }
   }
 </style>

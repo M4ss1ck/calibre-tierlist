@@ -11,7 +11,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "gen:types": "json2ts -i ../contract/tierlist.schema.json -o src/contract/tierlist.ts --bannerComment \"/* Generated from contract/tierlist.schema.json by pnpm gen:types. Do not edit. */\"",
     "lint": "eslint .",
-    "test:e2e": "vite build && playwright test"
+    "test:e2e": "vite build && playwright test",
+    "test:unit": "vitest run"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -27,6 +28,7 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
     "vite": "8.3.5",
-    "vite-plugin-singlefile": "2.3.4"
+    "vite-plugin-singlefile": "2.3.4",
+    "vitest": "5.1.0"
   }
 }
