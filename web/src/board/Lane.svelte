@@ -1,5 +1,7 @@
 <script lang="ts">
   import type { Book, Cover, Lane, Series, Tier } from '../contract/tierlist';
+  import type { Filters } from '../filter/filter';
+  import { matchesBook, matchesSeries } from '../filter/filter';
   import Card from './Card.svelte';
   import type { Selection } from './Detail.svelte';
   import Stack from './Stack.svelte';
@@ -10,6 +12,7 @@
     books,
     covers,
     series,
+    filters,
     onopen,
   }: {
     lane: Lane;
@@ -17,6 +20,7 @@
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     series: Record<string, Series>;
+    filters: Filters;
     onopen: (selection: Selection) => void;
   } = $props();
 
@@ -28,13 +32,15 @@
   const cards = $derived(
     lane.cards.flatMap((id) => {
       const book = books[id];
-      return book ? [{ id, book, cover: covers[id] }] : [];
+      return book && matchesBook(book, filters) ? [{ id, book, cover: covers[id] }] : [];
     }),
   );
   const stacks = $derived(
     lane.stacks.flatMap((name) => {
       const entry = series[name];
-      return entry ? [{ name, series: entry }] : [];
+      if (!entry) return [];
+      const owned = Object.values(books).filter((book) => book.series === name);
+      return matchesSeries(name, owned, filters) ? [{ name, series: entry }] : [];
     }),
   );
 </script>

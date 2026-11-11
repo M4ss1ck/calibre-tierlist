@@ -2,10 +2,13 @@
   import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
   import type { TierListData } from './contract/tierlist';
+  import type { Filters } from './filter/filter';
+  import FilterBar from './filter/FilterBar.svelte';
 
   let { data }: { data: TierListData } = $props();
   let selection = $state<Selection | undefined>();
   let unranked = $state(true);
+  let filters = $state<Filters>({ query: '', author: null, tag: null, year: null });
   const lanes = $derived(data.lanes.filter((lane) => unranked || lane.tier !== null));
 </script>
 
@@ -16,6 +19,7 @@
       Unranked Lane
     </button>
   </header>
+  <FilterBar books={data.books} bind:filters />
   {#each lanes as lane (lane.tier ?? 'unranked')}
     <Lane
       {lane}
@@ -23,6 +27,7 @@
       books={data.books}
       covers={data.covers}
       series={data.series}
+      {filters}
       onopen={(picked) => (selection = picked)}
     />
   {/each}
