@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
-import type { Book, TierListData } from '../src/contract/tierlist';
-import { fixtureBoardUrl, loadFixture } from './page';
+import type { TierListData } from '../src/contract/tierlist';
+import { oversized } from './fixture';
+import { fixtureBoardUrl } from './page';
 
 /** A4 at the 96dpi CSS reference, less the 12mm margins `print.css` asks for. */
 const MM = 96 / 25.4;
@@ -30,35 +31,6 @@ async function printed(page: Page) {
   });
   const pdf = await page.pdf({ format: 'A4', margin: MARGIN, printBackground: true });
   return { needed: Math.ceil(height / PAGE.height), pdf, pages: countPages(pdf) };
-}
-
-/** The shared fixture with 40 Cards per Lane, far taller than one A4 page. */
-async function oversized(): Promise<TierListData> {
-  const base = await loadFixture();
-  const books: Record<string, Book> = {};
-  const lanes = base.lanes.map((lane) => {
-    if (lane.tier === null) return { ...lane, cards: [], stacks: [] };
-    const tier: string = lane.tier;
-    const cards = Array.from({ length: 40 }, (_, index) => {
-      const id = `${tier}-${index}`;
-      books[id] = {
-        title: `${tier.toUpperCase()} book ${index + 1}`,
-        authors: [],
-        series: null,
-        seriesIndex: null,
-        rating: null,
-        tags: [],
-        blurb: null,
-        tier,
-        dateRead: null,
-        read: true,
-      };
-      return id;
-    });
-    return { tier, cards, stacks: [] };
-  });
-
-  return { ...base, lanes, books, series: {}, covers: {} };
 }
 
 test('prints the fixture board as a valid A4 PDF', async ({ page }) => {
@@ -108,6 +80,24 @@ test('keeps every Stack and Card whole across a page break', async ({ page }) =>
   expect(breaks.label).toBe('avoid');
 });
 
+test('saves the board as a PDF by calling window.print once', async ({ page }) => {
+  // The print dialog would block, so record the call instead of opening it.
+  await page.addInitScript(() => {
+    const probe = window as Window & { prints?: number };
+    probe.prints = 0;
+    window.print = () => {
+      probe.prints = (probe.prints ?? 0) + 1;
+    };
+  });
+  await page.goto(await fixtureBoardUrl());
+  await expect(page.locator('.card').first()).toBeAttached();
+
+  await page.getByRole('button', { name: 'Save as PDF' }).click();
+
+  const prints = await page.evaluate(() => (window as Window & { prints?: number }).prints);
+  expect(prints).toBe(1);
+});
+
 test('drops the controls and the Detail Panel from the paper', async ({ page }) => {
   await printMedia(page);
   await expect(page.locator('.card').first()).toBeAttached();
@@ -120,6 +110,7 @@ test('drops the controls and the Detail Panel from the paper', async ({ page }) 
     page.getByRole('button', { name: 'Unranked Lane', includeHidden: true }),
     page.getByRole('button', { name: 'Dark theme', includeHidden: true }),
     page.getByRole('button', { name: 'Export PNG', includeHidden: true }),
+    page.getByRole('button', { name: 'Save as PDF', includeHidden: true }),
     page.getByRole('status', { includeHidden: true }),
     page.getByRole('dialog', { includeHidden: true }),
   ]) {

@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Download, type Page } from '@playwright/test';
 import { unzipSync } from 'fflate';
-import type { Book, TierListData } from '../src/contract/tierlist';
 import { SAFE_LIMITS } from '../src/export/plan';
-import { fixtureBoardUrl, loadFixture } from './page';
+import { oversized } from './fixture';
+import { fixtureBoardUrl } from './page';
 
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
@@ -18,35 +18,6 @@ async function saved(download: Download): Promise<Uint8Array> {
 }
 
 const exportButton = (page: Page) => page.getByRole('button', { name: 'Export PNG' });
-
-/** The shared fixture with many Cards per Lane, tall enough to exceed SAFE_LIMITS at scale 2. */
-async function oversized(): Promise<TierListData> {
-  const base = await loadFixture();
-  const books: Record<string, Book> = {};
-  const lanes = base.lanes.map((lane) => {
-    if (lane.tier === null) return { ...lane, cards: [], stacks: [] };
-    const tier: string = lane.tier;
-    const cards = Array.from({ length: 40 }, (_, index) => {
-      const id = `${tier}-${index}`;
-      books[id] = {
-        title: `${tier.toUpperCase()} book ${index + 1}`,
-        authors: [],
-        series: null,
-        seriesIndex: null,
-        rating: null,
-        tags: [],
-        blurb: null,
-        tier,
-        dateRead: null,
-        read: true,
-      };
-      return id;
-    });
-    return { tier, cards, stacks: [] };
-  });
-
-  return { ...base, lanes, books, series: {}, covers: {} };
-}
 
 test('downloads the board as tierlist.png and reports it', async ({ page }) => {
   await page.goto(await fixtureBoardUrl());
