@@ -3,6 +3,7 @@
   import Lane from './board/Lane.svelte';
   import type { TierListData } from './contract/tierlist';
   import ExportButton from './export/ExportButton.svelte';
+  import PdfButton from './export/PdfButton.svelte';
   import type { Filters } from './filter/filter';
   import FilterBar from './filter/FilterBar.svelte';
   import { applyTheme, systemTheme, watchSystemTheme, type Theme } from './theme/theme';
@@ -36,6 +37,7 @@
       </button>
       <button type="button" class="toggle" aria-pressed={dark} onclick={toggleTheme}>Dark theme</button>
       <ExportButton {board} />
+      <PdfButton />
     </div>
   </header>
   <FilterBar books={data.books} bind:filters />

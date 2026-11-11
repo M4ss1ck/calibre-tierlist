@@ -1,0 +1,57 @@
+/*
+ * The board on paper: what the browser's print dialog and `page.pdf()` get.
+ * The interactive controls are for the page and drop out, Stacks and Cards
+ * break between pages instead of through a cover, and the colours print.
+ *
+ * Svelte scopes a component's rules with an extra class, which outranks a
+ * plain global selector here, so the rules that override a component say
+ * `!important`: on paper they are the last word.
+ */
+
+/* A4 with 12mm margins is the printable area the board lays out in. */
+@page {
+  margin: 12mm;
+}
+
+@media print {
+  :root {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /*
+   * Paper has no theme: the light tokens hold even when the screen is dark, so
+   * the PDF is never a near-black page. These are the selectors `theme.css`
+   * darkens, restated with the light values; print.css loads after it.
+   */
+  :root[data-theme='dark'],
+  :root:not([data-theme='light']) {
+    color-scheme: light;
+    --bg: #f7f7f8;
+    --fg: #1b1b1f;
+    --muted: #5b5b66;
+    --border: #d9d9de;
+    --border-strong: #b3b3bd;
+    --scrim: rgb(0 0 0 / 45%);
+  }
+
+  /* No toolbar, no filters, no expand toggle and no Detail Panel on paper. */
+  main.board > header .actions,
+  form.filters,
+  .stack button.toggle,
+  dialog.detail {
+    display: none !important;
+  }
+
+  /* The board uses the whole printable width instead of its screen measure. */
+  main.board {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  /* A Stack or a Card stays on one page. */
+  .stack,
+  .card {
+    break-inside: avoid;
+  }
+}

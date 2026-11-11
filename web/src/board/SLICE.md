@@ -25,5 +25,5 @@ Draws the compiled Tier List as Lanes of Stacks and Cards: one Lane per Tier in 
 ## Depends on
 
 - Ports: none; it draws the Tier List Data passed as props.
-- Slices: `contract` for `TierListData`, `Tier`, `Lane`, `Book`, `Series`, `Position`, and `Cover` types; `filter` for the `Filters` type and its predicates (App also mounts `FilterBar`); `theme` for the colour tokens and the header toggle's system lookup. The Lanes' `data-lane-id` is the only hook other slices read.
+- Slices: `contract` for `TierListData`, `Tier`, `Lane`, `Book`, `Series`, `Position`, and `Cover` types; `filter` for the `Filters` type and its predicates (App also mounts `FilterBar`); `theme` for the colour tokens and the header toggle's system lookup. Other slices read the Lanes' `data-lane-id` and, in `print.css`, the `.stack`, `.card`, `.stack button.toggle` and `dialog.detail` markup.
 - Svelte only; no calibre or network access.

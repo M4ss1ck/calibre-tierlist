@@ -1,5 +1,6 @@
 import { mount } from 'svelte';
 import './theme/theme.css';
+import './export/print.css';
 import App from './App.svelte';
 import { loadTierListData } from './contract/load';
 
