@@ -50,7 +50,7 @@ A simulated cover for a series position the user does not own, drawn in the seri
 Avoid: ghost cover, missing book (that is the position, not the drawing).
 
 **Stack Depth**
-How many positions a Stack shows behind its front, 0 to 6, default 3. Part of Tier Config.
+How many positions a collapsed Stack shows behind its front, 0 to 6, default 3; the rest count as "+N". The payload carries every position, so an expanded Stack shows them all. Part of Tier Config.
 Avoid: stack size, fan count.
 
 **Series Total**
@@ -64,6 +64,14 @@ Avoid: row, section, column.
 **Unranked Lane**
 The Lane at the bottom of the board holding read books with no Book Tier. It can be toggled off on the page.
 Avoid: unread lane, read lane.
+
+**Detail Panel**
+The dialog that opens from a Card or a Stack position, showing everything known about that book (or, for a Placeholder, its series, number and that it is not in the library). A book with no Book Tier shows "Unranked".
+Avoid: modal, popup, info box.
+
+**Blurb**
+A book's description, calibre's HTML comments sanitised to plain text and trimmed at a word boundary, shown in the Detail Panel.
+Avoid: summary, synopsis.
 
 ## Compile
 

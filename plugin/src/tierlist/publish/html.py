@@ -12,7 +12,7 @@ def render_html(template: str, data: TierListData) -> str:
     """Embed the JSON payload at the template's single marker, safe inside a script tag."""
     if template.count(MARKER) != 1:
         raise ValueError(f'template must contain {MARKER} exactly once')
-    payload = json.dumps(data.to_dict(), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    payload = json.dumps(data.to_dict(), ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
     return template.replace(MARKER, payload)
 
 

@@ -35,8 +35,20 @@ def test_render_html_keeps_the_payload_safe_inside_a_script_tag() -> None:
     html = render_html(f'{PREFIX}{MARKER}{SUFFIX}', data)
     payload = html.removeprefix(PREFIX).removesuffix(SUFFIX)
 
-    assert '</' not in payload
-    assert json.loads(payload.replace('<\\/', '</')) == data.to_dict()
+    assert '<' not in payload
+    assert json.loads(payload) == data.to_dict()
+
+
+def test_render_html_escapes_comment_and_script_openers() -> None:
+    data = sample_data()
+    hostile = Book(1, '<!--<script>x</script>', 's', None)
+    data = TierListData(data.generated, data.tiers, data.lanes, (hostile,))
+
+    payload = render_html(f'{PREFIX}{MARKER}{SUFFIX}', data).removeprefix(PREFIX).removesuffix(SUFFIX)
+
+    for raw in ('<!--', '<script', '</script'):
+        assert raw not in payload
+    assert json.loads(payload) == data.to_dict()
 
 
 def test_render_html_rejects_a_template_without_the_marker() -> None:

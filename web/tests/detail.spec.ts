@@ -40,7 +40,7 @@ test('shows a Stack book with its series and omits what it lacks', async ({ page
   await page.getByRole('figure', { name: 'Dune' }).getByRole('button', { name: book.title }).click();
   const panel = page.getByRole('dialog', { name: book.title });
   await expect(panel.locator('.series')).toHaveText(`Dune #${book.seriesIndex}`);
-  for (const missing of ['.rating', '.tags', '.blurb', '.status']) {
+  for (const missing of ['.rating', '.tags', '.blurb', '.library']) {
     await expect(panel.locator(missing)).toHaveCount(0);
   }
 });
@@ -51,9 +51,19 @@ test('opens a Placeholder with its series, number and that it is not owned', asy
   await page.getByRole('button', { name: 'Dune #1, not in your library' }).click();
   const panel = page.getByRole('dialog', { name: 'Dune #1' });
   await expect(panel.locator('.series')).toHaveText('Dune #1');
-  await expect(panel.locator('.status')).toHaveText('Not in your library');
+  await expect(panel.locator('.library')).toHaveText('Not in your library');
   await expect(panel.locator('.tier')).toHaveCount(0);
   await expect(panel.locator('.read')).toHaveCount(0);
+});
+
+test('shows an unranked book as Unranked', async ({ page }) => {
+  const book = bookOf('8');
+  if (book.tier !== null) throw new Error('Fixture book 8 should be unranked');
+  await page.goto(url);
+
+  await page.getByRole('button', { name: book.title }).click();
+  const panel = page.getByRole('dialog', { name: book.title });
+  await expect(panel.locator('.tier')).toHaveText('Unranked');
 });
 
 test('opens from the keyboard, closes on Escape and returns focus', async ({ page }) => {

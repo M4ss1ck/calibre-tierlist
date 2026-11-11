@@ -16,9 +16,9 @@ export async function loadFixture(): Promise<TierListData> {
  * Fill the built template with the fixture the way the plugin does and return
  * a file:// URL for the resulting self-contained page.
  */
-export async function fixtureBoardUrl(): Promise<string> {
+export async function fixtureBoardUrl(data?: TierListData): Promise<string> {
   const template = await readFile(templateFile, 'utf8');
-  const payload = JSON.stringify(await loadFixture()).replaceAll('</', '<\\/');
+  const payload = JSON.stringify(data ?? (await loadFixture())).replaceAll('<', '\\u003c');
   const html = template.replace('__TIERLIST_DATA__', () => payload);
 
   const directory = await mkdtemp(join(tmpdir(), 'tierlist-board-'));

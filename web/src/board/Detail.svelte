@@ -41,11 +41,13 @@
         <dt>Series</dt><dd class="series">{series}{number ? ` #${number}` : ''}</dd>
       {/if}
       {#if !book}
-        <dt>Status</dt><dd class="status">Not in your library</dd>
+        <dt>Library</dt><dd class="library">Not in your library</dd>
       {/if}
       {#if tier}
         <dt>Tier</dt>
         <dd class="tier"><span class="badge" style:background-color={tier.colour}>{tier.label}</span></dd>
+      {:else if book}
+        <dt>Tier</dt><dd class="tier">Unranked</dd>
       {/if}
       {#if book}
         <dt>Read</dt><dd class="read">{book.dateRead ?? (book.read ? 'Yes' : 'Not yet')}</dd>

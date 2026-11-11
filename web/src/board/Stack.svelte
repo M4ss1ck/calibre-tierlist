@@ -61,7 +61,7 @@
     {#each owned as position, index (index)}
       <span class="tier-badge" style:background-color={position.colour}>{position.label}</span>
     {/each}
-    {#if all.length > 1}
+    {#if series.more > 0}
       <button type="button" class="toggle" aria-expanded={expanded} onclick={() => (expanded = !expanded)}>
         {expanded ? 'Show fewer' : `Show all ${all.length}`}
       </button>

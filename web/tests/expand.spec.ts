@@ -67,6 +67,15 @@ test('offers no expand toggle for a Stack of one position', async ({ page }) => 
   await expect(page.getByRole('figure', { name: single[0] }).locator('.toggle')).toHaveCount(0);
 });
 
+test('offers no expand toggle when the collapsed Stack hides nothing', async ({ page }) => {
+  const [name, series] = cut();
+  await page.goto(await fixtureBoardUrl({ ...data, series: { ...data.series, [name]: { ...series, more: 0 } } }));
+
+  const stack = page.getByRole('figure', { name });
+  await expect(stack.locator('.position')).toHaveCount(series.positions.length);
+  await expect(stack.locator('.toggle')).toHaveCount(0);
+});
+
 test('toggles the Unranked Lane off and on', async ({ page }) => {
   await page.goto(url);
 
