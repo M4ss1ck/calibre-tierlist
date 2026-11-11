@@ -1,10 +1,7 @@
 """Cover format choice, dominant colour, and the thumbnail pool."""
 
-import time
-from collections.abc import Iterable
-from threading import current_thread
-
 import pytest
+from fakes import FakeCovers
 
 from tierlist.compile import COVER_WIDTH, choose_format, cover_thumbs, dominant_colour
 from tierlist.ports import Cover
@@ -48,26 +45,8 @@ def test_dominant_colour_breaks_ties_by_the_bucket_seen_first() -> None:
     assert dominant_colour([(255, 0, 0), (0, 255, 0)]) == '#ff0000'
 
 
-class RecordingCovers:
-    """A Covers port that records its calls and which thread served each one."""
-
-    def __init__(self, with_cover: Iterable[int] = ()) -> None:
-        self.with_cover = set(with_cover)
-        self.calls: list[tuple[int, str, int]] = []
-        self.threads: set[str] = set()
-
-    def formats(self) -> frozenset[str]:
-        return frozenset({'webp'})
-
-    def cover(self, book_id: int, fmt: str, width: int) -> Cover | None:
-        self.threads.add(current_thread().name)
-        self.calls.append((book_id, fmt, width))
-        time.sleep(0.01)  # the encode a host does, long enough that the pool has to overlap it
-        return Cover(fmt, b'x', '#336699') if book_id in self.with_cover else None
-
-
 def test_cover_thumbs_keeps_only_the_books_that_have_a_cover() -> None:
-    covers = RecordingCovers(with_cover={2, 3})
+    covers = FakeCovers(with_cover={2, 3})
 
     thumbs = cover_thumbs(covers, [1, 2, 3, 4], 'webp', COVER_WIDTH)
 
@@ -75,7 +54,7 @@ def test_cover_thumbs_keeps_only_the_books_that_have_a_cover() -> None:
 
 
 def test_cover_thumbs_asks_for_the_chosen_format_and_width() -> None:
-    covers = RecordingCovers({1})
+    covers = FakeCovers(with_cover={1})
 
     cover_thumbs(covers, [1], 'avif', 120)
 
@@ -83,7 +62,7 @@ def test_cover_thumbs_asks_for_the_chosen_format_and_width() -> None:
 
 
 def test_cover_thumbs_encodes_on_more_than_one_thread() -> None:
-    covers = RecordingCovers(range(32))
+    covers = FakeCovers(with_cover=range(32), delay=0.01)
 
     cover_thumbs(covers, range(32), 'webp', COVER_WIDTH)
 
@@ -91,7 +70,7 @@ def test_cover_thumbs_encodes_on_more_than_one_thread() -> None:
 
 
 def test_cover_thumbs_raises_when_a_host_cannot_encode() -> None:
-    class Broken(RecordingCovers):
+    class Broken(FakeCovers):
         def cover(self, book_id: int, fmt: str, width: int) -> Cover | None:
             raise RuntimeError('no codec for webp')
 

@@ -22,6 +22,10 @@ from calibre_plugins.tierlist.compile import CompileRequest
 from fixture_library import BOOKS, build
 
 BUDGET_SECONDS = 10.0
+# The fixture is seeded, so these are fixed: they keep the budget honest, since a compile that
+# quietly drops books would finish faster and still pass.
+EXPECTED_ON_BOARD = 954
+EXPECTED_SERIES = 113
 REPO = Path(__file__).resolve().parents[2]
 TEMPLATE = REPO / 'web' / 'dist' / 'template.html'
 STATS = re.compile(
@@ -43,11 +47,11 @@ def measure(db: Any, path: str) -> tuple[float, int]:
     match = STATS.search(lines[0])
     if match is None:
         raise SystemExit(f'PERF FAIL: no stats line in {lines[0]}')
-    on_board, scope, series, covers, seconds, size = match.groups()
+    on_board, scope, series_count, cover_count, seconds, size = match.groups()
+    expect(int(on_board) == EXPECTED_ON_BOARD, f'{on_board} books on the board, expected {EXPECTED_ON_BOARD}')
     expect(int(scope) == BOOKS, f'the compile covered {scope} books instead of {BOOKS}')
-    expect(int(on_board) <= BOOKS, on_board)
-    expect(int(series) > 0, 'the fixture produced no series')
-    expect(int(covers) > 0, 'the fixture produced no covers')
+    expect(int(series_count) == EXPECTED_SERIES, f'{series_count} series, expected {EXPECTED_SERIES}')
+    expect(int(cover_count) == EXPECTED_ON_BOARD, f'{cover_count} covers, expected one per book on the board')
     return float(seconds), int(size)
 
 

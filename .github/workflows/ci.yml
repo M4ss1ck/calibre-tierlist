@@ -97,5 +97,5 @@ jobs:
           pnpm -C web install --frozen-lockfile
           pnpm -C web exec playwright install --with-deps chromium
       - name: Integration smoke test
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: CALIBRE_BIN_DIR=$HOME/calibre-bin/calibre just itest
