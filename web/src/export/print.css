@@ -19,6 +19,22 @@
     -webkit-print-color-adjust: exact;
   }
 
+  /*
+   * Paper has no theme: the light tokens hold even when the screen is dark, so
+   * the PDF is never a near-black page. These are the selectors `theme.css`
+   * darkens, restated with the light values; print.css loads after it.
+   */
+  :root[data-theme='dark'],
+  :root:not([data-theme='light']) {
+    color-scheme: light;
+    --bg: #f7f7f8;
+    --fg: #1b1b1f;
+    --muted: #5b5b66;
+    --border: #d9d9de;
+    --border-strong: #b3b3bd;
+    --scrim: rgb(0 0 0 / 45%);
+  }
+
   /* No toolbar, no filters, no expand toggle and no Detail Panel on paper. */
   main.board > header .actions,
   form.filters,
@@ -33,19 +49,9 @@
     padding: 0 !important;
   }
 
-  /* A Stack or a Card stays on one page; a Lane's label stays with its cards. */
+  /* A Stack or a Card stays on one page. */
   .stack,
   .card {
     break-inside: avoid;
-  }
-
-  .lane > .label {
-    break-after: avoid;
-  }
-
-  /* Covers keep their natural rendering: no filter, no blur, no resampling hints. */
-  img.cover {
-    filter: none;
-    image-rendering: auto;
   }
 }

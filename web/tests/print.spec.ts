@@ -3,10 +3,12 @@ import type { TierListData } from '../src/contract/tierlist';
 import { oversized } from './fixture';
 import { fixtureBoardUrl } from './page';
 
-/** A4 at the 96dpi CSS reference, less the 12mm margins `print.css` asks for. */
+/**
+ * A4 at the 96dpi CSS reference, less the 12mm margins `print.css` asks for:
+ * `PAGE` mirrors the `@page` rule, since the PDF takes its paper from there.
+ */
 const MM = 96 / 25.4;
 const PAGE = { width: 186 * MM, height: 273 * MM };
-const MARGIN = { top: '12mm', bottom: '12mm', left: '12mm', right: '12mm' };
 
 /** Lay the board out the way the PDF is drawn: A4 paper, print media. */
 async function printMedia(page: Page, data?: TierListData) {
@@ -29,7 +31,7 @@ async function printed(page: Page) {
     const box = board.getBoundingClientRect();
     return box.bottom + window.scrollY;
   });
-  const pdf = await page.pdf({ format: 'A4', margin: MARGIN, printBackground: true });
+  const pdf = await page.pdf({ format: 'A4', preferCSSPageSize: true, printBackground: true });
   return { needed: Math.ceil(height / PAGE.height), pdf, pages: countPages(pdf) };
 }
 
@@ -41,7 +43,9 @@ test('prints the fixture board as a valid A4 PDF', async ({ page }) => {
 
   expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
   expect(pages).toBeGreaterThanOrEqual(1);
-  expect(pages).toBe(needed);
+  // A break that keeps a Card whole can only add pages, never remove one.
+  expect(pages).toBeGreaterThanOrEqual(needed);
+  expect(pages).toBeLessThanOrEqual(needed + 1);
 });
 
 test('spills an oversized board over more than one page', async ({ page }) => {
@@ -65,11 +69,9 @@ test('keeps every Stack and Card whole across a page break', async ({ page }) =>
   const breaks = await page.evaluate(() => {
     const values = (selector: string) =>
       [...document.querySelectorAll(selector)].map((element) => getComputedStyle(element).breakInside);
-    const label = document.querySelector('.lane > .label');
     return {
       stacks: values('.stack'),
       cards: values('.card'),
-      label: label ? getComputedStyle(label).breakAfter : null,
     };
   });
 
@@ -77,7 +79,24 @@ test('keeps every Stack and Card whole across a page break', async ({ page }) =>
   expect(breaks.cards.length).toBeGreaterThan(0);
   expect(breaks.stacks.filter((value) => value !== 'avoid')).toEqual([]);
   expect(breaks.cards.filter((value) => value !== 'avoid')).toEqual([]);
-  expect(breaks.label).toBe('avoid');
+});
+
+test('prints the light palette even with the dark theme on', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.goto(await fixtureBoardUrl());
+  await expect(page.locator('.card').first()).toBeAttached();
+
+  const background = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  const light = await background();
+
+  const dark = page.getByRole('button', { name: 'Dark theme' });
+  await dark.click();
+  await expect(dark).toHaveAttribute('aria-pressed', 'true');
+  expect(await background()).not.toBe(light);
+
+  // The toggle is off the paper, but the palette it chose is overruled there.
+  await page.emulateMedia({ media: 'print' });
+  expect(await background()).toBe(light);
 });
 
 test('saves the board as a PDF by calling window.print once', async ({ page }) => {

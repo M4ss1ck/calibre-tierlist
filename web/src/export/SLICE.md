@@ -26,10 +26,10 @@ Turns the compiled board into a PNG the reader can keep: one image when the whol
 - `export.ts`: the measurement, the plan, the PNG or zip download, and the status message.
 - `ExportButton.svelte`: the button, its busy state, and the status line.
 - `PdfButton.svelte`: the "Save as PDF" button that calls `window.print()`; the print stylesheet does the rest.
-- `print.css`: the `@media print` rules PDF export rests on — the toolbar, filters, Stack toggle and Detail Panel drop out, the board takes the printable width, every Stack and Card keeps off a page break, and the theme's colours print exact. Imported once by `src/main.ts`; it changes nothing on screen.
+- `print.css`: the `@media print` rules PDF export rests on — the toolbar, filters, Stack toggle and Detail Panel drop out, the board takes the printable width, every Stack and Card keeps off a page break, the light palette is forced whatever the screen shows, and the colours print exact. Imported once by `src/main.ts`; it changes nothing on screen.
 
 ## Depends on
 
 - Ports: none; the browser DOM only.
-- Slices: `board` for the Lane `data-lane-id` hook and the board element App hands over; `theme` for the control tokens and the page background that keeps the PNG readable.
+- Slices: `board` for the Lane `data-lane-id` hook, the board element App hands over, and the `.stack`, `.card`, `.stack button.toggle` and `dialog.detail` markup `print.css` hides or keeps whole; `filter` for the `form.filters` element `print.css` hides; `theme` for the control tokens, the tokens `print.css` restates for light paper, and the page background that keeps the PNG readable.
 - `@zumer/snapdom` for the capture and `fflate` for the zip; both are bundled into the single HTML file, so export stays offline.
