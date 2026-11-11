@@ -6,7 +6,7 @@ from datetime import date
 
 from ..ports import Covers, Library
 from ..tiers import MAX_STACK_DEPTH, MIN_STACK_DEPTH, TierConfig
-from .covers import COVER_WIDTH
+from .covers import COVER_WIDTH, cover_thumbs
 from .data import Book, Generated, Lane, TierListData
 from .rows import Row, book_of, on_board, series_name
 from .series import build_series, earliest, series_tier, stacks_for
@@ -49,7 +49,7 @@ def compile_data(
         for i in ids
     ]
     board = on_board(rows, datatype == 'bool', _overridden(config, overrides))
-    shots = {row.id: cover for row in board if (cover := covers.cover(row.id, fmt, COVER_WIDTH)) is not None}
+    shots = cover_thumbs(covers, (row.id for row in board), fmt, COVER_WIDTH)
     colours = {book_id: cover.colour for book_id, cover in shots.items()}
     return replace(build(generated, config, board, datatype == 'bool', colours, overrides), covers=shots)
 

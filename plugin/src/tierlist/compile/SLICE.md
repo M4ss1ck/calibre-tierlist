@@ -18,6 +18,7 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 - `Cover(format, data, colour)`: one book's cover thumbnail bytes, their image format, and its dominant colour.
 - `COVER_WIDTH`: the pixel width every embedded cover thumbnail is rendered at.
 - `choose_format(available) -> str`: the first preferred cover format the host encodes, or JPEG.
+- `cover_thumbs(covers, book_ids, fmt, width) -> dict[int, Cover]`: the thumbnails these books have, by id, encoded on a small pool (a pool, because the host's codec dominates a compile and releases the GIL); a host that cannot encode raises as it would have walked in order.
 - `dominant_colour(pixels) -> str`: the most common colour of these RGB pixels, or grey when there are none.
 - `READ_COLUMN_TYPES`: the calibre column datatypes that can hold Read State.
 - `compile_data(generated, library, covers, fmt, config, book_ids, overrides) -> TierListData`: reads title, authors, series, series index, Series total, rating, tags, comments, Book Tier, and Read State through the Library port, builds the board, then reads a `fmt` cover at `COVER_WIDTH` for each book on it. `overrides` maps a series name to its Override Tier id; an applicable Override also puts an otherwise unread, untiered series on the board.
@@ -30,7 +31,7 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 - `rows.py`: one library row, the rule for which rows belong on the board, and its Details.
 - `blurb.py`: the HTML-to-plain-text blurb sanitiser.
 - `series.py`: Series Stacks, their positions, Placeholders, Stack ordering, and the Series Tier rule.
-- `covers.py`: the thumbnail width, the format preference order, and the dominant colour.
+- `covers.py`: the thumbnail width, the format preference order, the thumbnail pool, and the dominant colour.
 
 ## Depends on
 

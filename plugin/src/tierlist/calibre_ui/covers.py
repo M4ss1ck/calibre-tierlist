@@ -2,6 +2,7 @@
 
 import io
 from collections.abc import Callable
+from threading import Lock
 from typing import Any
 
 from calibre.utils.img import image_to_data
@@ -20,6 +21,7 @@ class CalibreCovers(Covers):
     def __init__(self, db: Any) -> None:
         self._db = db
         self._encoders: dict[str, Encoder] | None = None
+        self._lock = Lock()
 
     def formats(self) -> frozenset[str]:
         """The cover formats this calibre can really encode; choose_format applies the preference order."""
@@ -37,16 +39,18 @@ class CalibreCovers(Covers):
         """The first encoder that writes a probe image in each format, found once.
 
         Probing, not Qt's advertised list: some calibre builds list AVIF with only a decoder behind it.
+        Covers are encoded on a pool, so the first few calls arrive on different threads.
         """
-        if self._encoders is None:
-            probe = QImage(8, 8, QImage.Format.Format_RGB32)
-            probe.fill(QColor('#808080'))
-            self._encoders = {}
-            for fmt in FORMATS:
-                encoder = next((encode for encode in ENCODERS if _writes(encode, probe, fmt)), None)
-                if encoder is not None:
-                    self._encoders[fmt] = encoder
-        return self._encoders
+        with self._lock:
+            if self._encoders is None:
+                probe = QImage(8, 8, QImage.Format.Format_RGB32)
+                probe.fill(QColor('#808080'))
+                self._encoders = {}
+                for fmt in FORMATS:
+                    encoder = next((encode for encode in ENCODERS if _writes(encode, probe, fmt)), None)
+                    if encoder is not None:
+                        self._encoders[fmt] = encoder
+            return self._encoders
 
 
 def _writes(encode: Encoder, probe: QImage, fmt: str) -> bool:

@@ -2,6 +2,8 @@
 
 import base64
 from collections.abc import Iterable, Mapping
+from threading import current_thread
+from time import sleep
 
 from tierlist.ports import Cover
 
@@ -85,24 +87,34 @@ class FakeSavedSearches:
 
 
 class FakeCovers:
-    """A Covers port where only the listed books have a tiny WebP thumbnail."""
+    """A Covers port where only the listed books have a tiny WebP thumbnail.
+
+    It records every call, which thread served it, and can hold each call open long enough for the
+    thumbnail pool to overlap them.
+    """
 
     def __init__(
         self,
         formats: frozenset[str] = frozenset({'webp', 'jpeg'}),
         with_cover: Iterable[int] = (),
         colours: Mapping[int, str] | None = None,
+        delay: float = 0.0,
     ) -> None:
         self._formats = formats
         self._with_cover = set(with_cover)
         self._colours = dict(colours or {})
+        self._delay = delay
         self.calls: list[tuple[int, str, int]] = []
+        self.threads: set[str] = set()
 
     def formats(self) -> frozenset[str]:
         return self._formats
 
     def cover(self, book_id: int, fmt: str, width: int) -> Cover | None:
+        self.threads.add(current_thread().name)
         self.calls.append((book_id, fmt, width))
+        if self._delay:
+            sleep(self._delay)
         if book_id not in self._with_cover:
             return None
         return Cover(fmt, TINY_WEBP, self._colours.get(book_id, '#336699'))

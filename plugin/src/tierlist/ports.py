@@ -88,7 +88,8 @@ class Covers(Protocol):
 
     def cover(self, book_id: int, fmt: str, width: int) -> Cover | None:
         """The book's cover as a thumbnail `width` px wide encoded as `fmt`, with its dominant colour;
-        None when the book has no cover."""
+        None when the book has no cover. Called concurrently from several threads, so an adapter must be
+        thread-safe."""
         ...
 
 
