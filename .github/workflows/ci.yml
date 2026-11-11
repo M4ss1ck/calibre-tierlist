@@ -7,6 +7,7 @@ on:
 jobs:
   gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -21,19 +22,30 @@ jobs:
       - uses: extractions/setup-just@v2
         with:
           just-version: 1.58.0
+      - name: Make apt fail fast
+        timeout-minutes: 1
+        run: |
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "15";' \
+            'Acquire::https::Timeout "15";' | sudo tee /etc/apt/apt.conf.d/80-fail-fast
       - name: Install web deps
+        timeout-minutes: 3
         run: pnpm -C web install --frozen-lockfile
       - name: Check
+        timeout-minutes: 5
         run: just check
       - name: Test
+        timeout-minutes: 5
         run: just test
       - name: Install Playwright chromium
+        timeout-minutes: 5
         run: pnpm -C web exec playwright install --with-deps chromium
       - name: Web tests
+        timeout-minutes: 5
         run: just webtest
 
   itest:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -52,7 +64,13 @@ jobs:
       - uses: extractions/setup-just@v2
         with:
           just-version: 1.58.0
+      - name: Make apt fail fast
+        timeout-minutes: 1
+        run: |
+          printf '%s\n' 'Acquire::Retries "2";' 'Acquire::http::Timeout "15";' \
+            'Acquire::https::Timeout "15";' | sudo tee /etc/apt/apt.conf.d/80-fail-fast
       - name: Install calibre headless libraries
+        timeout-minutes: 5
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
@@ -61,6 +79,7 @@ jobs:
             libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
             libxcb-xinerama0 libxcb-xkb1 libxrender1 libxi6
       - name: Install calibre (non-root, isolated)
+        timeout-minutes: 5
         run: |
           if [ "${{ matrix.calibre }}" = "latest" ]; then
             wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh \
@@ -70,10 +89,13 @@ jobs:
               | sh /dev/stdin install_dir=$HOME/calibre-bin isolated=y version=${{ matrix.calibre }}
           fi
       - name: Report calibre's Python
+        timeout-minutes: 1
         run: $HOME/calibre-bin/calibre/calibre-debug -c "import sys; print(sys.version)"
       - name: Install Playwright chromium
+        timeout-minutes: 5
         run: |
           pnpm -C web install --frozen-lockfile
           pnpm -C web exec playwright install --with-deps chromium
       - name: Integration smoke test
+        timeout-minutes: 5
         run: CALIBRE_BIN_DIR=$HOME/calibre-bin/calibre just itest
