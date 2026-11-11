@@ -5,10 +5,13 @@ with ``calibre-customize -a`` into a throwaway ``CALIBRE_CONFIG_DIRECTORY``. Bui
 fixture in a temp dir, compiles it through the same entry ``compile.py`` uses, and reads
 the seconds and byte size off the stats line the compile logs. Prints ``PERF <books>
 books in <seconds>s, <bytes> bytes`` then ``PERF OK``; exits non-zero on ``PERF FAIL``.
+``PERF_REPORT_ONLY=1`` reports an over-budget time without failing: calibre builds before
+9.18 bundle a non-SIMD libwebp about ten times slower, so CI enforces on latest only.
 
 calibre runs Python with -OO, which strips ``assert``; use ``expect``.
 """
 
+import os
 import re
 import sys
 import tempfile
@@ -66,6 +69,9 @@ def main() -> int:
             db.close()
     print(f'PERF {BOOKS} books in {seconds:.2f}s, {size} bytes')
     if seconds >= BUDGET_SECONDS:
+        if os.environ.get('PERF_REPORT_ONLY') == '1':
+            print(f'PERF OVER BUDGET (report only): {seconds:.2f}s')
+            return 0
         print(f'PERF FAIL: {seconds:.2f}s is over the {BUDGET_SECONDS:.0f}s budget')
         return 1
     print('PERF OK')

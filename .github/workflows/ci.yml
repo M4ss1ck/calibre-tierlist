@@ -98,4 +98,6 @@ jobs:
           pnpm -C web exec playwright install --with-deps chromium
       - name: Integration smoke test
         timeout-minutes: 10
+        env:
+          PERF_REPORT_ONLY: ${{ matrix.calibre != 'latest' && '1' || '0' }}
         run: CALIBRE_BIN_DIR=$HOME/calibre-bin/calibre just itest
