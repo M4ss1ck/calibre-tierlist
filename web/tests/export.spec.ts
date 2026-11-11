@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test, type Download, type Page } from '@playwright/test';
 import { unzipSync } from 'fflate';
-import type { Book, Lane, Tier, TierListData } from '../src/contract/tierlist';
+import type { Book, TierListData } from '../src/contract/tierlist';
 import { SAFE_LIMITS } from '../src/export/plan';
-import { fixtureBoardUrl } from './page';
+import { fixtureBoardUrl, loadFixture } from './page';
 
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
@@ -19,49 +19,33 @@ async function saved(download: Download): Promise<Uint8Array> {
 
 const exportButton = (page: Page) => page.getByRole('button', { name: 'Export PNG' });
 
-/** A board with many cards per Lane, tall enough to exceed SAFE_LIMITS at scale 2. */
-function oversized(): TierListData {
-  const tiers: Tier[] = [
-    { id: 's', label: 'S', colour: '#ff7f7f', description: '' },
-    { id: 'a', label: 'A', colour: '#ffbf7f', description: '' },
-    { id: 'b', label: 'B', colour: '#ffdf7f', description: '' },
-  ];
+/** The shared fixture with many Cards per Lane, tall enough to exceed SAFE_LIMITS at scale 2. */
+async function oversized(): Promise<TierListData> {
+  const base = await loadFixture();
   const books: Record<string, Book> = {};
-  const lanes: Lane[] = tiers.map((tier) => {
-    const cards: string[] = [];
-    for (let index = 0; index < 40; index += 1) {
-      const id = `${tier.id}-${index}`;
+  const lanes = base.lanes.map((lane) => {
+    if (lane.tier === null) return { ...lane, cards: [], stacks: [] };
+    const tier: string = lane.tier;
+    const cards = Array.from({ length: 40 }, (_, index) => {
+      const id = `${tier}-${index}`;
       books[id] = {
-        title: `${tier.label} book ${index + 1}`,
+        title: `${tier.toUpperCase()} book ${index + 1}`,
         authors: [],
         series: null,
         seriesIndex: null,
         rating: null,
         tags: [],
         blurb: null,
-        tier: tier.id,
+        tier,
         dateRead: null,
         read: true,
       };
-      cards.push(id);
-    }
-    return { tier: tier.id, cards, stacks: [] };
+      return id;
+    });
+    return { tier, cards, stacks: [] };
   });
 
-  return {
-    schemaVersion: 6,
-    generated: {
-      at: '2026-11-11T12:00:00+00:00',
-      libraryName: 'Oversized Library',
-      scope: 'library',
-      pluginVersion: '0.1.0',
-    },
-    tiers,
-    lanes,
-    books,
-    series: {},
-    covers: {},
-  };
+  return { ...base, lanes, books, series: {}, covers: {} };
 }
 
 test('downloads the board as tierlist.png and reports it', async ({ page }) => {
@@ -80,7 +64,7 @@ test.describe('an oversized board', () => {
   test.use({ deviceScaleFactor: 2 });
 
   test('downloads one PNG per Lane in order inside tierlist.zip', async ({ page }) => {
-    await page.goto(await fixtureBoardUrl(oversized()));
+    await page.goto(await fixtureBoardUrl(await oversized()));
 
     const board = await page
       .locator('.lanes')
@@ -94,16 +78,17 @@ test.describe('an oversized board', () => {
     expect(download.suggestedFilename()).toBe('tierlist.zip');
     const entries = unzipSync(await saved(download));
     const names = Object.keys(entries).sort();
-    expect(names).toEqual(['01-s.png', '02-a.png', '03-b.png']);
+    expect(names).toEqual(['01-s.png', '02-a.png', '03-b.png', '04-unranked.png']);
     for (const name of names) {
       expect(startsWithPng(entries[name] ?? new Uint8Array())).toBe(true);
     }
-    await expect(page.getByRole('status')).toHaveText('Exported 3 tiers as tierlist.zip');
+    await expect(page.getByRole('status')).toHaveText('Exported 4 lanes as tierlist.zip');
   });
 });
 
 test('makes no network request while exporting', async ({ page }) => {
   const url = await fixtureBoardUrl();
+  const control = 'https://example.invalid/x';
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
 
@@ -114,8 +99,15 @@ test('makes no network request while exporting', async ({ page }) => {
   await exportButton(page).click();
   await pending;
 
+  await page.evaluate((target) => fetch(target).catch(() => {}), control);
+  expect(requests).toContain(control);
+
   const extra = requests.filter(
-    (request) => request !== url && !request.startsWith('data:') && !request.startsWith('blob:'),
+    (request) =>
+      request !== url &&
+      request !== control &&
+      !request.startsWith('data:') &&
+      !request.startsWith('blob:'),
   );
   expect(extra).toEqual([]);
 });

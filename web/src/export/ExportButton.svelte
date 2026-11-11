@@ -7,7 +7,11 @@
   let status = $state('');
 
   async function run() {
-    if (!board || busy) return;
+    if (busy) return;
+    if (!board) {
+      status = 'PNG export failed: the board is not ready';
+      return;
+    }
     busy = true;
     status = '';
     try {
@@ -20,7 +24,7 @@
   }
 </script>
 
-<div class="export" data-export-skip>
+<div class="export">
   <button type="button" class="toggle" disabled={busy} onclick={run}>
     {busy ? 'Exporting…' : 'Export PNG'}
   </button>

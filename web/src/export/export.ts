@@ -24,12 +24,17 @@ function download(blob: Blob, name: string): void {
   document.body.append(link);
   link.click();
   link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 /** The zip entry name for the Lane at `index`: `01-s.png`, and so on. */
 function entryName(index: number, id: string): string {
   return `${String(index + 1).padStart(2, '0')}-${id}.png`;
+}
+
+/** A status note naming any snapshot warning code, or an empty string. */
+function warningNote(warnings: Set<string>): string {
+  return warnings.size > 0 ? ` (with warnings: ${[...warnings].join(', ')})` : '';
 }
 
 /**
@@ -43,26 +48,40 @@ export async function exportPng(board: HTMLElement): Promise<string> {
   );
   const scale = Math.max(1, window.devicePixelRatio);
   const plan = planExport(measure(board), lanes.map(({ id, size }) => ({ id, size })), scale);
+  const warnings = new Set<string>();
 
   if (plan.kind === 'single') {
-    download(await snapshot(board, plan.scale), 'tierlist.png');
-    return 'Exported tierlist.png';
+    const shot = await snapshot(board, plan.scale);
+    shot.warnings.forEach((code) => warnings.add(code));
+    download(shot.blob, 'tierlist.png');
+    return `Exported tierlist.png${warningNote(warnings)}`;
+  }
+
+  const lanesById = new Map(lanes.map((lane) => [lane.id, lane]));
+  const shots: { id: string; blob: Blob }[] = [];
+  let shrunk = 0;
+  for (const part of plan.parts) {
+    const lane = lanesById.get(part.id);
+    if (!lane) throw new Error(`No Lane for export part ${part.id}`);
+    if (part.downscaled) shrunk += 1;
+    const shot = await snapshot(lane.element, part.scale);
+    shot.warnings.forEach((code) => warnings.add(code));
+    shots.push({ id: part.id, blob: shot.blob });
+  }
+
+  const note = `${shrunk > 0 ? ` (${shrunk} shrunk to fit)` : ''}${warningNote(warnings)}`;
+
+  if (plan.parts.length === 1 && shots[0]) {
+    download(shots[0].blob, 'tierlist.png');
+    return `Exported tierlist.png${note}`;
   }
 
   const files: Record<string, Uint8Array> = {};
-  let shrunk = 0;
-  for (const [index, part] of plan.parts.entries()) {
-    const lane = lanes[index];
-    if (!lane) throw new Error(`No Lane for export part ${part.id}`);
-    if (part.downscaled) shrunk += 1;
-    const png = await snapshot(lane.element, part.scale);
-    files[entryName(index, part.id)] = new Uint8Array(await png.arrayBuffer());
+  for (const [index, shot] of shots.entries()) {
+    files[entryName(index, shot.id)] = new Uint8Array(await shot.blob.arrayBuffer());
   }
-
   const zip = zipSync(files, { level: 0 });
   download(new Blob([zip], { type: 'application/zip' }), 'tierlist.zip');
 
-  const tiers = `${plan.parts.length} ${plan.parts.length === 1 ? 'tier' : 'tiers'}`;
-  const note = shrunk > 0 ? ` (${shrunk} shrunk to fit)` : '';
-  return `Exported ${tiers} as tierlist.zip${note}`;
+  return `Exported ${plan.parts.length} lanes as tierlist.zip${note}`;
 }
