@@ -61,6 +61,7 @@ itest: build
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/config_import.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/compile.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/covers.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/perf.py
     COMPILED_HTML="$PWD/dist/itest/compiled.html" pnpm -C web exec playwright test tests/compiled.spec.ts
 
 # Point git at the versioned hooks.
