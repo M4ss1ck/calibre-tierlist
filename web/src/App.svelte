@@ -2,11 +2,13 @@
   import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
   import type { TierListData } from './contract/tierlist';
+  import ExportButton from './export/ExportButton.svelte';
   import type { Filters } from './filter/filter';
   import FilterBar from './filter/FilterBar.svelte';
   import { applyTheme, systemTheme, watchSystemTheme, type Theme } from './theme/theme';
 
   let { data }: { data: TierListData } = $props();
+  let board = $state<HTMLElement>();
   let selection = $state<Selection | undefined>();
   let unranked = $state(true);
   let systemDark = $state(systemTheme() === 'dark');
@@ -33,20 +35,23 @@
         Unranked Lane
       </button>
       <button type="button" class="toggle" aria-pressed={dark} onclick={toggleTheme}>Dark theme</button>
+      <ExportButton {board} />
     </div>
   </header>
   <FilterBar books={data.books} bind:filters />
-  {#each lanes as lane (lane.tier ?? 'unranked')}
-    <Lane
-      {lane}
-      tiers={data.tiers}
-      books={data.books}
-      covers={data.covers}
-      series={data.series}
-      {filters}
-      onopen={(picked) => (selection = picked)}
-    />
-  {/each}
+  <div class="lanes" bind:this={board}>
+    {#each lanes as lane (lane.tier ?? 'unranked')}
+      <Lane
+        {lane}
+        tiers={data.tiers}
+        books={data.books}
+        covers={data.covers}
+        series={data.series}
+        {filters}
+        onopen={(picked) => (selection = picked)}
+      />
+    {/each}
+  </div>
   <Detail {selection} tiers={data.tiers} onclose={() => (selection = undefined)} />
 </main>
 
@@ -84,8 +89,13 @@
   .actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     gap: 0.5rem;
     margin-left: auto;
+  }
+
+  .lanes {
+    display: flow-root;
   }
 
   .toggle {

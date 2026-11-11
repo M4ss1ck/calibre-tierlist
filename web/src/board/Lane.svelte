@@ -48,7 +48,7 @@
   );
 </script>
 
-<section class="lane" aria-label={label}>
+<section class="lane" aria-label={label} data-lane-id={lane.tier ?? 'unranked'}>
   <h2 class="label" style:background-color={colour}>{label}</h2>
   <div class="cards">
     {#each stacks as stack (stack.name)}

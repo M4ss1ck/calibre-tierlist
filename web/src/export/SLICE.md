@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Plans how the compiled board becomes a PNG: one canvas when the whole board fits what the browser can draw, otherwise one canvas per Lane, downscaling only the Lanes that cannot fit. It is separate so the arithmetic of canvas size is a pure, testable function, decided before anything is drawn.
+Turns the compiled board into a PNG the reader can keep: one image when the whole board fits what the browser can draw, otherwise one image per Lane bundled into a zip. It plans the canvas sizes in a pure function, snapshots the live DOM so filters, expanded Stacks and the theme apply as shown, and never fails silently — an export error reaches the reader as a status message.
 
 ## Public API
 
@@ -13,13 +13,19 @@ Plans how the compiled board becomes a PNG: one canvas when the whole board fits
 - `fits(size, scale, limits) -> boolean`: both scaled sides are within `maxSide` and the scaled area within `maxArea`.
 - `fitScale(size, limits) -> number`: the largest scale the size fits at, the tightest of the side and area caps.
 - `planExport(board, lanes, scale, limits = SAFE_LIMITS) -> ExportPlan`: the board as a single canvas when it fits, else one part per Lane in input order, each keeping `scale` when it fits or taking `fitScale` and marked downscaled.
+- `snapshot(element, scale) -> Promise<Blob>`: renders the element to a PNG at `scale`, leaving out anything marked `data-export-skip`; no network.
+- `exportPng(board) -> Promise<string>`: measures the board and its `[data-lane-id]` Lanes, plans at `max(1, devicePixelRatio)`, downloads `tierlist.png` or `tierlist.zip` (entries `NN-<laneId>.png` in Lane order), and resolves to the status message. Rejects on failure.
+- `ExportButton(board)`: the toolbar's "Export PNG" control; disabled and reading "Exporting…" while it runs, with the outcome in a visible `role="status"` element.
 
 ## Files
 
 - `plan.ts`: the caps, the `fits` and `fitScale` checks, and the planner; no DOM, no canvas, no Svelte.
+- `snapshot.ts`: the snapdom adapter; sets the scale, excludes `data-export-skip`, and disables webfont discovery.
+- `export.ts`: the measurement, the plan, the PNG or zip download, and the status message.
+- `ExportButton.svelte`: the button, its busy state, and the status line.
 
 ## Depends on
 
-- Ports: none.
-- Slices: none; it takes plain pixel sizes.
-- Nothing else: no DOM, no dependencies. The canvas that draws the plan goes in another slice.
+- Ports: none; the browser DOM only.
+- Slices: `board` for the Lane `data-lane-id` hook and the board element App hands over; `theme` for the control tokens and the page background that keeps the PNG readable.
+- `@zumer/snapdom` for the capture and `fflate` for the zip; both are bundled into the single HTML file, so export stays offline.
