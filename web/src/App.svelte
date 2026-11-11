@@ -1,8 +1,10 @@
 <script lang="ts">
+  import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
   import type { TierListData } from './contract/tierlist';
 
   let { data }: { data: TierListData } = $props();
+  let selection = $state<Selection | undefined>();
 </script>
 
 <main class="board">
@@ -14,8 +16,10 @@
       books={data.books}
       covers={data.covers}
       series={data.series}
+      onopen={(picked) => (selection = picked)}
     />
   {/each}
+  <Detail {selection} tiers={data.tiers} onclose={() => (selection = undefined)} />
 </main>
 
 <style>

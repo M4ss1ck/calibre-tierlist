@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Book, Cover, Series, Tier } from '../contract/tierlist';
+  import type { Selection } from './Detail.svelte';
 
   interface Drawn {
     number: string;
@@ -15,9 +16,10 @@
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     tiers: Tier[];
+    onopen: (selection: Selection) => void;
   };
 
-  let { name, series, books, covers, tiers }: Props = $props();
+  let { name, series, books, covers, tiers, onopen }: Props = $props();
 
   const shown = $derived<Drawn[]>(
     series.positions.map((position) => {
@@ -42,28 +44,32 @@
   <div class="positions">
     {#each shown as position, index (index)}
       {@const unread = position.book !== undefined && !position.book.read}
-      <div
+      <button
+        type="button"
         class="position"
         class:placeholder={position.book === undefined}
         class:unread
         data-number={position.number}
         style:z-index={shown.length - index}
         style:background={position.book === undefined ? gradient : undefined}
+        aria-label={position.book ? undefined : `${name} #${position.number}, not in your library`}
+        onclick={() =>
+          onopen(position.book ? { book: position.book } : { series: name, number: position.number })}
       >
         {#if position.book && position.cover}
           <img class="cover" src={position.cover.src} alt={position.book.title} />
         {:else if position.book}
-          <div class="frame">
+          <span class="frame">
             <span class="title">{position.book.title}</span>
             <span class="mark">no cover</span>
-          </div>
+          </span>
         {:else}
-          <div class="frame">
+          <span class="frame">
             <span class="series-name">{name}</span>
             <span class="number">{position.number}</span>
-          </div>
+          </span>
         {/if}
-      </div>
+      </button>
     {/each}
     {#if series.more > 0}
       <span class="more">+{series.more}</span>
@@ -102,7 +108,9 @@
     width: 8rem; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 0.375rem;
     border: 1px solid color-mix(in srgb, var(--fg) 18%, var(--bg));
     background: color-mix(in srgb, var(--fg) 6%, var(--bg));
+    flex: none; padding: 0; font: inherit; cursor: pointer;
   }
+  .position:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
   .position + .position { margin-left: -3.5rem; }
   .position.unread { opacity: 0.4; filter: grayscale(1); }
   .cover { display: block; width: 100%; height: 100%; object-fit: cover; }

@@ -1,29 +1,47 @@
 <script lang="ts">
   import type { Cover } from '../contract/tierlist';
 
-  let { title, cover }: { title: string; cover?: Cover | undefined } = $props();
+  type Props = { title: string; cover?: Cover | undefined; onopen: () => void };
+  let { title, cover, onopen }: Props = $props();
 </script>
 
-{#if cover}
-  <article class="card">
-    <img class="cover" src={cover.src} alt="" />
-    <span class="title">{title}</span>
-  </article>
-{:else}
-  <article class="card placeholder">
-    <div class="frame">
+<article class="card" class:placeholder={!cover}>
+  <button type="button" class="open" onclick={onopen}>
+    {#if cover}
+      <img class="cover" src={cover.src} alt="" />
       <span class="title">{title}</span>
-      <span class="mark">no cover</span>
-    </div>
-  </article>
-{/if}
+    {:else}
+      <span class="frame">
+        <span class="title">{title}</span>
+        <span class="mark">no cover</span>
+      </span>
+    {/if}
+  </button>
+</article>
 
 <style>
   .card {
+    width: 8rem;
+  }
+
+  .open {
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
-    width: 8rem;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0.375rem;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .open:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
   }
 
   .cover,
