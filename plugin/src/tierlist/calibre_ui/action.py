@@ -14,6 +14,7 @@ from . import column
 from .adapters import tier_list
 from .compile_dialog import CompileDialog
 from .compile_job import scope_book_ids, start_compile
+from .icons import plugin_icon
 from .menu import TierMenu
 
 load_translations()
@@ -30,6 +31,7 @@ class TierListAction(InterfaceAction):
     def genesis(self) -> None:
         self.column_created_paths: set[str] = set()
         self.read_column_created_paths: set[str] = set()
+        self.qaction.setIcon(plugin_icon(self.name))
         self.tier_menu = TierMenu(self)
         self.qaction.triggered.connect(self.show_dialog)
         self.add_to_action_layouts()
