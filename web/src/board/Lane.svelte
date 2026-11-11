@@ -6,6 +6,7 @@
   import type { Selection } from './Detail.svelte';
   import { editable } from './editable';
   import Stack from './Stack.svelte';
+  import type { StackPick } from './stack';
 
   type Props = {
     lane: Lane;
@@ -15,7 +16,7 @@
     covers: Record<string, Cover>;
     series: Record<string, Series>;
     filters: Filters;
-    onopen: (selection: Selection) => void;
+    onopen: (opened: Selection | StackPick) => void;
     onrename: (label: string) => void;
   };
   let { lane, label, colour, books, covers, series, filters, onopen, onrename }: Props = $props();
@@ -117,11 +118,14 @@
   }
   @media (max-width: 480px) {
     .label {
-      flex-basis: 4.5rem;
+      flex-basis: 5.25rem;
       padding: 0.375rem;
     }
     h2 {
       font-size: 1.5rem;
+    }
+    h2.long {
+      font-size: 0.8rem;
     }
     .cards {
       gap: 0.75rem;

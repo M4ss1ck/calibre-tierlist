@@ -9,12 +9,13 @@
     id="unranked-switch"
     type="button"
     role="switch"
+    aria-labelledby="unranked-label"
     aria-checked={on}
     onclick={() => (on = !on)}
   >
     <span class="thumb"></span>
   </button>
-  <label for="unranked-switch">Unranked lane</label>
+  <label id="unranked-label" for="unranked-switch">Unranked lane</label>
 </div>
 
 <style>

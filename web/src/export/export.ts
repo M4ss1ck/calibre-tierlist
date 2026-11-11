@@ -2,6 +2,9 @@ import { zipSync } from 'fflate';
 import { planExport, type Size } from './plan';
 import { snapshot } from './snapshot';
 
+/** What the page shows but the image leaves out: the toolbar and the filters. */
+export const SCREEN_ONLY = ['.controls', 'form.filters'];
+
 /** A rendered Lane and the id it exports under. */
 type LaneElement = { id: string; element: HTMLElement; size: Size };
 
@@ -51,7 +54,7 @@ export async function exportPng(board: HTMLElement): Promise<string> {
   const warnings = new Set<string>();
 
   if (plan.kind === 'single') {
-    const shot = await snapshot(board, plan.scale);
+    const shot = await snapshot(board, plan.scale, SCREEN_ONLY);
     shot.warnings.forEach((code) => warnings.add(code));
     download(shot.blob, 'tierlist.png');
     return `Exported tierlist.png${warningNote(warnings)}`;

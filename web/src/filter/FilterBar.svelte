@@ -54,34 +54,45 @@
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 0.75rem;
-    margin: 0 0 1.5rem;
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--surface);
   }
 
   .field {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.2rem;
     max-width: 100%;
     min-width: 0;
+  }
+
+  .field:first-child {
+    flex: 1 1 14rem;
   }
 
   .caption {
     color: var(--muted);
     font-size: 0.7rem;
-    letter-spacing: 0.06em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   input,
   select {
+    box-sizing: border-box;
     max-width: 100%;
-    padding: 0.2rem 0.4rem;
+    height: 2.5rem;
+    padding: 0 0.625rem;
     border: 1px solid var(--border-strong);
-    border-radius: 0.375rem;
-    background: none;
+    border-radius: 0.5rem;
+    background: var(--bg);
     color: var(--fg);
     font: inherit;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
 
   input:focus-visible,
@@ -91,7 +102,7 @@
   }
 
   .note {
-    margin: 0 0 0.15rem;
+    margin: 0 0 0.5rem;
     color: var(--muted);
     font-size: 0.85rem;
   }

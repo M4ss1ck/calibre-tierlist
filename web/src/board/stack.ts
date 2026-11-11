@@ -1,5 +1,8 @@
 import type { Book, Cover, Position, Series } from '../contract/tierlist';
 
+/** What a Stack asks the board to open: its series panel. */
+export type StackPick = { stack: string };
+
 /** One Stack position resolved against the board's books and covers. */
 export type Resolved = { position: Position; book: Book | undefined; cover: Cover | undefined };
 

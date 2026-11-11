@@ -1,15 +1,14 @@
 <script lang="ts">
   import type { Book, Cover, Series } from '../contract/tierlist';
-  import type { Selection } from './Detail.svelte';
   import OverrideMark from './OverrideMark.svelte';
-  import { frontOf, resolve, sheetsBehind } from './stack';
+  import { frontOf, resolve, sheetsBehind, type StackPick } from './stack';
 
   type Props = {
     name: string;
     series: Series;
     books: Record<string, Book>;
     covers: Record<string, Cover>;
-    onopen: (selection: Selection) => void;
+    onopen: (pick: StackPick) => void;
   };
   let { name, series, books, covers, onopen }: Props = $props();
 
