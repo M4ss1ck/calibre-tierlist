@@ -34,6 +34,10 @@ test:
         echo "skipping web unit tests"; \
     fi
 
+# Regenerate the translation template for translators.
+pot:
+    cd {{plugin}} && uv run python tools/make_pot.py
+
 # Build the plugin zip, with template.html when the web package is built.
 build:
     @if [ -f web/package.json ]; then pnpm -C web install --frozen-lockfile && pnpm -C web build; fi

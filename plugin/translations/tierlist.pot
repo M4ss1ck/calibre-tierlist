@@ -1,0 +1,384 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Tier List package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Tier List 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-11 19:58-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: plugin/calibre_entry.py:10
+msgid ""
+"Assign books a tier and compile a single offline, interactive HTML tier list "
+"of your series."
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/action.py:27
+msgid "Compile a tier list of your series"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/action.py:106
+msgid ""
+"This plugin was built without the web template, so it cannot compile a tier "
+"list."
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:17
+msgid "Create a Tier column so books can be sent to a tier?"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:18
+#: plugin/src/tierlist/calibre_ui/column.py:35
+#: plugin/src/tierlist/calibre_ui/column.py:54
+#: plugin/src/tierlist/calibre_ui/column.py:58
+#: plugin/src/tierlist/calibre_ui/column.py:60
+#: plugin/src/tierlist/calibre_ui/config_io.py:20
+#: plugin/src/tierlist/calibre_ui/config_widget.py:118
+msgid "Tier List"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:32
+msgid "A new \"Date read\" column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:35
+msgid "Track the date you read each book in:"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:40
+msgid "Date read"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:47
+msgid "Tier"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:54
+msgid "Restart calibre before creating the new column."
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/column.py:58
+msgid "Restart calibre before using the new column."
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:18
+msgid "Compile Tier List"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:19
+msgid "Whole library"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:23
+msgid "Current selection"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:27
+msgid "Browse…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:29
+msgid "Compile"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:31
+msgid "Cancel"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:56
+msgid "Current virtual library"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:57
+#, python-format
+msgid "Current virtual library (%s)"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:62
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:63
+msgid "Save tier list"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:64
+msgid "HTML files"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_dialog.py:74
+msgid "Compile Scope"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_job.py:36
+msgid "Compiling tier list"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_job.py:38
+msgid "Done"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_job.py:42
+msgid "Tier List compile failed"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_job.py:45
+#, python-format
+msgid "Tier list written to %s"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/compile_job.py:47
+msgid "Compile tier list"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_extras.py:49
+msgid "No orphaned series overrides"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_extras.py:51
+msgid "Orphaned Overrides"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_extras.py:54
+msgid "Delete"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_extras.py:54
+msgid "Reattach…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_extras.py:72
+msgid "Attach this Override to series:"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_extras.py:72
+msgid "Reattach Override"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_form.py:24
+msgid "Stack depth"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:14
+#: plugin/src/tierlist/calibre_ui/config_io.py:45
+msgid "Import Tier Config"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:14
+#: plugin/src/tierlist/calibre_ui/config_io.py:26
+msgid "JSON files (*.json)"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:26
+msgid "Export Tier Config"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:39
+#, python-format
+msgid ""
+"%d book holds a Tier this import removes. It will lose its Book Tier and "
+"stay read. Import anyway?"
+msgid_plural ""
+"%d books hold Tiers this import removes. They will lose their Book Tier and "
+"stay read. Import anyway?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:54
+#, python-format
+msgid ""
+"%d book holds this Tier. It will lose its Book Tier and stay read. Remove it?"
+msgid_plural ""
+"%d books hold this Tier. They will lose their Book Tier and stay read. "
+"Remove it?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:60
+msgid "Remove Tier"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:41
+msgid "Tiers"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:47
+msgid "Add"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:48
+msgid "Remove"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:49
+msgid "Move up"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:50
+msgid "Move down"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:57
+msgid "Tier column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:58
+msgid "Read column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:59
+msgid "Series total column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:67
+msgid "Export JSON…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:67
+msgid "Import JSON…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:138
+msgid "None"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:22
+msgid "Send to tier"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:23
+msgid "Set series tier"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:60
+msgid "Send to tier: {}"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:64
+msgid "Clear tier"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:68
+msgid "Mark read"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:69
+msgid "Mark unread"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:72
+msgid "Restart calibre to finish adding the read column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:74
+msgid "This library has no read column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:78
+msgid "Set up read column…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:95
+msgid "Restart calibre to finish adding the tier column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:97
+msgid "This library has no tier column"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:100
+msgid "Create tier column…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/series_menu.py:19
+msgid "Set series tier: {}"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/series_menu.py:23
+msgid "Auto"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/series_menu.py:23
+msgid "Set series tier: Auto"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/tier_table.py:28
+msgid "Tier colour"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/tier_table.py:38
+msgid "Colour"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/tier_table.py:38
+msgid "Description"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/tier_table.py:38
+msgid "Id"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/tier_table.py:38
+msgid "Label"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:28
+msgid "Tier Config needs at least one Tier"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:35
+#, python-format
+msgid "Stack depth must be between %d and %d, not %d"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:41
+#, python-format
+msgid "Tier id must not be empty: %r"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:43
+#, python-format
+msgid "Tier label must not be empty for Tier %r"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:45
+#, python-format
+msgid "Tier colour must be #rrggbb hex for Tier %r: %r"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:52
+#, python-format
+msgid "Duplicate Tier id: %r"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:61
+#, python-format
+msgid "Duplicate Tier label: %r"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:70
+#, python-format
+msgid "Not valid JSON: %s"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:72
+msgid "Tier Config must be a JSON object"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:76
+#, python-format
+msgid "Missing field: %s"
+msgstr ""
+
+#: plugin/src/tierlist/tiers/validate.py:78
+#, python-format
+msgid "Not a valid Tier Config: %s"
+msgstr ""
