@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",
     "libraryName": "Fixture Library",
@@ -63,49 +63,108 @@
       "title": "The </script> Problem",
       "tier": "s",
       "dateRead": "2024-01-10",
-      "read": true
+      "read": true,
+      "authors": [
+        "Ann Author"
+      ],
+      "series": null,
+      "seriesIndex": null,
+      "rating": 4.5,
+      "tags": [
+        "mystery",
+        "classic"
+      ],
+      "blurb": "A tense tale & more."
     },
     "2": {
       "title": "Cien años de soledad",
       "tier": "s",
       "dateRead": "2024-02-20",
-      "read": true
+      "read": true,
+      "authors": [
+        "Gabriel García Márquez"
+      ],
+      "series": "Dune",
+      "seriesIndex": "2",
+      "rating": 5.0,
+      "tags": [
+        "magical realism"
+      ],
+      "blurb": null
     },
     "3": {
       "title": "Alpha",
       "tier": "a",
       "dateRead": "2023-05-01",
-      "read": true
+      "read": true,
+      "authors": [
+        "Frank Herbert"
+      ],
+      "series": "Dune",
+      "seriesIndex": "3",
+      "rating": null,
+      "tags": [],
+      "blurb": null
     },
     "4": {
       "title": "Bravo",
       "tier": "a",
       "dateRead": null,
-      "read": false
+      "read": false,
+      "authors": [],
+      "series": null,
+      "seriesIndex": null,
+      "rating": null,
+      "tags": [],
+      "blurb": null
     },
     "5": {
       "title": "Owned Unread",
       "tier": null,
       "dateRead": null,
-      "read": false
+      "read": false,
+      "authors": [],
+      "series": "Dune",
+      "seriesIndex": "4",
+      "rating": null,
+      "tags": [],
+      "blurb": null
     },
     "7": {
       "title": "Another S",
       "tier": "s",
       "dateRead": "2024-01-10",
-      "read": true
+      "read": true,
+      "authors": [],
+      "series": null,
+      "seriesIndex": null,
+      "rating": null,
+      "tags": [],
+      "blurb": null
     },
     "8": {
       "title": "Zulu",
       "tier": null,
       "dateRead": "2021-01-01",
-      "read": true
+      "read": true,
+      "authors": [],
+      "series": null,
+      "seriesIndex": null,
+      "rating": null,
+      "tags": [],
+      "blurb": null
     },
     "9": {
       "title": "Earthsea One",
       "tier": "b",
       "dateRead": null,
-      "read": false
+      "read": false,
+      "authors": [],
+      "series": "Earthsea",
+      "seriesIndex": "1",
+      "rating": null,
+      "tags": [],
+      "blurb": null
     }
   },
   "series": {

@@ -9,7 +9,7 @@
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 4,
+      "const": 5,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "generated": { "$ref": "#/$defs/Generated" },
@@ -86,9 +86,30 @@
     "Book": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["title", "tier", "dateRead", "read"],
+      "required": ["title", "tier", "dateRead", "read", "authors", "series", "seriesIndex", "rating", "tags", "blurb"],
       "properties": {
         "title": { "type": "string" },
+        "authors": { "type": "array", "description": "Author names in calibre's order.", "items": { "type": "string" } },
+        "series": {
+          "type": ["string", "null"],
+          "description": "Series name (key of series), or null for a standalone book."
+        },
+        "seriesIndex": {
+          "type": ["string", "null"],
+          "description": "The series index as a reader sees it, e.g. \"2.5\", or null for a standalone book."
+        },
+        "rating": {
+          "type": ["number", "null"],
+          "minimum": 0.5,
+          "maximum": 5,
+          "multipleOf": 0.5,
+          "description": "Stars out of 5 in half steps, or null when unrated."
+        },
+        "tags": { "type": "array", "description": "calibre tags.", "items": { "type": "string" } },
+        "blurb": {
+          "type": ["string", "null"],
+          "description": "The book's comments as plain text, trimmed at a word boundary near 600 characters with an ellipsis; null when empty."
+        },
         "tier": { "type": ["string", "null"], "description": "Book Tier id, or null when unranked." },
         "dateRead": {
           "type": ["string", "null"],

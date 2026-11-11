@@ -10,7 +10,7 @@ from ..ports import Cover
 from ..tiers import Tier
 from .series import Series
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 Scope = Literal['library', 'virtual_library', 'selection']
 
@@ -26,14 +26,27 @@ class Generated:
 
 
 @dataclass(frozen=True)
+class Details:
+    """What the detail panel shows beyond the board: authors, series and index, stars, tags, and the blurb."""
+
+    authors: tuple[str, ...] = ()
+    series: str | None = None
+    series_index: str | None = None
+    rating: float | None = None
+    tags: tuple[str, ...] = ()
+    blurb: str | None = None
+
+
+@dataclass(frozen=True)
 class Book:
-    """One book on the board: its title, Book Tier, date read if any, and whether it is read."""
+    """One book on the board: its title, Book Tier, date read if any, whether it is read, and its details."""
 
     id: int
     title: str
     tier: str | None
     date_read: date | None
     read: bool = False
+    details: Details = field(default_factory=Details)
 
 
 @dataclass(frozen=True)
@@ -90,6 +103,12 @@ class TierListData:
                     'tier': book.tier,
                     'dateRead': None if book.date_read is None else book.date_read.isoformat(),
                     'read': book.read,
+                    'authors': list(book.details.authors),
+                    'series': book.details.series,
+                    'seriesIndex': book.details.series_index,
+                    'rating': book.details.rating,
+                    'tags': list(book.details.tags),
+                    'blurb': book.details.blurb,
                 }
                 for book in self.books
             },

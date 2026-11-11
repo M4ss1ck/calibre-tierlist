@@ -49,7 +49,7 @@ def build_series(
     shown = ordered[: 1 + max(0, stack_depth)]
     return Series(
         _colour(ordered, colours),
-        tuple(Position(_number(index), book) for index, book in shown),
+        tuple(Position(display_number(index), book) for index, book in shown),
         len(ordered) - len(shown),
         override,
     )
@@ -119,7 +119,7 @@ def _colour(ordered: list[tuple[float, int | None]], colours: Mapping[int, str])
     return EMPTY_COLOUR
 
 
-def _number(index: float) -> str:
+def display_number(index: float) -> str:
     return f'{index:g}'
 
 
