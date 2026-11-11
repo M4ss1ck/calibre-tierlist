@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Turns the compiled board into a PNG the reader can keep: one image when the whole board fits what the browser can draw, otherwise one image per Lane bundled into a zip. It plans the canvas sizes in a pure function, snapshots the live DOM so filters, expanded Stacks and the theme apply as shown, and never fails silently — an export error, or a degradation snapdom reports, reaches the reader in the status message.
+Turns the compiled board into a PNG the reader can keep: one image when the whole board fits what the browser can draw, otherwise one image per Lane bundled into a zip. It plans the canvas sizes in a pure function, snapshots the live DOM so filters, expanded Stacks and the theme apply as shown, and never fails silently — an export error, or a degradation snapdom reports, reaches the reader in the status message. It also owns the print stylesheet, so the same board prints to a readable PDF.
 
 ## Public API
 
@@ -24,6 +24,7 @@ Turns the compiled board into a PNG the reader can keep: one image when the whol
 - `snapshot.ts`: the snapdom adapter; sets the scale and `dpr: 1`, uses the page background, disables webfont discovery, and reports snapdom's warning codes.
 - `export.ts`: the measurement, the plan, the PNG or zip download, and the status message.
 - `ExportButton.svelte`: the button, its busy state, and the status line.
+- `print.css`: the `@media print` rules PDF export rests on — the toolbar, filters, Stack toggle and Detail Panel drop out, the board takes the printable width, every Stack and Card keeps off a page break, and the theme's colours print exact. Imported once by `src/main.ts`; it changes nothing on screen.
 
 ## Depends on
 
