@@ -1,0 +1,21 @@
+{
+  "bootstrap-sha": "15a82633e60eed25e30c4aa2930ddda2ebc34026",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "calibre-tierlist",
+      "include-component-in-tag": false,
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "plugin/pyproject.toml",
+          "jsonpath": "$.project.version"
+        },
+        {
+          "type": "generic",
+          "path": "plugin/calibre_entry.py"
+        }
+      ]
+    }
+  }
+}
