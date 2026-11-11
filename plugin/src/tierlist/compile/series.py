@@ -19,8 +19,8 @@ class Position:
 
 @dataclass(frozen=True)
 class Series:
-    """One series on the board: its Placeholder colour, positions shown, how many were cut, and whether it is an
-    Override."""
+    """One series on the board: its Placeholder colour, every position, how many of them the collapsed Stack cuts, and
+    whether it is an Override."""
 
     colour: str
     positions: tuple[Position, ...]
@@ -43,14 +43,13 @@ def build_series(
     colours: Mapping[int, str],
     override: bool,
 ) -> Series:
-    """Build the Stack for one series from each member's series index and colour, truncated to `stack_depth` behind."""
+    """Build the Stack for one series from each member's series index and colour; it collapses to `stack_depth` behind."""
     owned = {book: _index(index) for book, index in indexes.items()}
     ordered = _positions(owned, _end(owned, _total(totals)))
-    shown = ordered[: 1 + max(0, stack_depth)]
     return Series(
         _colour(ordered, colours),
-        tuple(Position(_number(index), book) for index, book in shown),
-        len(ordered) - len(shown),
+        tuple(Position(display_number(index), book) for index, book in ordered),
+        max(0, len(ordered) - 1 - max(0, stack_depth)),
         override,
     )
 
@@ -119,7 +118,7 @@ def _colour(ordered: list[tuple[float, int | None]], colours: Mapping[int, str])
     return EMPTY_COLOUR
 
 
-def _number(index: float) -> str:
+def display_number(index: float) -> str:
     return f'{index:g}'
 
 

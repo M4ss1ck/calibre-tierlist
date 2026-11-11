@@ -1,10 +1,13 @@
 """Rows: one book as read from the library, and which rows belong on the board."""
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
+from typing import cast
 
-from .data import Book
+from .blurb import blurb
+from .data import Book, Details
+from .series import display_number
 
 
 @dataclass(frozen=True)
@@ -16,6 +19,10 @@ class Row:
     series: object | None = None
     index: object | None = None
     total: object | None = None
+    authors: object | None = None
+    rating: object | None = None
+    tags: object | None = None
+    comments: object | None = None
 
 
 def on_board(rows: Iterable[Row], read_is_bool: bool, overridden: set[str]) -> list[Row]:
@@ -47,7 +54,30 @@ def book_of(row: Row, known: set[str], read_is_bool: bool) -> Book:
         raw if raw in known else None,
         _date_read(row.read, read_is_bool),
         _is_read(row, read_is_bool),
+        details_of(row),
     )
+
+
+def details_of(row: Row) -> Details:
+    """The detail panel fields of one row: calibre's 0-10 rating becomes 0.5-5 stars, 0 meaning unrated."""
+    name = series_name(row)
+    index = row.index if isinstance(row.index, (int, float)) and name is not None else None
+    rating = row.rating if isinstance(row.rating, (int, float)) and row.rating > 0 else None
+    return Details(
+        _strings(row.authors),
+        name,
+        None if index is None else display_number(float(index)),
+        None if rating is None else rating / 2,
+        _strings(row.tags),
+        blurb(row.comments),
+    )
+
+
+def _strings(value: object) -> tuple[str, ...]:
+    if not isinstance(value, (list, tuple)):
+        return ()
+    items = cast(Sequence[object], value)
+    return tuple(item for item in items if isinstance(item, str) and item)
 
 
 def series_name(row: Row) -> str | None:

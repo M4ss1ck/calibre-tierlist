@@ -12,6 +12,7 @@ from .rows import Row, book_of, on_board, series_name
 from .series import build_series, earliest, series_tier, stacks_for
 
 READ_COLUMN_TYPES = ('datetime', 'bool')
+DETAIL_FIELDS = ('authors', 'rating', 'tags', 'comments')
 
 
 def compile_data(
@@ -33,8 +34,18 @@ def compile_data(
     indexes = library.read_field('series_index', ids)
     column = config.series_total_column
     totals = library.read_field(column, ids) if library.column_types().get(column) == 'int' else {}
+    extra = {name: library.read_field(name, ids) for name in DETAIL_FIELDS}
     rows = [
-        Row(i, str(titles.get(i) or ''), tiers.get(i), reads.get(i), series.get(i), indexes.get(i), totals.get(i))
+        Row(
+            i,
+            str(titles.get(i) or ''),
+            tiers.get(i),
+            reads.get(i),
+            series.get(i),
+            indexes.get(i),
+            totals.get(i),
+            **{name: values.get(i) for name, values in extra.items()},
+        )
         for i in ids
     ]
     board = on_board(rows, datatype == 'bool', _overridden(config, overrides))

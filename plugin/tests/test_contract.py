@@ -53,6 +53,10 @@ def fixture_payload() -> dict[str, Any]:
     library.values['series'] = {2: 'Dune', 3: 'Dune', 5: 'Dune', 9: 'Earthsea'}
     library.values['series_index'] = {2: 2.0, 3: 3.0, 5: 4.0, 9: 1.0}
     library.values['#series_total'] = {2: 7}
+    library.values['authors'] = {1: ('Ann Author',), 2: ('Gabriel García Márquez',), 3: ('Frank Herbert',)}
+    library.values['rating'] = {1: 9, 2: 10}
+    library.values['tags'] = {1: ('mystery', 'classic'), 2: ('magical realism',)}
+    library.values['comments'] = {1: '<p>A <b>tense</b> tale &amp; more.</p><script>x()</script>'}
     prefs = FakePrefs({TIER_CONFIG_KEY: CONFIG.to_dict(), SERIES_TIER_OVERRIDES_KEY: {'Dune': 'b'}})
     app = TierList(library, prefs, lambda: NOW.date(), lambda: NOW, covers=FakeCovers(with_cover={1, 2, 3, 7}))
     request = CompileRequest('library', tuple(range(1, 10)), 'Fixture Library', '0.1.0')

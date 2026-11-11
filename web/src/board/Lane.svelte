@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Book, Cover, Lane, Series, Tier } from '../contract/tierlist';
   import Card from './Card.svelte';
+  import type { Selection } from './Detail.svelte';
   import Stack from './Stack.svelte';
 
   let {
@@ -9,12 +10,14 @@
     books,
     covers,
     series,
+    onopen,
   }: {
     lane: Lane;
     tiers: Tier[];
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     series: Record<string, Series>;
+    onopen: (selection: Selection) => void;
   } = $props();
 
   const tier = $derived(
@@ -25,7 +28,7 @@
   const cards = $derived(
     lane.cards.flatMap((id) => {
       const book = books[id];
-      return book ? [{ id, title: book.title, cover: covers[id] }] : [];
+      return book ? [{ id, book, cover: covers[id] }] : [];
     }),
   );
   const stacks = $derived(
@@ -46,10 +49,11 @@
         {books}
         {covers}
         {tiers}
+        {onopen}
       />
     {/each}
     {#each cards as card (card.id)}
-      <Card title={card.title} cover={card.cover} />
+      <Card title={card.book.title} cover={card.cover} onopen={() => onopen({ book: card.book })} />
     {/each}
   </div>
 </section>

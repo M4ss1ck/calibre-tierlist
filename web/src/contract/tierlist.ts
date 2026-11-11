@@ -7,7 +7,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 4;
+  schemaVersion: 6;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -68,6 +68,30 @@ export interface Lane {
 export interface Book {
   title: string;
   /**
+   * Author names in calibre's order.
+   */
+  authors: string[];
+  /**
+   * Series name (key of series), or null for a standalone book.
+   */
+  series: string | null;
+  /**
+   * The series index as a reader sees it, e.g. "2.5", or null for a standalone book.
+   */
+  seriesIndex: string | null;
+  /**
+   * Stars out of 5 in half steps, or null when unrated.
+   */
+  rating: number | null;
+  /**
+   * calibre tags.
+   */
+  tags: string[];
+  /**
+   * The book's comments as plain text, trimmed at a word boundary near 600 characters with an ellipsis; null when empty.
+   */
+  blurb: string | null;
+  /**
    * Book Tier id, or null when unranked.
    */
   tier: string | null;
@@ -86,11 +110,11 @@ export interface Series {
    */
   colour: string;
   /**
-   * The Stack's positions, index 1 first, truncated to fit; a position with no owned book is a Placeholder.
+   * Every position of the series, index 1 first; a position with no owned book is a Placeholder.
    */
   positions: Position[];
   /**
-   * How many further positions were cut from this Stack.
+   * How many trailing positions the collapsed Stack cuts (Stack Depth); the expanded Stack shows them all.
    */
   more: number;
   /**

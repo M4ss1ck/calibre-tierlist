@@ -27,7 +27,7 @@ def test_an_index_zero_prequel_sits_behind_book_one() -> None:
     assert [position.number for position in data.series['Dune'].positions] == ['1', '0']
 
 
-def test_a_directly_built_stack_depth_above_the_max_shows_at_most_seven_positions() -> None:
+def test_a_directly_built_stack_depth_above_the_max_collapses_to_at_most_seven_positions() -> None:
     library = FakeLibrary(types={'#date_read': 'datetime'})
     indexes = {book_id: float(book_id) for book_id in range(1, 11)}
     library.values['series'] = cast(dict[int, object], dict.fromkeys(indexes, 'Dune'))
@@ -39,4 +39,5 @@ def test_a_directly_built_stack_depth_above_the_max_shows_at_most_seven_position
         Generated(NOW, 'Lib', 'library', '0.1.0'), library, FakeCovers(), 'webp', config, range(1, 11), {}
     )
 
-    assert len(data.series['Dune'].positions) == 7
+    assert len(data.series['Dune'].positions) == 10
+    assert data.series['Dune'].more == 3
