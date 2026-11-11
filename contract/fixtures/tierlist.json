@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",
     "libraryName": "Fixture Library",
@@ -186,6 +186,18 @@
         {
           "number": "4",
           "book": "5"
+        },
+        {
+          "number": "5",
+          "book": null
+        },
+        {
+          "number": "6",
+          "book": null
+        },
+        {
+          "number": "7",
+          "book": null
         }
       ],
       "more": 3,

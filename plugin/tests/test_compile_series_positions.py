@@ -43,7 +43,7 @@ def test_a_series_total_fills_placeholders_up_to_it() -> None:
 
     series = compile_series({2: 2.0}, config, totals={2: 7})
 
-    assert numbers(series) == ['1', '2', '3', '4']
+    assert numbers(series) == ['1', '2', '3', '4', '5', '6', '7']
     assert series.more == 3
 
 
@@ -68,19 +68,19 @@ def test_a_missing_book_one_puts_a_placeholder_in_front() -> None:
     assert series.positions[0].book is None
 
 
-def test_depth_zero_shows_only_the_front_and_counts_the_rest() -> None:
+def test_depth_zero_collapses_to_the_front_and_counts_the_rest() -> None:
     series = compile_series({1: 2.0, 2: 3.0}, TierConfig(tiers=CONFIG.tiers, stack_depth=0))
 
-    assert len(series.positions) == 1
+    assert numbers(series) == ['1', '2', '3']
     assert series.more == 2
 
 
-def test_depth_six_shows_seven_positions() -> None:
+def test_depth_six_collapses_to_seven_positions() -> None:
     config = TierConfig(tiers=CONFIG.tiers, stack_depth=6, series_total_column='#series_total')
 
     series = compile_series({1: 1.0}, config, totals={1: 10})
 
-    assert len(series.positions) == 7
+    assert len(series.positions) == 10
     assert series.more == 3
 
 
@@ -88,7 +88,7 @@ def test_the_cut_positions_become_the_plus_n_count() -> None:
     config = TierConfig(tiers=CONFIG.tiers, series_total_column='#series_total')
     series = compile_series({2: 2.0}, config, totals={2: 5})
 
-    assert numbers(series) == ['1', '2', '3', '4']
+    assert numbers(series) == ['1', '2', '3', '4', '5']
     assert series.more == 1
 
 

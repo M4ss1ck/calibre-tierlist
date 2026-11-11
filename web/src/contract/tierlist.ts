@@ -7,7 +7,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 5;
+  schemaVersion: 6;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -110,11 +110,11 @@ export interface Series {
    */
   colour: string;
   /**
-   * The Stack's positions, index 1 first, truncated to fit; a position with no owned book is a Placeholder.
+   * Every position of the series, index 1 first; a position with no owned book is a Placeholder.
    */
   positions: Position[];
   /**
-   * How many further positions were cut from this Stack.
+   * How many trailing positions the collapsed Stack cuts (Stack Depth); the expanded Stack shows them all.
    */
   more: number;
   /**

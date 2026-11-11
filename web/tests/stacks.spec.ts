@@ -16,6 +16,12 @@ function seriesOf(name: string) {
   return series;
 }
 
+/** The positions a collapsed Stack draws: all but the `more` it cuts. */
+function collapsed(name: string) {
+  const { positions, more } = seriesOf(name);
+  return positions.slice(0, positions.length - more);
+}
+
 function bookOf(id: string): Book {
   const book = data.books[id];
   if (!book) throw new Error(`Fixture Stack names unknown book ${id}`);
@@ -58,7 +64,7 @@ test('draws each Stack in the Lane that names it, first position in front', asyn
     const numbers = await positions.evaluateAll((nodes) =>
       nodes.map((node) => node.getAttribute('data-number')),
     );
-    expect(numbers).toEqual(seriesOf(name).positions.map((position) => position.number));
+    expect(numbers).toEqual(collapsed(name).map((position) => position.number));
 
     const layers = await positions.evaluateAll((nodes) =>
       nodes.map((node) => Number(getComputedStyle(node).zIndex)),
@@ -74,7 +80,7 @@ test('dims the positions of unread books and leaves read ones alone', async ({ p
 
   for (const { name } of placed()) {
     const positions = stack(page, name).locator('.position');
-    for (const [index, position] of seriesOf(name).positions.entries()) {
+    for (const [index, position] of collapsed(name).entries()) {
       if (position.book === null) continue;
       const dimmed = !bookOf(position.book).read;
       const classes = ((await positions.nth(index).getAttribute('class')) ?? '').split(/\s+/);
@@ -91,7 +97,7 @@ test('draws a Placeholder for every position without an owned book', async ({ pa
   let drawn = 0;
 
   for (const { name } of placed()) {
-    const expected = seriesOf(name).positions.filter((position) => position.book === null);
+    const expected = collapsed(name).filter((position) => position.book === null);
     const placeholders = stack(page, name).locator('.position.placeholder');
     await expect(placeholders).toHaveCount(expected.length);
 
@@ -131,7 +137,7 @@ test('labels every owned position with its Book Tier', async ({ page }) => {
   const seen: string[] = [];
 
   for (const { name } of placed()) {
-    const labels = seriesOf(name).positions.flatMap((position) =>
+    const labels = collapsed(name).flatMap((position) =>
       position.book === null ? [] : [labelOf(position.book)],
     );
     await expect(stack(page, name).locator('.tier-badge')).toHaveText(labels);

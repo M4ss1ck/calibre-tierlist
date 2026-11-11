@@ -9,7 +9,7 @@
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 5,
+      "const": 6,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "generated": { "$ref": "#/$defs/Generated" },
@@ -134,13 +134,13 @@
         },
         "positions": {
           "type": "array",
-          "description": "The Stack's positions, index 1 first, truncated to fit; a position with no owned book is a Placeholder.",
+          "description": "Every position of the series, index 1 first; a position with no owned book is a Placeholder.",
           "items": { "$ref": "#/$defs/Position" }
         },
         "more": {
           "type": "integer",
           "minimum": 0,
-          "description": "How many further positions were cut from this Stack."
+          "description": "How many trailing positions the collapsed Stack cuts (Stack Depth); the expanded Stack shows them all."
         },
         "override": {
           "type": "boolean",

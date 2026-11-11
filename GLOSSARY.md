@@ -38,7 +38,7 @@ An Override whose series name matches no series in the library, usually after a 
 ## Board
 
 **Stack**
-The visual group for one series inside a Tier row. It lists the series positions in index order, index 1 in front, with up to Stack Depth more fanned behind and the rest counted as "+N".
+The visual group for one series inside a Tier row. It lists the series positions in index order, index 1 in front, with up to Stack Depth more fanned behind and the rest counted as "+N". Expanded, it shows every position side by side.
 Avoid: pile, deck.
 
 **Card**
