@@ -125,7 +125,7 @@
     "Series": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["colour", "positions", "more", "override"],
+      "required": ["colour", "positions", "override"],
       "properties": {
         "colour": {
           "type": "string",
@@ -136,11 +136,6 @@
           "type": "array",
           "description": "Every position of the series, index 1 first; a position with no owned book is a Placeholder.",
           "items": { "$ref": "#/$defs/Position" }
-        },
-        "more": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "How many trailing positions Stack Depth would cut; the board no longer uses it and lists every position in the Series Panel."
         },
         "override": {
           "type": "boolean",

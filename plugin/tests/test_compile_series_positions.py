@@ -1,4 +1,4 @@
-"""Compile Series Stacks through the facade: placeholders, totals, depth, "+N", and colour."""
+"""Compile Series Stacks through the facade: placeholders, totals, and colour."""
 
 from datetime import UTC, date, datetime
 from typing import cast
@@ -44,14 +44,12 @@ def test_a_series_total_fills_placeholders_up_to_it() -> None:
     series = compile_series({2: 2.0}, config, totals={2: 7})
 
     assert numbers(series) == ['1', '2', '3', '4', '5', '6', '7']
-    assert series.more == 3
 
 
 def test_gaps_without_a_total_only_reach_the_highest_owned_whole_index() -> None:
     series = compile_series({1: 1.0, 3: 3.0})
 
     assert numbers(series) == ['1', '2', '3']
-    assert series.more == 0
 
 
 def test_a_fractional_index_is_a_position_but_never_a_placeholder() -> None:
@@ -68,28 +66,13 @@ def test_a_missing_book_one_puts_a_placeholder_in_front() -> None:
     assert series.positions[0].book is None
 
 
-def test_depth_zero_collapses_to_the_front_and_counts_the_rest() -> None:
-    series = compile_series({1: 2.0, 2: 3.0}, TierConfig(tiers=CONFIG.tiers, stack_depth=0))
-
-    assert numbers(series) == ['1', '2', '3']
-    assert series.more == 2
-
-
-def test_depth_six_collapses_to_seven_positions() -> None:
-    config = TierConfig(tiers=CONFIG.tiers, stack_depth=6, series_total_column='#series_total')
+def test_a_long_series_keeps_every_position_for_the_series_panel() -> None:
+    config = TierConfig(tiers=CONFIG.tiers, series_total_column='#series_total')
 
     series = compile_series({1: 1.0}, config, totals={1: 10})
 
-    assert len(series.positions) == 10
-    assert series.more == 3
-
-
-def test_the_cut_positions_become_the_plus_n_count() -> None:
-    config = TierConfig(tiers=CONFIG.tiers, series_total_column='#series_total')
-    series = compile_series({2: 2.0}, config, totals={2: 5})
-
-    assert numbers(series) == ['1', '2', '3', '4', '5']
-    assert series.more == 1
+    assert numbers(series) == [str(number) for number in range(1, 11)]
+    assert [position.book for position in series.positions] == [1, *[None] * 9]
 
 
 def test_colour_comes_from_the_first_owned_book_with_a_cover() -> None:

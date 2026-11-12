@@ -1,12 +1,11 @@
 """Compile Series Stacks through the facade: position order."""
 
 from datetime import UTC, date, datetime
-from typing import cast
 
 from fakes import FakeCovers, FakeLibrary, FakePrefs
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
-from tierlist.compile import CompileRequest, Generated, compile_data
+from tierlist.compile import CompileRequest
 from tierlist.tiers import Tier, TierConfig
 
 NOW = datetime(2026, 11, 6, 12, 0, tzinfo=UTC)
@@ -25,19 +24,3 @@ def test_an_index_zero_prequel_sits_behind_book_one() -> None:
     data = app.compile(CompileRequest('library', (1, 2), 'Lib', '0.1.0'))
 
     assert [position.number for position in data.series['Dune'].positions] == ['1', '0']
-
-
-def test_a_directly_built_stack_depth_above_the_max_collapses_to_at_most_seven_positions() -> None:
-    library = FakeLibrary(types={'#date_read': 'datetime'})
-    indexes = {book_id: float(book_id) for book_id in range(1, 11)}
-    library.values['series'] = cast(dict[int, object], dict.fromkeys(indexes, 'Dune'))
-    library.values['series_index'] = cast(dict[int, object], indexes)
-    library.values['#tier'] = cast(dict[int, object], dict.fromkeys(indexes, 's'))
-    config = TierConfig(tiers=CONFIG.tiers, stack_depth=99)
-
-    data = compile_data(
-        Generated(NOW, 'Lib', 'library', '0.1.0'), library, FakeCovers(), 'webp', config, range(1, 11), {}
-    )
-
-    assert len(data.series['Dune'].positions) == 10
-    assert data.series['Dune'].more == 3

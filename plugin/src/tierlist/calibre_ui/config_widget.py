@@ -3,11 +3,11 @@
 from typing import Any
 
 from calibre.gui2 import error_dialog
-from qt.core import QComboBox, QLabel, QSpinBox, QVBoxLayout, QWidget
+from qt.core import QComboBox, QLabel, QVBoxLayout, QWidget
 
 from ..compile import READ_COLUMN_TYPES
 from ..config_admin import ConfigAdmin
-from ..tiers import MAX_STACK_DEPTH, MIN_STACK_DEPTH, TierConfig, TierConfigError, validate
+from ..tiers import TierConfig, TierConfigError, validate
 from .adapters import config_admin
 from .config_extras import OrphanPanel, fill_column_combo
 from .config_form import button_row, mapping_form
@@ -27,8 +27,6 @@ class ConfigWidget(QWidget):
         self.gui = gui
         self.admin: ConfigAdmin = config_admin(gui.current_db)
         self.table = TierTable(self)
-        self.depth = QSpinBox(self)
-        self.depth.setRange(MIN_STACK_DEPTH, MAX_STACK_DEPTH)
         self.tier_column = QComboBox(self)
         self.read_column = QComboBox(self)
         self.total_column = QComboBox(self)
@@ -58,7 +56,6 @@ class ConfigWidget(QWidget):
                     (_('Read column'), self.read_column),
                     (_('Series total column'), self.total_column),
                 ),
-                self.depth,
             )
         )
         layout.addLayout(
@@ -106,7 +103,6 @@ class ConfigWidget(QWidget):
             tiers=self.table.tiers(),
             tier_column=self.tier_column.currentData(),
             read_column=self.read_column.currentData(),
-            stack_depth=self.depth.value(),
             series_total_column=self.total_column.currentData() or '',
         )
 
@@ -139,4 +135,3 @@ class ConfigWidget(QWidget):
 
     def _load_tiers(self, config: TierConfig) -> None:
         self.table.set_tiers(config.tiers)
-        self.depth.setValue(config.stack_depth)

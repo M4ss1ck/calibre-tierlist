@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Tier List 0.1.0\n"
+"Project-Id-Version: Tier List 0.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 19:58-0300\n"
+"POT-Creation-Date: 2026-11-11 21:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,11 +24,11 @@ msgid ""
 "of your series."
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:27
+#: plugin/src/tierlist/calibre_ui/action.py:28
 msgid "Compile a tier list of your series"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:106
+#: plugin/src/tierlist/calibre_ui/action.py:108
 msgid ""
 "This plugin was built without the web template, so it cannot compile a tier "
 "list."
@@ -44,7 +44,7 @@ msgstr ""
 #: plugin/src/tierlist/calibre_ui/column.py:58
 #: plugin/src/tierlist/calibre_ui/column.py:60
 #: plugin/src/tierlist/calibre_ui/config_io.py:20
-#: plugin/src/tierlist/calibre_ui/config_widget.py:118
+#: plugin/src/tierlist/calibre_ui/config_widget.py:114
 msgid "Tier List"
 msgstr ""
 
@@ -163,10 +163,6 @@ msgstr ""
 msgid "Reattach Override"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_form.py:24
-msgid "Stack depth"
-msgstr ""
-
 #: plugin/src/tierlist/calibre_ui/config_io.py:14
 #: plugin/src/tierlist/calibre_ui/config_io.py:45
 msgid "Import Tier Config"
@@ -206,107 +202,107 @@ msgstr[1] ""
 msgid "Remove Tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:41
+#: plugin/src/tierlist/calibre_ui/config_widget.py:39
 msgid "Tiers"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:47
+#: plugin/src/tierlist/calibre_ui/config_widget.py:45
 msgid "Add"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:48
+#: plugin/src/tierlist/calibre_ui/config_widget.py:46
 msgid "Remove"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:49
+#: plugin/src/tierlist/calibre_ui/config_widget.py:47
 msgid "Move up"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:50
+#: plugin/src/tierlist/calibre_ui/config_widget.py:48
 msgid "Move down"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:57
+#: plugin/src/tierlist/calibre_ui/config_widget.py:55
 msgid "Tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:58
+#: plugin/src/tierlist/calibre_ui/config_widget.py:56
 msgid "Read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:59
+#: plugin/src/tierlist/calibre_ui/config_widget.py:57
 msgid "Series total column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:67
+#: plugin/src/tierlist/calibre_ui/config_widget.py:64
 msgid "Export JSON…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:67
+#: plugin/src/tierlist/calibre_ui/config_widget.py:64
 msgid "Import JSON…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:138
+#: plugin/src/tierlist/calibre_ui/config_widget.py:134
 msgid "None"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:22
+#: plugin/src/tierlist/calibre_ui/menu.py:23
 msgid "Send to tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:23
+#: plugin/src/tierlist/calibre_ui/menu.py:24
 msgid "Set series tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:60
+#: plugin/src/tierlist/calibre_ui/menu.py:61
 msgid "Send to tier: {}"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:64
+#: plugin/src/tierlist/calibre_ui/menu.py:66
 msgid "Clear tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:68
+#: plugin/src/tierlist/calibre_ui/menu.py:70
 msgid "Mark read"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:69
+#: plugin/src/tierlist/calibre_ui/menu.py:71
 msgid "Mark unread"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:72
+#: plugin/src/tierlist/calibre_ui/menu.py:74
 msgid "Restart calibre to finish adding the read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:74
+#: plugin/src/tierlist/calibre_ui/menu.py:76
 msgid "This library has no read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:78
+#: plugin/src/tierlist/calibre_ui/menu.py:80
 msgid "Set up read column…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:95
+#: plugin/src/tierlist/calibre_ui/menu.py:97
 msgid "Restart calibre to finish adding the tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:97
+#: plugin/src/tierlist/calibre_ui/menu.py:99
 msgid "This library has no tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:100
+#: plugin/src/tierlist/calibre_ui/menu.py:102
 msgid "Create tier column…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/series_menu.py:19
+#: plugin/src/tierlist/calibre_ui/series_menu.py:24
 msgid "Set series tier: {}"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/series_menu.py:23
+#: plugin/src/tierlist/calibre_ui/series_menu.py:29
 msgid "Auto"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/series_menu.py:23
+#: plugin/src/tierlist/calibre_ui/series_menu.py:29
 msgid "Set series tier: Auto"
 msgstr ""
 
@@ -334,51 +330,46 @@ msgstr ""
 msgid "Tier Config needs at least one Tier"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:35
-#, python-format
-msgid "Stack depth must be between %d and %d, not %d"
-msgstr ""
-
-#: plugin/src/tierlist/tiers/validate.py:41
+#: plugin/src/tierlist/tiers/validate.py:37
 #, python-format
 msgid "Tier id must not be empty: %r"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:43
+#: plugin/src/tierlist/tiers/validate.py:39
 #, python-format
 msgid "Tier label must not be empty for Tier %r"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:45
+#: plugin/src/tierlist/tiers/validate.py:41
 #, python-format
 msgid "Tier colour must be #rrggbb hex for Tier %r: %r"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:52
+#: plugin/src/tierlist/tiers/validate.py:48
 #, python-format
 msgid "Duplicate Tier id: %r"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:61
+#: plugin/src/tierlist/tiers/validate.py:57
 #, python-format
 msgid "Duplicate Tier label: %r"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:70
+#: plugin/src/tierlist/tiers/validate.py:66
 #, python-format
 msgid "Not valid JSON: %s"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:72
+#: plugin/src/tierlist/tiers/validate.py:68
 msgid "Tier Config must be a JSON object"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:76
+#: plugin/src/tierlist/tiers/validate.py:72
 #, python-format
 msgid "Missing field: %s"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:78
+#: plugin/src/tierlist/tiers/validate.py:74
 #, python-format
 msgid "Not a valid Tier Config: %s"
 msgstr ""

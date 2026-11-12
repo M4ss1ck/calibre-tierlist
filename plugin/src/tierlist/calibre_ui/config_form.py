@@ -3,7 +3,7 @@
 from collections.abc import Callable, Sequence
 from typing import Any
 
-from qt.core import QComboBox, QFormLayout, QHBoxLayout, QPushButton, QSpinBox, QWidget
+from qt.core import QComboBox, QFormLayout, QHBoxLayout, QPushButton, QWidget
 
 
 def button_row(parent: QWidget, buttons: Sequence[tuple[str, Callable[[], Any]]]) -> QHBoxLayout:
@@ -16,10 +16,9 @@ def button_row(parent: QWidget, buttons: Sequence[tuple[str, Callable[[], Any]]]
     return row
 
 
-def mapping_form(combos: Sequence[tuple[str, QComboBox]], depth: QSpinBox) -> QFormLayout:
-    """The column mapping combos and the Stack depth spin box, labelled."""
+def mapping_form(combos: Sequence[tuple[str, QComboBox]]) -> QFormLayout:
+    """The column mapping combos, labelled."""
     form = QFormLayout()
     for label, combo in combos:
         form.addRow(label, combo)
-    form.addRow(_('Stack depth'), depth)
     return form
