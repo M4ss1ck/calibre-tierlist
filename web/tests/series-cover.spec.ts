@@ -44,6 +44,9 @@ test('offers an eye only on owned books with a cover, keeping every row the same
     await expect(eyes).toHaveCount(position.book !== null && covered.includes(position.book) ? 1 : 0);
     await expect(rows.nth(index).locator('.eye, .eye-slot')).toHaveCount(1);
   }
+  const width = async (selector: string) => (await panel.locator(selector).first().boundingBox())?.width ?? 0;
+  expect(await width('.eye-slot')).toBeGreaterThan(0);
+  expect(await width('.eye-slot')).toBeCloseTo(await width('.eye'), 1);
   await expect(panel.getByRole('button', { name: LABEL }).first()).toHaveAttribute('title', LABEL);
 });
 
@@ -110,9 +113,33 @@ test('keeps the pick for the session across closing and reopening the panel, not
 
 test('opens Detail from the title, not from the eye', async ({ page }) => {
   const { unread } = dune();
-  const { row } = await openDune(page);
+  const { panel, row, eye } = await openDune(page);
+  const detail = page.getByRole('dialog', { name: data.books[unread]?.title ?? '' });
+
+  await eye(unread).click();
+  await expect(panel).toBeVisible();
+  await expect(detail).toBeHidden();
 
   await row(unread).locator('button.title').click();
 
-  await expect(page.getByRole('dialog', { name: data.books[unread]?.title ?? '' })).toBeVisible();
+  await expect(detail).toBeVisible();
+});
+
+test('names each eye after its book for assistive tech', async ({ page }) => {
+  const { unread } = dune();
+  const { eye } = await openDune(page);
+
+  await expect(eye(unread)).toHaveAccessibleDescription(data.books[unread]?.title ?? '');
+});
+
+test('prints the picked Series Cover', async ({ page }) => {
+  const { unread } = dune();
+  const { panel, eye } = await openDune(page);
+  await eye(unread).click();
+  await panel.getByRole('button', { name: 'Close' }).click();
+
+  await page.emulateMedia({ media: 'print' });
+
+  await expect(front(page)).toBeVisible();
+  await expect(front(page)).toHaveAttribute('src', src(unread));
 });

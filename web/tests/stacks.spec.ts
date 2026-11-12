@@ -72,7 +72,8 @@ test('fills a Stack with no cover with its series colour and leaves an unread fr
 
   const button = stack(page, bare.name).locator('.front');
   await expect(button).toHaveCSS('background-image', /linear-gradient/);
-  await expect(button).not.toHaveClass(/\bunread\b/);
+  await expect(button).toHaveCSS('filter', 'none');
+  await expect(button).toHaveCSS('opacity', '1');
 });
 
 test('counts the read books over the books in the library, Placeholders left out', async ({ page }) => {

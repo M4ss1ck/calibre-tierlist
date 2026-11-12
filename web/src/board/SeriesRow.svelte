@@ -14,18 +14,19 @@
   };
   let { number, book, tier, eligible, front, onopen, onfront }: Props = $props();
   const label = 'Use this cover for the series';
+  const titleId = $props.id();
 </script>
 
 <li class="row" class:missing={!book}>
   <span class="number">#{number}</span>
-  <button type="button" class="title" onclick={onopen}>{book?.title ?? 'Not in your library'}</button>
+  <button type="button" class="title" id={titleId} onclick={onopen}>{book?.title ?? 'Not in your library'}</button>
   {#if tier}
     <span class="tier" style:background-color={tier.colour}>{tier.label}</span>
   {:else if book}
     <span class="tier unranked">Unranked</span>
   {/if}
   {#if eligible}
-    <button type="button" class="eye" aria-label={label} title={label} aria-pressed={front} onclick={onfront}>
+    <button type="button" class="eye" aria-label={label} title={label} aria-pressed={front} aria-describedby={titleId} onclick={onfront}>
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
         <path class="lid" d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" />
         <circle class="pupil" cx="12" cy="12" r="3" />
