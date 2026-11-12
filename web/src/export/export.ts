@@ -1,9 +1,7 @@
 import { zipSync } from 'fflate';
 import { planExport, type Size } from './plan';
 import { snapshot } from './snapshot';
-
-/** What the page shows but the image leaves out: the toolbar and the filters. */
-export const SCREEN_ONLY = ['.controls', 'form.filters'];
+import { stage } from './stage';
 
 /** A rendered Lane and the id it exports under. */
 type LaneElement = { id: string; element: HTMLElement; size: Size };
@@ -41,11 +39,22 @@ function warningNote(warnings: Set<string>): string {
 }
 
 /**
- * Exports the board as `tierlist.png`, or — when the whole board would exceed the
- * safe canvas size — one PNG per Lane in `tierlist.zip`. Resolves to the status
- * message shown to the reader; failures reject so they are never silent.
+ * Exports the sheet as `tierlist.png`, or — when the whole sheet would exceed the
+ * safe canvas size — one PNG per Lane in `tierlist.zip`. Draws an off-screen copy
+ * without the screen-only controls (see `stage`). Resolves to the status message
+ * shown to the reader; failures reject so they are never silent.
  */
-export async function exportPng(board: HTMLElement): Promise<string> {
+export async function exportPng(sheet: HTMLElement): Promise<string> {
+  const staged = stage(sheet);
+  try {
+    return await exportStaged(staged.element);
+  } finally {
+    staged.dispose();
+  }
+}
+
+/** Plans, captures and downloads the staged `board`. */
+async function exportStaged(board: HTMLElement): Promise<string> {
   const lanes: LaneElement[] = [...board.querySelectorAll<HTMLElement>('[data-lane-id]')].map(
     (element) => ({ id: element.dataset['laneId'] ?? 'lane', element, size: measure(element) }),
   );
@@ -54,7 +63,7 @@ export async function exportPng(board: HTMLElement): Promise<string> {
   const warnings = new Set<string>();
 
   if (plan.kind === 'single') {
-    const shot = await snapshot(board, plan.scale, SCREEN_ONLY);
+    const shot = await snapshot(board, plan.scale);
     shot.warnings.forEach((code) => warnings.add(code));
     download(shot.blob, 'tierlist.png');
     return `Exported tierlist.png${warningNote(warnings)}`;
