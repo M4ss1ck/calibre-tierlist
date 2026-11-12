@@ -12,8 +12,8 @@ class TierListPlugin(InterfaceActionBase):
     author = 'Andy Palmero'
     version = (
         0,  # x-release-please-major
-        4,  # x-release-please-minor
-        2,  # x-release-please-patch
+        5,  # x-release-please-minor
+        0,  # x-release-please-patch
     )
     minimum_calibre_version = (9, 0, 0)
     actual_plugin = 'calibre_plugins.tierlist.calibre_ui.action:TierListAction'
