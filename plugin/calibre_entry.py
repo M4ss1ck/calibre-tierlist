@@ -12,7 +12,7 @@ class TierListPlugin(InterfaceActionBase):
     author = 'Andy Palmero'
     version = (
         0,  # x-release-please-major
-        2,  # x-release-please-minor
+        3,  # x-release-please-minor
         0,  # x-release-please-patch
     )
     minimum_calibre_version = (9, 0, 0)
