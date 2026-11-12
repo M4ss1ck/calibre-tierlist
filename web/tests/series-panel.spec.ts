@@ -19,11 +19,16 @@ function longest(): [string, Series] {
 
 const ownedCount = (series: Series) => series.positions.filter((position) => position.book !== null).length;
 
+/** How many of the series' books in the library are read, out of how many are in it. */
+function readOf(series: Series): { read: number; total: number } {
+  const books = series.positions.flatMap(({ book }) => (book === null ? [] : [data.books[book]]));
+  return { read: books.filter((book) => book?.read === true).length, total: books.length };
+}
+
 /** Click the Stack named `name` and return its series panel. */
 async function openPanel(page: Page, name: string, series: Series) {
-  const opener = page.getByRole('button', {
-    name: `${name}, ${ownedCount(series)} of ${series.positions.length} books`,
-  });
+  const { read, total } = readOf(series);
+  const opener = page.getByRole('button', { name: `${name}, ${read} of ${total} read` });
   await opener.click();
   const panel = page.getByRole('dialog', { name });
   await expect(panel).toBeVisible();

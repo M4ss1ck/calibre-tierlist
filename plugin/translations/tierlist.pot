@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Tier List 0.3.0\n"
+"Project-Id-Version: Tier List 0.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-12 00:36-0300\n"
+"POT-Creation-Date: 2026-11-12 02:18-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -247,28 +247,93 @@ msgstr[1] ""
 msgid "Remove Tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_page.py:23
-msgid "Show the Unranked Lane"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_page.py:24
+#: plugin/src/tierlist/calibre_ui/config_page.py:32
 msgid "Show the book and series counts"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_page.py:25
+#: plugin/src/tierlist/calibre_ui/config_page.py:33
 msgid "Show the library name"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_page.py:27
+#: plugin/src/tierlist/calibre_ui/config_page.py:44
+#: plugin/src/tierlist/calibre_ui/config_widget.py:31
+msgid "Page"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:46
 msgid "Theme"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_page.py:28
+#: plugin/src/tierlist/calibre_ui/config_page.py:47
 msgid "Title"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_page.py:29
+#: plugin/src/tierlist/calibre_ui/config_page.py:48
+msgid "Page width"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:52
+msgid "Header"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_covers.py:16
+msgid "Covers"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_covers.py:17
+msgid "Show captions"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_covers.py:18
+msgid "Show the read count"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_covers.py:19
+msgid "Show the sheets behind series"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_covers.py:26
+msgid "Cover size"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_covers.py:27
+msgid "Cover gap"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:16
+msgid "Lanes"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:17
+msgid "Show tier labels"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:18
+msgid "Show tier descriptions"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:19
+msgid "Show the Unranked Lane"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:24
+msgid "No books in this tier"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:29
 msgid "Unranked Lane label"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:30
+msgid "Lane gap"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:31
+msgid "Empty lane message"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page_lanes.py:32
+msgid "Custom message"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/config_tiers.py:39
@@ -300,15 +365,12 @@ msgid "Series total column"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/config_tiers.py:93
+#: plugin/src/tierlist/calibre_ui/page_labels.py:17
 msgid "None"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/config_widget.py:30
 msgid "Tiers"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_widget.py:31
-msgid "Page"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/config_widget.py:32
@@ -375,6 +437,58 @@ msgstr ""
 msgid "Create tier column…"
 msgstr ""
 
+#: plugin/src/tierlist/calibre_ui/page_labels.py:7
+msgid "Dark"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:7
+msgid "Light"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:7
+msgid "System"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:12
+msgid "Full window"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:12
+msgid "Narrow"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:12
+#: plugin/src/tierlist/calibre_ui/page_labels.py:17
+#: plugin/src/tierlist/calibre_ui/page_labels.py:22
+msgid "Normal"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:12
+msgid "Wide"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:17
+#: plugin/src/tierlist/calibre_ui/page_labels.py:22
+msgid "Large"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:17
+#: plugin/src/tierlist/calibre_ui/page_labels.py:22
+msgid "Small"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:27
+msgid "Custom"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:27
+msgid "Default text"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/page_labels.py:27
+msgid "Hidden"
+msgstr ""
+
 #: plugin/src/tierlist/calibre_ui/series_menu.py:24
 msgid "Set series tier: {}"
 msgstr ""
@@ -387,7 +501,7 @@ msgstr ""
 msgid "Set series tier: Auto"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/settings_dialog.py:17
+#: plugin/src/tierlist/calibre_ui/settings_dialog.py:21
 msgid "Tier List Settings"
 msgstr ""
 

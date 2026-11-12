@@ -9,7 +9,7 @@
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 8,
+      "const": 9,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "pageDefaults": { "$ref": "#/$defs/PageDefaults" },
@@ -44,7 +44,25 @@
     "PageDefaults": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["theme", "title", "unrankedLabel", "showUnranked", "showCounts", "showLibrary"],
+      "required": [
+        "theme",
+        "title",
+        "unrankedLabel",
+        "showUnranked",
+        "showCounts",
+        "showLibrary",
+        "pageWidth",
+        "showLabels",
+        "showDescriptions",
+        "laneGap",
+        "emptyLane",
+        "emptyLaneText",
+        "showCaptions",
+        "showReadCount",
+        "showSheets",
+        "coverSize",
+        "coverGap"
+      ],
       "properties": {
         "theme": {
           "type": "string",
@@ -58,9 +76,39 @@
         "showLibrary": {
           "type": "boolean",
           "description": "Whether the header line and footer show the library name."
-        }
+        },
+        "pageWidth": {
+          "type": "string",
+          "enum": ["narrow", "normal", "wide", "full"],
+          "description": "How wide the Sheet may grow on screen and in the PNG: 60rem, 85rem, 110rem or the full window."
+        },
+        "showLabels": { "type": "boolean", "description": "Whether each Lane's label cell shows its label." },
+        "showDescriptions": {
+          "type": "boolean",
+          "description": "Whether each Lane's label cell shows its Tier's description, when it has one."
+        },
+        "laneGap": { "$ref": "#/$defs/Gap", "description": "The space between Lanes; none draws them as one block." },
+        "emptyLane": {
+          "type": "string",
+          "enum": ["default", "hidden", "custom"],
+          "description": "The Empty Lane Message: the built-in text, nothing, or emptyLaneText."
+        },
+        "emptyLaneText": {
+          "type": "string",
+          "description": "The reader's own Empty Lane Message, used when emptyLane is custom; blank falls back to the built-in text."
+        },
+        "showCaptions": { "type": "boolean", "description": "Whether Stacks and Cards show their Caption." },
+        "showReadCount": { "type": "boolean", "description": "Whether Stacks show their Read Count." },
+        "showSheets": { "type": "boolean", "description": "Whether Stacks show the sheets peeking out behind them." },
+        "coverSize": {
+          "type": "string",
+          "enum": ["small", "normal", "large"],
+          "description": "How large Stacks and Cards are drawn."
+        },
+        "coverGap": { "$ref": "#/$defs/Gap", "description": "The space between Stacks and Cards inside a Lane." }
       }
     },
+    "Gap": { "type": "string", "enum": ["none", "small", "normal", "large"] },
     "Generated": {
       "type": "object",
       "additionalProperties": false,

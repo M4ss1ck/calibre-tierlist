@@ -77,6 +77,23 @@ def test_a_file_without_page_defaults_keeps_the_stored_ones() -> None:
     assert prefs.data[SERIES_TIER_OVERRIDES_KEY] == OVERRIDES and prefs.data[LANE_ORDER_KEY] == PREF_ORDER
 
 
+def test_an_export_stored_before_the_new_page_fields_loads_their_defaults() -> None:
+    old = {
+        'theme': 'dark',
+        'title': 'Old shelf',
+        'unrankedLabel': 'Someday',
+        'showUnranked': False,
+        'showCounts': True,
+        'showLibrary': False,
+    }
+    export = parse_export(
+        json.dumps({'kind': KIND, 'version': VERSION, 'tier_config': CONFIG.to_dict(), 'page_defaults': old})
+    )
+
+    assert export.page_defaults is not None
+    assert export.page_defaults.to_dict() == {**PageDefaults().to_dict(), **old}
+
+
 @pytest.mark.parametrize(
     ('section', 'value', 'message'),
     [

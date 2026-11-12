@@ -1,12 +1,23 @@
 {
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "pageDefaults": {
     "theme": "system",
     "title": "Tier List",
     "unrankedLabel": "Unranked",
     "showUnranked": true,
     "showCounts": true,
-    "showLibrary": true
+    "showLibrary": true,
+    "pageWidth": "normal",
+    "showLabels": true,
+    "showDescriptions": false,
+    "laneGap": "none",
+    "emptyLane": "default",
+    "emptyLaneText": "",
+    "showCaptions": true,
+    "showReadCount": true,
+    "showSheets": true,
+    "coverSize": "normal",
+    "coverGap": "normal"
   },
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",

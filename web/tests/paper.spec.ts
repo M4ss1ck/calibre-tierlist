@@ -39,7 +39,7 @@ test('drops the controls and the Detail Panel from the paper', async ({ page }) 
   for (const control of [
     page.locator('form.filters'),
     page.locator('input[type="search"]'),
-    page.getByRole('switch', { name: 'Unranked lane', includeHidden: true }),
+    page.getByRole('button', { name: 'Customize view', includeHidden: true }),
     page.getByRole('group', { name: 'Theme', includeHidden: true }),
     page.getByRole('button', { name: 'Download PNG', includeHidden: true }),
     page.getByRole('button', { name: 'Print or PDF', includeHidden: true }),

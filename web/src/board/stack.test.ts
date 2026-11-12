@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Book, Cover, Series } from '../contract/tierlist';
-import { frontOf, resolve, sheetsBehind } from './stack';
+import { frontOf, readCount, resolve, sheetsBehind } from './stack';
 
 function book(title: string, read = true): Book {
   return {
@@ -81,5 +81,13 @@ describe('sheetsBehind', () => {
   ])('shows %i positions with %i sheets behind the front', (count, expected) => {
     const ids = Array.from({ length: count }, () => null);
     expect(sheetsBehind(resolve(series(...ids), books, {}))).toBe(expected);
+  });
+});
+
+describe('readCount', () => {
+  it('counts the read books out of the owned ones, Placeholders in neither', () => {
+    const resolved = resolve(series('a', 'b', null), books, {});
+
+    expect(readCount(resolved)).toEqual({ read: 1, total: 2 });
   });
 });
