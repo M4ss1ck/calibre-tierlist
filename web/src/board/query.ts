@@ -17,7 +17,6 @@ const BUILT_IN: PageDefaults = {
   emptyLaneText: '',
   showCaptions: true,
   showReadCount: true,
-  showSheets: true,
   coverSize: 'normal',
   coverGap: 'normal',
 };
@@ -69,7 +68,6 @@ export function resolvePageDefaults(baked: Partial<PageDefaults>, search: string
     emptyLaneText: chosenText(query.get('empty_text'), defaults.emptyLaneText),
     showCaptions: chosenSwitch(query.get('captions'), defaults.showCaptions),
     showReadCount: chosenSwitch(query.get('read_count'), defaults.showReadCount),
-    showSheets: chosenSwitch(query.get('sheets'), defaults.showSheets),
     coverSize: chosenOf(COVER_SIZES, query.get('cover_size'), defaults.coverSize),
     coverGap: chosenOf(GAPS, query.get('cover_gap'), defaults.coverGap),
   };

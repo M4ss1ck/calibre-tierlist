@@ -59,15 +59,6 @@ test('hides every Caption from the panel', async ({ page }) => {
   await expect(page.locator('figure .name')).toHaveCount(0);
 });
 
-test('hides the sheets behind each series from the panel', async ({ page }) => {
-  await page.goto(url);
-  await expect(stack(page, 'Dune').locator('.behind')).toHaveCount(2);
-
-  await change(page, 'Sheets behind series');
-
-  await expect(page.locator('.behind')).toHaveCount(0);
-});
-
 test('draws Cards 1.25 times wider at ?cover_size=large', async ({ page }) => {
   const width = () => page.locator('article.card').first().evaluate((card) => card.getBoundingClientRect().width);
 

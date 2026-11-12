@@ -1,5 +1,6 @@
 """The compiled payload validates against the JSON Schema and matches the checked-in fixture."""
 
+import base64
 import json
 import os
 from datetime import UTC, date, datetime
@@ -18,6 +19,9 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = ROOT / 'contract' / 'tierlist.schema.json'
 FIXTURE_PATH = ROOT / 'contract' / 'fixtures' / 'tierlist.json'
 NOW = datetime(2026, 11, 6, 12, 0, tzinfo=UTC)
+# Distinct 2x3 WebPs, so the page tests can tell a Series Cover pick from the default.
+ORANGE_WEBP = base64.b64decode('UklGRh4AAABXRUJQVlA4TBEAAAAvAYAAAAdQvCIXpf+BiOh/AAA=')
+GREEN_WEBP = base64.b64decode('UklGRh4AAABXRUJQVlA4TBEAAAAvAYAAAAdQ0KJUq/+BiOh/AAA=')
 CONFIG = TierConfig(
     tiers=(
         Tier('s', 'S', '#ff7f7f', 'The best'),
@@ -57,7 +61,17 @@ def fixture_payload() -> dict[str, Any]:
     library.values['tags'] = {1: ('mystery', 'classic'), 2: ('magical realism',)}
     library.values['comments'] = {1: '<p>A <b>tense</b> tale &amp; more.</p><script>x()</script>'}
     prefs = FakePrefs({TIER_CONFIG_KEY: CONFIG.to_dict(), SERIES_TIER_OVERRIDES_KEY: {'Dune': 'b'}})
-    app = TierList(library, prefs, lambda: NOW.date(), lambda: NOW, covers=FakeCovers(with_cover={1, 2, 3, 7}))
+    app = TierList(
+        library,
+        prefs,
+        lambda: NOW.date(),
+        lambda: NOW,
+        covers=FakeCovers(
+            with_cover={1, 2, 3, 5, 7},
+            colours={3: '#c87828', 5: '#28a05a'},
+            images={3: ORANGE_WEBP, 5: GREEN_WEBP},
+        ),
+    )
     request = CompileRequest('library', tuple(range(1, 10)), 'Fixture Library', '0.1.0')
     return app.compile(request).to_dict()
 

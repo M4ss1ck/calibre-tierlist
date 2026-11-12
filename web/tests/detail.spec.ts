@@ -14,7 +14,7 @@ test.beforeAll(async () => {
 async function pickFromDune(page: Page, text: string) {
   await page.getByRole('figure', { name: 'Dune' }).getByRole('button').click();
   const panel = page.getByRole('dialog', { name: 'Dune' });
-  const row = panel.getByRole('listitem').filter({ hasText: text }).first().getByRole('button');
+  const row = panel.getByRole('listitem').filter({ hasText: text }).first().locator('button.title');
   await row.click();
 }
 
@@ -95,7 +95,7 @@ test('closes with the close button and returns focus to the Stack it came from',
   const stack = page.getByRole('figure', { name: 'Dune' }).getByRole('button');
   await stack.focus();
   await page.keyboard.press('Space');
-  await page.getByRole('dialog', { name: 'Dune' }).getByRole('listitem').first().getByRole('button').press('Enter');
+  await page.getByRole('dialog', { name: 'Dune' }).getByRole('listitem').first().locator('button.title').press('Enter');
   await page.getByRole('dialog', { name: 'Dune #1' }).getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(stack).toBeFocused();

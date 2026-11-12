@@ -17,10 +17,11 @@
     showLabel: boolean;
     showCaption: boolean;
     showReadCount: boolean;
-    showSheets: boolean;
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     series: Record<string, Series>;
+    /** Each series' session Series Cover pick, by series name. */
+    fronts: Record<string, string>;
     filters: Filters;
     onopen: (opened: Selection | StackPick) => void;
     onrename: (label: string) => void;
@@ -34,10 +35,10 @@
     showLabel,
     showCaption,
     showReadCount,
-    showSheets,
     books,
     covers,
     series,
+    fronts,
     filters,
     onopen,
     onrename,
@@ -62,9 +63,9 @@
         <Stack
           name={entry.name}
           series={entry.series}
+          chosen={fronts[entry.name]}
           {showCaption}
           {showReadCount}
-          {showSheets}
           {books}
           {covers}
           {onopen}

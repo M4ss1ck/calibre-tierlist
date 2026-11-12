@@ -19,25 +19,41 @@ export function resolve(
   }));
 }
 
+/** Whether this position can be a Series Cover: an owned book with a cover. */
+export function canFront(entry: Resolved): boolean {
+  return entry.book !== undefined && entry.cover !== undefined;
+}
+
 /**
- * The position a collapsed Stack shows in front: the first owned book with a
- * cover, else the first owned book, else the first position.
+ * The position a Stack shows in front, its Series Cover: the book id `chosen`
+ * names when it is one that can front, else the first owned book with a cover,
+ * else the first owned book, else the first position.
  */
-export function frontOf(resolved: Resolved[]): Resolved | undefined {
+export function frontOf(resolved: Resolved[], chosen?: string): Resolved | undefined {
   return (
-    resolved.find((entry) => entry.book && entry.cover) ??
+    resolved.find((entry) => chosen !== undefined && entry.position.book === chosen && canFront(entry)) ??
+    resolved.find(canFront) ??
     resolved.find((entry) => entry.book) ??
     resolved[0]
   );
 }
 
-/** How many sheets peek out behind the front: one per other position, at most two. */
-export function sheetsBehind(resolved: Resolved[]): number {
-  return Math.min(2, Math.max(0, resolved.length - 1));
+/**
+ * The pick a click on `book`'s eye leaves: clicking the book already in front
+ * returns the series to its default Series Cover, any other book becomes it.
+ */
+export function pickFront(resolved: Resolved[], chosen: string | undefined, book: string): string | undefined {
+  return frontOf(resolved, chosen)?.position.book === book ? undefined : book;
 }
 
 /** How many of the series' books in the library are read, out of how many are in it. */
 export function readCount(resolved: Resolved[]): { read: number; total: number } {
   const owned = resolved.filter((entry) => entry.book !== undefined);
   return { read: owned.filter((entry) => entry.book?.read === true).length, total: owned.length };
+}
+
+/** The session's Series Cover picks with `name`'s set to `chosen`, or dropped when `chosen` is undefined. */
+export function withFront(fronts: Record<string, string>, name: string, chosen: string | undefined) {
+  const rest = Object.fromEntries(Object.entries(fronts).filter(([series]) => series !== name));
+  return chosen === undefined ? rest : { ...rest, [name]: chosen };
 }

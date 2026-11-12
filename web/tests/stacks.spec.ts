@@ -63,7 +63,7 @@ test('shows the cover of the first owned book that has one in front', async ({ p
   expect(fronted).toBeGreaterThan(0);
 });
 
-test('fills a Stack with no cover with its series colour and dims an unread front', async ({ page }) => {
+test('fills a Stack with no cover with its series colour and leaves an unread front undimmed', async ({ page }) => {
   await page.goto(url);
   const bare = placed().find(({ name }) => owned(name).every(({ book }) => book === null || !(book in data.covers)));
   if (!bare) throw new Error('Fixture has no Stack without covers');
@@ -72,7 +72,8 @@ test('fills a Stack with no cover with its series colour and dims an unread fron
 
   const button = stack(page, bare.name).locator('.front');
   await expect(button).toHaveCSS('background-image', /linear-gradient/);
-  await expect(button).toHaveClass(/\bunread\b/);
+  await expect(button).toHaveCSS('filter', 'none');
+  await expect(button).toHaveCSS('opacity', '1');
 });
 
 test('counts the read books over the books in the library, Placeholders left out', async ({ page }) => {
@@ -96,12 +97,15 @@ test('names the series in a box and in the button that opens it', async ({ page 
   }
 });
 
-test('peeks at most two sheets out behind the front', async ({ page }) => {
-  await page.goto(url);
+test('draws no sheets behind a Stack and never dims its front', async ({ page }) => {
+  await page.goto(`${url}?sheets=1`);
 
-  for (const { name } of placed()) {
-    const expected = Math.min(2, seriesOf(name).positions.length - 1);
-    await expect(stack(page, name).locator('.behind')).toHaveCount(expected);
+  await expect(page.locator('.behind')).toHaveCount(0);
+  const covers = page.locator('figure.stack .cover');
+  expect(await covers.count()).toBeGreaterThan(0);
+  for (const cover of await covers.all()) {
+    await expect(cover).toHaveCSS('filter', 'none');
+    await expect(cover).toHaveCSS('opacity', '1');
   }
 });
 

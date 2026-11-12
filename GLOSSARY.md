@@ -46,7 +46,7 @@ An Override whose series name matches no series in the library, usually after a 
 ## Board
 
 **Stack**
-The visual group for one series inside a Tier row: a single front cover (the first owned book with a cover, else the series colour) with up to two sheets peeking out behind it, a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
+The visual group for one series inside a Tier row: a single cover, its Series Cover (or the series colour when no owned book has one), a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
 Avoid: pile, deck.
 
 **Card**
@@ -57,8 +57,12 @@ Avoid: tile, chip.
 A series position the user does not own. The Series Panel lists it as "Not in your library" and it opens the Detail Panel like an owned position; a Stack with no owned cover is drawn in the series colour (the dominant cover colour of its first covered book in index order). An owned book without a cover uses the Placeholder style with a "no cover" mark on its Card.
 Avoid: ghost cover, missing book (that is the position, not the drawing).
 
+**Series Cover**
+The book whose cover a Stack shows: the first owned book with a cover, unless the reader picks another with its eye in the Series Panel. The pick lasts for the session and is never saved; pressing the picked eye again returns to the first.
+Avoid: front, thumbnail, poster.
+
 **Series Panel**
-The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier and each Placeholder as "Not in your library". Picking a row opens the Detail Panel.
+The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier and each Placeholder as "Not in your library". Picking a row's title opens the Detail Panel; the eye on a row with a cover picks the Series Cover.
 Avoid: expanded Stack, series popup.
 
 **Sheet**
@@ -82,7 +86,7 @@ The part of Settings that shows the board as Lanes of covers so the reader can d
 Avoid: board editor, sorter, drag mode.
 
 **Page Defaults**
-The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, peeking sheets, Cover Size and Cover Gap. A query in the page's address can override any of them for that one opening, and the View Panel changes them for the session; neither is ever saved.
+The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, Cover Size and Cover Gap. A query in the page's address can override any of them for that one opening, and the View Panel changes them for the session; neither is ever saved.
 Avoid: page settings, view options, preferences.
 
 **Unranked Lane**
@@ -122,7 +126,7 @@ How wide the Sheet may grow on screen and in the PNG: narrow, normal, wide or th
 Avoid: page size, paper size, zoom.
 
 **Detail Panel**
-The dialog that opens from a Card or a Series Panel row, showing everything known about that book (or, for a Placeholder, its series, number and that it is not in the library). A book with no Book Tier shows "Unranked".
+The dialog that opens from a Card or a Series Panel row, showing everything known about that book (or, for a Placeholder, its series, number and that it is not in the library). A book with no Book Tier shows "Unranked". Opened from a Series Panel row, it has a back button that returns to that list; closing it any other way closes both.
 Avoid: modal, popup, info box.
 
 **Blurb**

@@ -17,7 +17,6 @@ const baked: PageDefaults = {
   emptyLaneText: 'Nothing here',
   showCaptions: false,
   showReadCount: false,
-  showSheets: false,
   coverSize: 'large',
   coverGap: 'small',
 };
@@ -91,7 +90,6 @@ describe('resolvePageDefaults', () => {
       emptyLaneText: '',
       showCaptions: true,
       showReadCount: true,
-      showSheets: true,
       coverSize: 'normal',
       coverGap: 'normal',
     });

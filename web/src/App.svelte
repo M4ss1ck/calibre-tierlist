@@ -1,12 +1,13 @@
 <script lang="ts">
   import { untrack } from 'svelte';
-  import Detail, { type Selection } from './board/Detail.svelte';
+  import Detail from './board/Detail.svelte';
+  import { back, closeDetail, closePanel, openPicked, pick, type Nav } from './board/dialogs';
   import Lane from './board/Lane.svelte';
   import { boardLanes, footerMeta } from './board/page';
   import { resolvePageDefaults } from './board/query';
   import SeriesPanel from './board/SeriesPanel.svelte';
   import SheetHeader from './board/SheetHeader.svelte';
-  import type { StackPick } from './board/stack';
+  import { withFront } from './board/stack';
   import { emptyMessage, viewStyle } from './board/view';
   import ViewPanel from './board/ViewPanel.svelte';
   import type { PageDefaults, TierListData } from './contract/tierlist';
@@ -19,8 +20,8 @@
 
   let { data }: { data: TierListData } = $props();
   let sheet = $state<HTMLElement>();
-  let selection = $state<Selection | undefined>();
-  let opened = $state<string | undefined>();
+  let nav = $state<Nav>({});
+  let fronts = $state<Record<string, string>>({});
   const defaults = untrack(() => resolvePageDefaults(data.pageDefaults, location.search));
   let view = $state<PageDefaults>({ ...defaults });
   let theme = $state<ThemeChoice>(defaults.theme);
@@ -31,11 +32,6 @@
   const lanes = $derived(boardLanes(data.lanes, data.tiers, labels, view));
   const emptyText = $derived(emptyMessage(view));
   const compiled = $derived(new Date(data.generated.at).toLocaleDateString(undefined, { dateStyle: 'medium' }));
-
-  function open(picked: Selection | StackPick) {
-    if ('stack' in picked) opened = picked.stack;
-    else selection = picked;
-  }
 </script>
 
 <main class="board" style={viewStyle(view)}>
@@ -71,12 +67,12 @@
           showLabel={view.showLabels}
           showCaption={view.showCaptions}
           showReadCount={view.showReadCount}
-          showSheets={view.showSheets}
           books={data.books}
           covers={data.covers}
           series={data.series}
+          {fronts}
           {filters}
-          onopen={open}
+          onopen={(picked) => (nav = openPicked(nav, picked))}
           onrename={(label) => (labels = { ...labels, [entry.id]: label })}
         />
       {/each}
@@ -87,15 +83,21 @@
     </footer>
   </div>
   <SeriesPanel
-    name={opened}
-    series={opened === undefined ? undefined : data.series[opened]}
-    books={data.books}
-    covers={data.covers}
-    tiers={data.tiers}
-    onpick={(picked) => (selection = picked)}
-    onclose={() => (opened = undefined)}
+    name={nav.opened}
+    series={nav.opened === undefined ? undefined : data.series[nav.opened]}
+    books={data.books} covers={data.covers} tiers={data.tiers}
+    chosen={nav.opened === undefined ? undefined : fronts[nav.opened]}
+    focusRow={nav.focusRow}
+    onpick={(picked, from) => (nav = pick(nav, picked, from))}
+    onfront={(name, chosen) => (fronts = withFront(fronts, name, chosen))}
+    onclose={() => (nav = closePanel(nav))}
   />
-  <Detail {selection} tiers={data.tiers} onclose={() => (selection = undefined)} />
+  <Detail
+    selection={nav.selection} tiers={data.tiers}
+    back={nav.returnTo?.series}
+    onback={() => (nav = back(nav))}
+    onclose={() => (nav = closeDetail(nav))}
+  />
 </main>
 
 <style>

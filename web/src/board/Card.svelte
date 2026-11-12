@@ -19,7 +19,7 @@
 </article>
 
 <style>
-  .card { flex: none; width: calc(7rem * var(--cover-scale, 1)); padding-top: calc(0.75rem * var(--cover-scale, 1)); }
+  .card { flex: none; width: calc(7rem * var(--cover-scale, 1)); }
   .open {
     position: relative; display: block; width: 100%; aspect-ratio: 2 / 3; overflow: hidden;
     padding: 0; border: 0; border-radius: 0.375rem;

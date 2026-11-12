@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Book, Cover, Series } from '../contract/tierlist';
-import { frontOf, readCount, resolve, sheetsBehind } from './stack';
+import { canFront, frontOf, pickFront, readCount, resolve, withFront } from './stack';
 
 function book(title: string, read = true): Book {
   return {
@@ -69,18 +69,40 @@ describe('frontOf', () => {
   it('has no front for an empty series', () => {
     expect(frontOf([])).toBeUndefined();
   });
+
+  it('fronts the chosen book when it has a cover, read or not', () => {
+    const resolved = resolve(series('a', 'b', 'c'), books, { a: cover, b: cover, c: cover });
+    expect(frontOf(resolved, 'b')?.book?.title).toBe('B');
+    expect(frontOf(resolved, 'c')?.book?.title).toBe('C');
+  });
+
+  it('ignores a chosen book that cannot front and keeps the default', () => {
+    const resolved = resolve(series(null, 'a', 'b', 'gone'), books, { b: cover });
+    for (const chosen of ['a', 'gone', 'unknown']) expect(frontOf(resolved, chosen)?.book?.title).toBe('B');
+  });
 });
 
-describe('sheetsBehind', () => {
-  it.each([
-    [0, 0],
-    [1, 0],
-    [2, 1],
-    [3, 2],
-    [12, 2],
-  ])('shows %i positions with %i sheets behind the front', (count, expected) => {
-    const ids = Array.from({ length: count }, () => null);
-    expect(sheetsBehind(resolve(series(...ids), books, {}))).toBe(expected);
+describe('canFront', () => {
+  it('takes only owned books with a cover', () => {
+    const resolved = resolve(series(null, 'a', 'b'), books, { b: cover });
+    expect(resolved.map(canFront)).toEqual([false, false, true]);
+  });
+});
+
+describe('pickFront', () => {
+  const resolved = resolve(series('a', 'b', 'c'), books, { a: cover, b: cover, c: cover });
+
+  it('makes another book the Series Cover', () => {
+    expect(pickFront(resolved, undefined, 'b')).toBe('b');
+    expect(pickFront(resolved, 'b', 'c')).toBe('c');
+  });
+
+  it('returns a picked cover to the default when clicked again', () => {
+    expect(pickFront(resolved, 'b', 'b')).toBeUndefined();
+  });
+
+  it('leaves the default cover as the default', () => {
+    expect(pickFront(resolved, undefined, 'a')).toBeUndefined();
   });
 });
 
@@ -89,5 +111,13 @@ describe('readCount', () => {
     const resolved = resolve(series('a', 'b', null), books, {});
 
     expect(readCount(resolved)).toEqual({ read: 1, total: 2 });
+  });
+});
+
+describe('withFront', () => {
+  it('sets a pick and drops it again, leaving other series alone', () => {
+    const picked = withFront({ Other: 'x' }, 'Saga', 'b');
+    expect(picked).toEqual({ Other: 'x', Saga: 'b' });
+    expect(withFront(picked, 'Saga', undefined)).toEqual({ Other: 'x' });
   });
 });
