@@ -23,7 +23,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `ConfigWidget(gui)`: the tabbed Settings widget calibre shows under Customize and the Settings dialog hosts; its `tiers`, `page`, `arrange` and `export` tabs hold the widgets; `build_config()` reads the Tier Config they show, `validate()` returns False after showing why an invalid one cannot be saved, `select(name)` shows one tab by attribute name, and `save()` stores the Tier Config and Page Defaults, writes the staged Arrange drops and an imported Settings Export's Overrides and Lane Order, and refreshes saved searches and the Tier menu.
 - `SettingsDialog(gui, parent=None, tab=None)`: the Settings dialog, OK and Cancel; `tab` opens on a named tab (`'arrange'` from the menu), `accept()` validates then saves, and Cancel writes nothing.
 - `TiersTab(admin, parent)`: the Tier table, its buttons, the column mapping and the Orphaned Overrides; `build_config()` reads them, `load()` and `load_tiers()` show them.
-- `PageTab(admin, parent)`: the theme combo, the title and Unranked Lane label fields, and the show-Unranked, show-counts and show-library checkboxes; `build_defaults()` reads them and `load(defaults)` shows them.
+- `PageTab(admin, parent)`: the Page Defaults in four groups — Page (theme, title, Page Width), Header (counts and library name), Lanes (labels, Tier descriptions, Unranked Lane, Lane Gap, Empty Lane Message) and Covers (Captions, Read Count, peeking sheets, Cover Size, Cover Gap); `build_defaults()` reads them and `load(defaults)` shows them.
 - `ArrangeTab(gui, parent)`: the whole-library board as wrapping Lane rows of covers; `drop(kind, key, target, index)` stages one drag and `save()` writes the staged drops. Covers load off the GUI thread once the tab is shown.
 - `LaneList(lane_tier, on_drop, parent)`: one Lane's wrapping duplicate of the board; it translates a drop into its handler and never writes.
 - `ExportTab(admin, tiers, page, parent)`: the Import JSON… and Export JSON… buttons and the "Include series Overrides and Lane Order" checkbox; an import accepts a Settings Export or an old Tier Config, asks first when it drops Tiers books still hold or replaces stored Overrides/Lane Order, loads its sections into the tabs, and writes its Overrides and Lane Order when Settings saves.
@@ -47,7 +47,10 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `config_widget.py`: the tabbed Settings widget: its tabs and the validating save.
 - `settings_dialog.py`: the Settings dialog the Tier List menu opens, with OK and Cancel.
 - `config_tiers.py`: the Tiers tab: the Tier table, the column mapping, and the Orphaned Overrides.
-- `config_page.py`: the Page tab: the theme combo, title and Unranked Lane label fields, and the three header switches.
+- `config_page.py`: the Page tab: the Page and Header groups, and the Page Defaults the tab reads and shows.
+- `config_page_lanes.py`: the Lanes group: labels, Tier descriptions, the Unranked Lane, Lane Gap and the Empty Lane Message.
+- `config_page_covers.py`: the Covers group: Captions, Read Count, peeking sheets, Cover Size and Cover Gap.
+- `config_page_form.py`: the right-aligned form and the contract-value combos the Page tab's groups share.
 - `config_arrange.py`: the Arrange tab: the Lane rows, the staged board, and saving its drops.
 - `arrange_lane.py`: one Lane's wrapping cover list, the drop-to-handler bridge, and the off-thread thumbnail loader.
 - `config_export.py`: the Export tab: importing and exporting Settings JSON, with the Overrides and Lane Order opt-in.

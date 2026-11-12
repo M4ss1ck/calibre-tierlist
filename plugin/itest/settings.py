@@ -11,7 +11,7 @@ calibre runs Python with -OO, which strips ``assert``; use ``expect``.
 
 import sys
 import tempfile
-from typing import Any
+from typing import Any, cast
 
 from calibre.gui2 import Application
 from calibre.library import db as open_db
@@ -19,6 +19,7 @@ from calibre_plugins.tierlist.calibre_ui import action as action_module
 from calibre_plugins.tierlist.calibre_ui.adapters import config_admin, tier_list
 from calibre_plugins.tierlist.calibre_ui.settings_dialog import SettingsDialog
 from fake_gui import FakeGui, load_action
+from page_tab import change_page_tab, expect_page_stored
 from qt.core import QPushButton
 
 ID, LABEL = 0, 1
@@ -102,20 +103,17 @@ def check_ok(path: str) -> None:
         gui.iactions = {'Tier List': action}
         dialog = SettingsDialog(gui)
         widget = dialog.widget
-        tabs = [widget.tabText(index) for index in range(widget.count())]
-        expect(tabs == ['Tiers', 'Page', 'Arrange', 'Export'], 'tabs')
-        export: Any = widget.export
-        texts = {button.text() for button in export.findChildren(QPushButton)}
+        expect([widget.tabText(i) for i in range(widget.count())] == ['Tiers', 'Page', 'Arrange', 'Export'], 'tabs')
+        texts = {button.text() for button in cast(Any, widget.export).findChildren(QPushButton)}
         expect(texts == {'Import JSON…', 'Export JSON…'}, f'the Export tab holds {sorted(texts)}')
-        page: Any = widget.page
-        page.theme.setCurrentIndex(page.theme.findData('light'))
+        change_page_tab(widget.page, expect)
         table = widget.tiers.table
         expect(len(table.tiers()) == 6, f'the Tiers tab shows {len(table.tiers())} Tiers')
         cell(table, row_of(table, 's'), LABEL).setText('Top')
         expect(labels(db)['s'] == 'S', 'editing the widget changed the stored config before OK')
         dialog.accept()
         expect(labels(db)['s'] == 'Top', f'OK did not store the label: {labels(db)}')
-        expect(config_admin(db).page_defaults().theme == 'light', 'OK did not store the Page Defaults')
+        expect_page_stored(config_admin(db).page_defaults(), expect)
         expect('Tier Top' in db.new_api.saved_search_names(), sorted(db.new_api.saved_search_names()))
         shown = [item.text() for item in action.tier_menu._submenu.actions()]
         expect('Top' in shown, f'OK did not rebuild the Tier menu: {shown}')

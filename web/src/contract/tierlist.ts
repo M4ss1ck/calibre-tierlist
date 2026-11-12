@@ -21,7 +21,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 8;
+  schemaVersion: 9;
   pageDefaults: PageDefaults;
   generated: Generated;
   /**
@@ -76,6 +76,50 @@ export interface PageDefaults {
    * Whether the header line and footer show the library name.
    */
   showLibrary: boolean;
+  /**
+   * How wide the Sheet may grow on screen and in the PNG: 60rem, 85rem, 110rem or the full window.
+   */
+  pageWidth: "narrow" | "normal" | "wide" | "full";
+  /**
+   * Whether each Lane's label cell shows its label.
+   */
+  showLabels: boolean;
+  /**
+   * Whether each Lane's label cell shows its Tier's description, when it has one.
+   */
+  showDescriptions: boolean;
+  /**
+   * The space between Lanes; none draws them as one block.
+   */
+  laneGap: "none" | "small" | "normal" | "large";
+  /**
+   * The Empty Lane Message: the built-in text, nothing, or emptyLaneText.
+   */
+  emptyLane: "default" | "hidden" | "custom";
+  /**
+   * The reader's own Empty Lane Message, used when emptyLane is custom; blank falls back to the built-in text.
+   */
+  emptyLaneText: string;
+  /**
+   * Whether Stacks and Cards show their Caption.
+   */
+  showCaptions: boolean;
+  /**
+   * Whether Stacks show their Read Count.
+   */
+  showReadCount: boolean;
+  /**
+   * Whether Stacks show the sheets peeking out behind them.
+   */
+  showSheets: boolean;
+  /**
+   * How large Stacks and Cards are drawn.
+   */
+  coverSize: "small" | "normal" | "large";
+  /**
+   * The space between Stacks and Cards inside a Lane.
+   */
+  coverGap: "none" | "small" | "normal" | "large";
 }
 export interface Generated {
   /**

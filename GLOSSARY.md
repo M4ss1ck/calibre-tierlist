@@ -46,7 +46,7 @@ An Override whose series name matches no series in the library, usually after a 
 ## Board
 
 **Stack**
-The visual group for one series inside a Tier row: a single front cover (the first owned book with a cover, else the series colour) with up to two sheets peeking out behind it, an "owned/total" count and the series name. Clicking it opens the Series Panel, which lists every position.
+The visual group for one series inside a Tier row: a single front cover (the first owned book with a cover, else the series colour) with up to two sheets peeking out behind it, a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
 Avoid: pile, deck.
 
 **Card**
@@ -82,12 +82,44 @@ The part of Settings that shows the board as Lanes of covers so the reader can d
 Avoid: board editor, sorter, drag mode.
 
 **Page Defaults**
-The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Unranked Lane label and whether it is shown, and whether the header shows the counts and library name. A query in the page's address can override any of them for that one opening; changes made on the page are never saved.
+The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, peeking sheets, Cover Size and Cover Gap. A query in the page's address can override any of them for that one opening, and the View Panel changes them for the session; neither is ever saved.
 Avoid: page settings, view options, preferences.
 
 **Unranked Lane**
-The Lane at the bottom of the board holding read books with no Book Tier. An "Unranked lane" switch shows or hides it on the page; whether it starts shown, and its label, are Page Defaults, and the switch is not saved.
+The Lane at the bottom of the board holding read books with no Book Tier. A switch in the View Panel shows or hides it on the page; whether it starts shown, and its label, are Page Defaults, and the switch is not saved.
 Avoid: unread lane, read lane.
+
+**View Panel**
+The popover on the compiled page that changes the Page Defaults for the session, grouped as Lanes, Covers and Page; nothing set there is saved.
+Avoid: settings (that is the calibre dialog), customize menu, options.
+
+**Caption**
+The box over the bottom of a cover naming it: the series name on a Stack, the title on a Card.
+Avoid: legend, label (that is a Lane's), name tag.
+
+**Read Count**
+The "read/in library" mark on a Stack: how many of the series' books in the library are read, out of how many are in it.
+Avoid: owned count, counter, x/y.
+
+**Cover Size**
+How large Stacks and Cards are drawn: small, normal or large.
+Avoid: zoom, scale (that is the export's).
+
+**Cover Gap**
+The space between Stacks and Cards inside a Lane: none, small, normal or large.
+Avoid: padding, spacing, separation.
+
+**Lane Gap**
+The space between Lanes: none draws the Lanes as one block split by lines, any other draws each Lane as its own rounded block.
+Avoid: row spacing, separation, divider.
+
+**Empty Lane Message**
+The text a Lane with nothing drawn in it shows: the default "No books in this tier", hidden, or the reader's own text.
+Avoid: placeholder (that is a missing series position), empty state.
+
+**Page Width**
+How wide the Sheet may grow on screen and in the PNG: narrow, normal, wide or the full window. Print and PDF always fit the paper.
+Avoid: page size, paper size, zoom.
 
 **Detail Panel**
 The dialog that opens from a Card or a Series Panel row, showing everything known about that book (or, for a Placeholder, its series, number and that it is not in the library). A book with no Book Tier shows "Unranked".

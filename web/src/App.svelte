@@ -2,13 +2,14 @@
   import { untrack } from 'svelte';
   import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
-  import { footerMeta, shownLanes } from './board/page';
+  import { boardLanes, footerMeta } from './board/page';
   import { resolvePageDefaults } from './board/query';
   import SeriesPanel from './board/SeriesPanel.svelte';
   import SheetHeader from './board/SheetHeader.svelte';
   import type { StackPick } from './board/stack';
-  import UnrankedSwitch from './board/UnrankedSwitch.svelte';
-  import type { TierListData } from './contract/tierlist';
+  import { emptyMessage, viewStyle } from './board/view';
+  import ViewPanel from './board/ViewPanel.svelte';
+  import type { PageDefaults, TierListData } from './contract/tierlist';
   import ExportButton from './export/ExportButton.svelte';
   import PdfButton from './export/PdfButton.svelte';
   import type { Filters } from './filter/filter';
@@ -21,19 +22,14 @@
   let selection = $state<Selection | undefined>();
   let opened = $state<string | undefined>();
   const defaults = untrack(() => resolvePageDefaults(data.pageDefaults, location.search));
-  let unranked = $state(defaults.showUnranked);
+  let view = $state<PageDefaults>({ ...defaults });
   let theme = $state<ThemeChoice>(defaults.theme);
   let title = $state(defaults.title);
   let labels = $state<Record<string, string>>({ unranked: defaults.unrankedLabel });
   let filters = $state<Filters>({ query: '', author: null, tag: null, year: null });
 
-  const lanes = $derived(
-    shownLanes(data.lanes, unranked).map((lane) => {
-      const id = lane.tier ?? 'unranked';
-      const tier = data.tiers.find((candidate) => candidate.id === lane.tier);
-      return { id, lane, label: labels[id] ?? tier?.label ?? 'Unranked', colour: tier?.colour ?? '#8a8a94' };
-    }),
-  );
+  const lanes = $derived(boardLanes(data.lanes, data.tiers, labels, view));
+  const emptyText = $derived(emptyMessage(view));
   const compiled = $derived(new Date(data.generated.at).toLocaleDateString(undefined, { dateStyle: 'medium' }));
 
   function open(picked: Selection | StackPick) {
@@ -42,15 +38,15 @@
   }
 </script>
 
-<main class="board">
+<main class="board" style={viewStyle(view)}>
   <div class="sheet" bind:this={sheet}>
     <header>
-      <SheetHeader {data} bind:title showCounts={defaults.showCounts} showLibrary={defaults.showLibrary} />
+      <SheetHeader {data} bind:title showCounts={view.showCounts} showLibrary={view.showLibrary} />
       <div class="controls">
         <div class="group">
           <span class="caption">View</span>
           <div class="row">
-            <UnrankedSwitch bind:on={unranked} />
+            <ViewPanel bind:view {defaults} />
             <ThemePicker bind:choice={theme} />
           </div>
         </div>
@@ -64,12 +60,18 @@
       </div>
     </header>
     <FilterBar books={data.books} bind:filters />
-    <div class="lanes">
+    <div class="lanes" data-lane-gap={view.laneGap}>
       {#each lanes as entry (entry.id)}
         <Lane
           lane={entry.lane}
           label={entry.label}
           colour={entry.colour}
+          description={entry.description}
+          emptyMessage={emptyText}
+          showLabel={view.showLabels}
+          showCaption={view.showCaptions}
+          showReadCount={view.showReadCount}
+          showSheets={view.showSheets}
           books={data.books}
           covers={data.covers}
           series={data.series}
@@ -80,7 +82,7 @@
       {/each}
     </div>
     <footer>
-      <span>{footerMeta(data.generated.libraryName, defaults.showLibrary, compiled)}</span>
+      <span>{footerMeta(data.generated.libraryName, view.showLibrary, compiled)}</span>
       <span>Calibre Tier List</span>
     </footer>
   </div>
@@ -105,7 +107,7 @@
     font-family: var(--font-sans);
     line-height: 1.45;
   }
-  .board { max-width: 85rem; margin: 0 auto; }
+  .board { max-width: var(--page-width); margin: 0 auto; }
   .sheet { display: flex; flex-direction: column; gap: 1.5rem; padding: 2.5rem 2rem 3rem; }
   header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1.25rem 2rem; }
   .controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.5rem; }
@@ -120,6 +122,19 @@
     text-transform: uppercase;
   }
   .lanes { overflow: hidden; border: 1px solid var(--border); border-radius: 0.875rem; }
+  .lanes[data-lane-gap]:not([data-lane-gap='none']) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--lane-gap);
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .lanes[data-lane-gap]:not([data-lane-gap='none']) :global(.lane) {
+    border: 1px solid var(--border);
+    border-radius: 0.875rem;
+    overflow: hidden;
+  }
   footer {
     display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem;
     padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem;

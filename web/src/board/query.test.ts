@@ -9,6 +9,17 @@ const baked: PageDefaults = {
   showUnranked: false,
   showCounts: false,
   showLibrary: false,
+  pageWidth: 'wide',
+  showLabels: false,
+  showDescriptions: true,
+  laneGap: 'large',
+  emptyLane: 'hidden',
+  emptyLaneText: 'Nothing here',
+  showCaptions: false,
+  showReadCount: false,
+  showSheets: false,
+  coverSize: 'large',
+  coverGap: 'small',
 };
 
 describe('resolvePageDefaults', () => {
@@ -29,19 +40,10 @@ describe('resolvePageDefaults', () => {
     expect(resolvePageDefaults(baked, '?unranked_label=Later')).toEqual({ ...baked, unrankedLabel: 'Later' });
   });
 
-  it('overrides whether the Unranked Lane is shown', () => {
+  it('overrides the header switches', () => {
     expect(resolvePageDefaults(baked, '?unranked=1')).toEqual({ ...baked, showUnranked: true });
-    expect(resolvePageDefaults(baked, '?unranked=true')).toEqual({ ...baked, showUnranked: true });
-  });
-
-  it('overrides whether the header shows counts', () => {
-    expect(resolvePageDefaults(baked, '?counts=1')).toEqual({ ...baked, showCounts: true });
     expect(resolvePageDefaults(baked, '?counts=true')).toEqual({ ...baked, showCounts: true });
-  });
-
-  it('overrides whether the library name is shown', () => {
     expect(resolvePageDefaults(baked, '?library=1')).toEqual({ ...baked, showLibrary: true });
-    expect(resolvePageDefaults(baked, '?library=true')).toEqual({ ...baked, showLibrary: true });
   });
 
   it('turns a switch off with 0 or false', () => {
@@ -52,11 +54,8 @@ describe('resolvePageDefaults', () => {
     expect(resolvePageDefaults(on, '?library=0')).toEqual({ ...on, showLibrary: false });
   });
 
-  it('ignores an invalid theme for that key only', () => {
+  it('ignores an invalid value for that key only', () => {
     expect(resolvePageDefaults(baked, '?theme=blue&counts=1')).toEqual({ ...baked, showCounts: true });
-  });
-
-  it('ignores an invalid switch for that key only', () => {
     expect(resolvePageDefaults(baked, '?counts=maybe&library=1')).toEqual({ ...baked, showLibrary: true });
   });
 
@@ -84,6 +83,17 @@ describe('resolvePageDefaults', () => {
       showUnranked: true,
       showCounts: true,
       showLibrary: true,
+      pageWidth: 'normal',
+      showLabels: true,
+      showDescriptions: false,
+      laneGap: 'none',
+      emptyLane: 'default',
+      emptyLaneText: '',
+      showCaptions: true,
+      showReadCount: true,
+      showSheets: true,
+      coverSize: 'normal',
+      coverGap: 'normal',
     });
   });
 });

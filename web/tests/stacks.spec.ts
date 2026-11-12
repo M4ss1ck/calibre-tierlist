@@ -28,6 +28,12 @@ function placed(): { name: string; lane: number }[] {
 const owned = (name: string) => seriesOf(name).positions.filter((position) => position.book !== null);
 const stack = (page: Page, name: string) => page.getByRole('figure', { name, exact: true });
 
+/** How many of the series' books in the library are read, out of how many are in it. */
+function readCount(name: string): { read: number; total: number } {
+  const books = owned(name).flatMap(({ book }) => (book === null ? [] : [data.books[book]]));
+  return { read: books.filter((book) => book?.read === true).length, total: books.length };
+}
+
 test('draws each Stack once, in the Lane that names it', async ({ page }) => {
   await page.goto(url);
   expect(placed().length).toBeGreaterThan(1);
@@ -69,12 +75,12 @@ test('fills a Stack with no cover with its series colour and dims an unread fron
   await expect(button).toHaveClass(/\bunread\b/);
 });
 
-test('counts owned books over every position, Placeholders included', async ({ page }) => {
+test('counts the read books over the books in the library, Placeholders left out', async ({ page }) => {
   await page.goto(url);
 
   for (const { name } of placed()) {
-    const { positions } = seriesOf(name);
-    await expect(stack(page, name).locator('.count')).toHaveText(`${owned(name).length}/${positions.length}`);
+    const { read, total } = readCount(name);
+    await expect(stack(page, name).locator('.count')).toHaveText(`${read}/${total}`);
   }
 });
 
@@ -82,10 +88,10 @@ test('names the series in a box and in the button that opens it', async ({ page 
   await page.goto(url);
 
   for (const { name } of placed()) {
-    const total = seriesOf(name).positions.length;
+    const { read, total } = readCount(name);
     await expect(stack(page, name).locator('.name')).toHaveText(name);
     await expect(
-      stack(page, name).getByRole('button', { name: `${name}, ${owned(name).length} of ${total} books` }),
+      stack(page, name).getByRole('button', { name: `${name}, ${read} of ${total} read` }),
     ).toBeVisible();
   }
 });

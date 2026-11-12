@@ -1,36 +1,42 @@
 <script lang="ts">
-  /** The on/off switch that shows or hides the Unranked Lane. Not persisted. */
-  type Props = { on: boolean };
-  let { on = $bindable(true) }: Props = $props();
+  /** A labelled on/off switch: the label toggles it too. Not persisted. */
+  type Props = { label: string; on?: boolean };
+  let { label, on = $bindable(true) }: Props = $props();
+
+  const id = $props.id();
 </script>
 
 <div class="field">
+  <label id={`${id}-label`} for={id}>{label}</label>
   <button
-    id="unranked-switch"
+    {id}
     type="button"
     role="switch"
-    aria-labelledby="unranked-label"
+    aria-labelledby={`${id}-label`}
     aria-checked={on}
     onclick={() => (on = !on)}
   >
     <span class="thumb"></span>
   </button>
-  <label id="unranked-label" for="unranked-switch">Unranked lane</label>
 </div>
 
 <style>
   .field {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    height: 2.75rem;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.875rem;
+  }
+  label {
+    cursor: pointer;
   }
   button {
     display: flex;
     flex: none;
     justify-content: flex-start;
-    width: 2.875rem;
-    height: 1.75rem;
+    width: 2.5rem;
+    height: 1.5rem;
     box-sizing: border-box;
     padding: 3px;
     border: 0;
@@ -47,14 +53,9 @@
     outline-offset: 2px;
   }
   .thumb {
-    width: 1.375rem;
-    height: 1.375rem;
+    width: 1.125rem;
+    height: 1.125rem;
     border-radius: 50%;
     background: var(--on-accent);
-  }
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
   }
 </style>

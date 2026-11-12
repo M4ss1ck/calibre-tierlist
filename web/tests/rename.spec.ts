@@ -80,9 +80,12 @@ test('keeps a renamed Unranked label when the Lane is switched off and on', asyn
   await page.goto(url);
 
   await retype(label(page, 'Unranked'), 'Someday', 'Enter');
+  await page.getByRole('button', { name: 'Customize view' }).click();
   const toggle = page.getByRole('switch', { name: 'Unranked lane' });
+  await expect(toggle).toBeVisible();
   await toggle.click();
   await expect(page.getByRole('region', { name: 'Someday' })).toHaveCount(0);
   await toggle.click();
+  await page.keyboard.press('Escape');
   await expect(label(page, 'Someday')).toHaveText('Someday');
 });
