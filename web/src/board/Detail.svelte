@@ -8,8 +8,15 @@
 <script lang="ts">
   import type { Tier } from '../contract/tierlist';
 
-  type Props = { selection: Selection | undefined; tiers: Tier[]; onclose: () => void };
-  let { selection, tiers, onclose }: Props = $props();
+  type Props = {
+    selection: Selection | undefined;
+    tiers: Tier[];
+    /** The series whose panel the back button reopens, when Detail was opened from one. */
+    back: string | undefined;
+    onback: () => void;
+    onclose: () => void;
+  };
+  let { selection, tiers, back, onback, onclose }: Props = $props();
   let dialog: HTMLDialogElement;
 
   const book = $derived(selection && 'book' in selection ? selection.book : undefined);
@@ -24,12 +31,25 @@
 
   $effect(() => {
     if (selection && !dialog.open) dialog.showModal();
+    else if (!selection && dialog.open) dialog.close();
   });
 </script>
 
 <dialog class="detail" bind:this={dialog} aria-labelledby="detail-title" onclose={onclose}>
   {#if selection}
     <header>
+      {#if back !== undefined}
+        <button
+          type="button"
+          class="back"
+          aria-label={`Back to ${back}`}
+          title={`Back to ${back}`}
+          onclick={() => {
+            dialog.close();
+            onback();
+          }}>‹</button
+        >
+      {/if}
       <h2 id="detail-title">{heading}</h2>
       <button type="button" class="close" aria-label="Close" onclick={() => dialog.close()}>×</button>
     </header>
@@ -77,13 +97,14 @@
     color: var(--fg);
   }
   .detail::backdrop { background: var(--scrim); }
-  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-  h2 { margin: 0 0 0.75rem; font-size: 1.25rem; overflow-wrap: anywhere; }
-  .close {
+  header { display: flex; align-items: flex-start; gap: 0.5rem; }
+  h2 { flex: 1; margin: 0 0 0.75rem; font-size: 1.25rem; overflow-wrap: anywhere; }
+  .back, .close {
     padding: 0 0.5rem; border: 0; border-radius: 0.25rem; background: transparent;
     color: var(--muted); font-size: 1.5rem; line-height: 1; cursor: pointer;
   }
-  .close:hover, .close:focus-visible { color: var(--fg); }
+  .back { margin-left: -0.5rem; }
+  .back:hover, .back:focus-visible, .close:hover, .close:focus-visible { color: var(--fg); }
   dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin: 0; }
   dt { color: var(--muted); font-size: 0.85rem; }
   dd { margin: 0; overflow-wrap: anywhere; }

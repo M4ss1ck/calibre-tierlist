@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Book, Cover, Series, Tier } from '../contract/tierlist';
   import type { Selection } from './Detail.svelte';
+  import type { ReturnTo } from './dialogs';
   import SeriesRow from './SeriesRow.svelte';
   import { canFront, frontOf, pickFront, resolve } from './stack';
 
@@ -12,11 +13,13 @@
     tiers: Tier[];
     /** The book id picked as this series' Series Cover for the session, if any. */
     chosen: string | undefined;
-    onpick: (selection: Selection) => void;
-    onfront: (chosen: string | undefined) => void;
+    /** The row whose title takes focus when the panel opens, after a back from Detail. */
+    focusRow: number | undefined;
+    onpick: (selection: Selection, from: ReturnTo) => void;
+    onfront: (name: string, chosen: string | undefined) => void;
     onclose: () => void;
   };
-  let { name, series, books, covers, tiers, chosen, onpick, onfront, onclose }: Props = $props();
+  let { name, series, books, covers, tiers, chosen, focusRow, onpick, onfront, onclose }: Props = $props();
   let dialog: HTMLDialogElement;
 
   const resolved = $derived(series && name ? resolve(series, books, covers) : []);
@@ -33,17 +36,22 @@
   const owned = $derived(rows.filter((row) => row.book !== undefined).length);
 
   $effect(() => {
-    if (name && !dialog.open) dialog.showModal();
+    if (!name) {
+      if (dialog.open) dialog.close();
+      return;
+    }
+    if (dialog.open) return;
+    dialog.showModal();
+    if (focusRow !== undefined) dialog.querySelectorAll<HTMLElement>('button.title')[focusRow]?.focus();
   });
 
-  function choose(selection: Selection) {
+  function choose(selection: Selection, series: string, row: number) {
     dialog.close();
-    onpick(selection);
+    onpick(selection, { series, row });
   }
 
-  function selectionOf(row: (typeof rows)[number]): Selection | undefined {
-    if (row.book) return { book: row.book };
-    return name ? { series: name, number: row.number } : undefined;
+  function selectionOf(row: (typeof rows)[number], series: string): Selection {
+    return row.book ? { book: row.book } : { series, number: row.number };
   }
 </script>
 
@@ -64,11 +72,8 @@
           tier={row.tier}
           eligible={row.eligible}
           front={row.eligible && row.id === front}
-          onopen={() => {
-            const selection = selectionOf(row);
-            if (selection) choose(selection);
-          }}
-          onfront={() => row.id !== null && onfront(pickFront(resolved, chosen, row.id))}
+          onopen={() => name && choose(selectionOf(row, name), name, index)}
+          onfront={() => name && row.id !== null && onfront(name, pickFront(resolved, chosen, row.id))}
         />
       {/each}
     </ol>

@@ -126,7 +126,7 @@ How wide the Sheet may grow on screen and in the PNG: narrow, normal, wide or th
 Avoid: page size, paper size, zoom.
 
 **Detail Panel**
-The dialog that opens from a Card or a Series Panel row, showing everything known about that book (or, for a Placeholder, its series, number and that it is not in the library). A book with no Book Tier shows "Unranked".
+The dialog that opens from a Card or a Series Panel row, showing everything known about that book (or, for a Placeholder, its series, number and that it is not in the library). A book with no Book Tier shows "Unranked". Opened from a Series Panel row, it has a back button that returns to that list; closing it any other way closes both.
 Avoid: modal, popup, info box.
 
 **Blurb**
