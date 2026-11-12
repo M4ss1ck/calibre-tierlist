@@ -12,6 +12,7 @@ class Plugin:
     actual_plugin: str | None
     site_customization: Any
     def load_actual_plugin(self, gui: Any) -> Any: ...
+    def load_resources(self, names: Any) -> dict[str, bytes]: ...
 
 class InterfaceActionBase(Plugin):
     actual_plugin_: Any

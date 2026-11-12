@@ -22,6 +22,7 @@ NAME = 'Tier List'
 TOOLBAR = 'action-layout-toolbar'
 CONTEXT_MENU = 'action-layout-context-menu'
 LAYOUT_KEYS = (TOOLBAR, CONTEXT_MENU)
+ICON = 'images/icon.png'
 MANIFEST = Path(__file__).resolve().parents[2] / '.release-please-manifest.json'
 
 
@@ -37,6 +38,7 @@ def check() -> None:
     release = tuple(int(part) for part in json.loads(MANIFEST.read_text(encoding='utf-8'))['.'].split('.'))
     expect(plugin.version == release, f'version {plugin.version} is not the release {release}')
     expect(plugin.minimum_calibre_version == (9, 0, 0), f'unexpected minimum: {plugin.minimum_calibre_version}')
+    expect(bool(plugin.load_resources([ICON]).get(ICON)), f'the installed zip has no {ICON}')
     module_name, class_name = plugin.actual_plugin.split(':')
     action_class = getattr(importlib.import_module(module_name), class_name)
     expect(issubclass(action_class, InterfaceAction), action_class)

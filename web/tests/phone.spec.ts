@@ -83,13 +83,18 @@ test('fits the whole board without sideways scroll', async ({ page }) => {
   await expectNoSideScroll(page);
 });
 
-test('fits a Stack with every position expanded', async ({ page }) => {
+test('fits the series panel of a long series with every position listed', async ({ page }) => {
   await page.goto(url);
 
-  const stack = page.getByRole('figure', { name: seriesName });
-  await stack.getByRole('button', { name: /^Show all/ }).click();
-  await expect(stack.locator('button.toggle')).toHaveText('Show fewer');
-  await expect(stack.locator('.position')).toHaveCount(6);
+  await page.getByRole('figure', { name: seriesName }).getByRole('button').click();
+  const panel = page.getByRole('dialog', { name: seriesName });
+  await expect(panel).toBeVisible();
+  await expect(panel.getByRole('listitem')).toHaveCount(6);
+
+  const box = await panel.boundingBox();
+  if (!box) throw new Error('Series panel has no box');
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(phone.width);
   await expectNoSideScroll(page);
 });
 

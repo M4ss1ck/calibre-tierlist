@@ -17,7 +17,7 @@
 
 <style>
   .override {
-    position: absolute; top: 0.25rem; right: 0.25rem; z-index: 100; display: flex;
+    position: absolute; top: 1.125rem; left: 0.375rem; z-index: 100; display: flex;
     padding: 0.15rem; border-radius: 999px; color: var(--bg); line-height: 0;
     background: color-mix(in srgb, var(--fg) 82%, var(--bg));
     box-shadow: 0 1px 2px rgb(0 0 0 / 35%);

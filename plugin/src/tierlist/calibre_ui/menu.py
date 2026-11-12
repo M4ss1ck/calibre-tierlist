@@ -8,6 +8,7 @@ from qt.core import QMenu
 
 from ..tiers import Tier
 from .adapters import tier_list
+from .icons import tier_swatch
 from .series_menu import add_items as add_series_items
 
 
@@ -59,6 +60,7 @@ class TierMenu:
                 tier.label,
                 _('Send to tier: {}').format(tier.label),
                 partial(self._send, tier.id),
+                icon=tier_swatch(tier.colour),
             )
         self._submenu.addSeparator()
         self._register(self._submenu, 'clear-tier', _('Clear tier'), _('Clear tier'), self._clear)
@@ -99,11 +101,14 @@ class TierMenu:
         explanation.setEnabled(False)
         self._submenu.addAction(_('Create tier column…'), self._action.create_tier_column)
 
-    def _register(self, menu: Any, unique_name: str, text: str, shortcut_name: str, triggered: Any) -> None:
+    def _register(
+        self, menu: Any, unique_name: str, text: str, shortcut_name: str, triggered: Any, icon: Any = None
+    ) -> None:
         created = self._action.create_menu_action(
             menu,
             unique_name,
             text,
+            icon=icon,
             shortcut=None,
             shortcut_name=shortcut_name,
             triggered=triggered,

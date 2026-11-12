@@ -32,19 +32,23 @@
     --muted: #5b5b66;
     --border: #d9d9de;
     --border-strong: #b3b3bd;
+    --surface: #ffffff;
+    --selected: #e4e4e8;
+    --accent: #2563eb;
     --scrim: rgb(0 0 0 / 45%);
   }
 
-  /* No toolbar, no filters, no expand toggle and no Detail Panel on paper. */
-  main.board > header .actions,
+  /* No toolbar, no filters, no series panel and no Detail Panel on paper. */
+  .sheet .controls,
   form.filters,
-  .stack button.toggle,
+  dialog.series-panel,
   dialog.detail {
     display: none !important;
   }
 
   /* The board uses the whole printable width instead of its screen measure. */
-  main.board {
+  main.board,
+  .sheet {
     max-width: none !important;
     padding: 0 !important;
   }

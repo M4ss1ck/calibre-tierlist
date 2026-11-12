@@ -20,6 +20,7 @@ def test_zip_layout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         names = zf.namelist()
         assert 'plugin-import-name-tierlist.txt' in names
         assert 'calibre_ui/action.py' in names
+        assert zf.read('images/icon.png').startswith(b'\x89PNG')
         assert zf.read('__init__.py') == build_zip.ENTRY.read_bytes()
         assert zf.read('__init__.py') != (build_zip.SRC / '__init__.py').read_bytes()
         assert not [name for name in names if '__pycache__' in name]

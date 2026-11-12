@@ -1,6 +1,6 @@
 /*
  * The board's colour tokens: light by default, dark when the system asks for
- * it or the header toggle pins `data-theme="dark"` on the root. Every slice
+ * it or the theme picker pins `data-theme="dark"` on the root. Every slice
  * reads these names and hard-codes no colour of its own; Tier and series
  * colours come from Tier List Data and stay as they are.
  */
@@ -12,13 +12,18 @@
   --muted: #5b5b66;
   --border: #d9d9de;
   --border-strong: #b3b3bd;
+  --surface: #ffffff;
+  --selected: #e4e4e8;
+  --accent: #2563eb;
+  --on-accent: #ffffff;
   --scrim: rgb(0 0 0 / 45%);
   --tier-ink: #1b1b1f;
   --on-series: #ffffff;
+  --caption-bg: rgb(12 12 14 / 84%);
   --font-sans: system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif;
 }
 
-/* The same dark palette twice: once for the system, once for the toggle. */
+/* The same dark palette twice: once for the system, once for the picker. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
@@ -27,6 +32,9 @@
     --muted: #a1a1aa;
     --border: #2f2f36;
     --border-strong: #4a4a55;
+    --surface: #1a1a1e;
+    --selected: #2f2f36;
+    --accent: #3b82f6;
     --scrim: rgb(0 0 0 / 65%);
   }
 }
@@ -38,5 +46,8 @@
   --muted: #a1a1aa;
   --border: #2f2f36;
   --border-strong: #4a4a55;
+  --surface: #1a1a1e;
+  --selected: #2f2f36;
+  --accent: #3b82f6;
   --scrim: rgb(0 0 0 / 65%);
 }

@@ -17,7 +17,7 @@ async function saved(download: Download): Promise<Uint8Array> {
   return new Uint8Array(await readFile(path));
 }
 
-const exportButton = (page: Page) => page.getByRole('button', { name: 'Export PNG' });
+const exportButton = (page: Page) => page.getByRole('button', { name: 'Download PNG' });
 
 test('downloads the board as tierlist.png and reports it', async ({ page }) => {
   await page.goto(await fixtureBoardUrl());
@@ -31,6 +31,31 @@ test('downloads the board as tierlist.png and reports it', async ({ page }) => {
   await expect(page.getByRole('status')).toHaveText('Exported tierlist.png');
 });
 
+/** The pixel height a PNG's IHDR chunk declares: bytes 20-23, big-endian. */
+function pngHeight(bytes: Uint8Array): number {
+  return new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).getUint32(20);
+}
+
+test('exports the whole sheet, title included, closed up where the controls were', async ({ page }) => {
+  await page.goto(await fixtureBoardUrl());
+  const heights = await page.evaluate(() => {
+    const height = (selector: string) => document.querySelector(selector)?.getBoundingClientRect().height ?? 0;
+    return { lanes: height('.lanes'), title: height('h1'), sheet: height('.sheet'), filters: height('form.filters') };
+  });
+  expect(heights.title).toBeGreaterThan(0);
+  expect(heights.filters).toBeGreaterThan(0);
+
+  const pending = page.waitForEvent('download');
+  await exportButton(page).click();
+  const height = pngHeight(await saved(await pending));
+
+  expect(height).toBeGreaterThan(heights.lanes + heights.title);
+  // No blank band where the filters were: the image is shorter than the sheet by at least them.
+  expect(height).toBeLessThanOrEqual(Math.ceil(heights.sheet - heights.filters));
+  // The off-screen copy the export draws is gone again.
+  await expect(page.locator('.sheet')).toHaveCount(1);
+});
+
 test.describe('an oversized board', () => {
   test.use({ deviceScaleFactor: 2 });
 
@@ -38,7 +63,7 @@ test.describe('an oversized board', () => {
     await page.goto(await fixtureBoardUrl(await oversized()));
 
     const board = await page
-      .locator('.lanes')
+      .locator('.sheet')
       .evaluate((element) => ({ width: element.scrollWidth, height: element.scrollHeight }));
     expect((board.width * 2) * (board.height * 2)).toBeGreaterThan(SAFE_LIMITS.maxArea);
 
