@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import type { Book, TierListData } from '../src/contract/tierlist';
+import type { Series, TierListData } from '../src/contract/tierlist';
 import { fixtureBoardUrl, loadFixture } from './page';
 
 let data: TierListData;
@@ -10,28 +10,10 @@ test.beforeAll(async () => {
   url = await fixtureBoardUrl();
 });
 
-function seriesOf(name: string) {
+function seriesOf(name: string): Series {
   const series = data.series[name];
-  if (!series) throw new Error(`Fixture Lane names unknown series ${name}`);
+  if (!series) throw new Error(`Fixture has no series ${name}`);
   return series;
-}
-
-/** The positions a collapsed Stack draws: all but the `more` it cuts. */
-function collapsed(name: string) {
-  const { positions, more } = seriesOf(name);
-  return positions.slice(0, positions.length - more);
-}
-
-function bookOf(id: string): Book {
-  const book = data.books[id];
-  if (!book) throw new Error(`Fixture Stack names unknown book ${id}`);
-  return book;
-}
-
-function labelOf(id: string): string {
-  const tierId = bookOf(id).tier;
-  const tier = tierId === null ? undefined : data.tiers.find((candidate) => candidate.id === tierId);
-  return tier?.label ?? '-';
 }
 
 /** Every Stack the fixture places on the board, with the Lane index that names it. */
@@ -41,108 +23,87 @@ function placed(): { name: string; lane: number }[] {
   );
 }
 
-function stack(page: Page, name: string) {
-  const lane = data.lanes.findIndex((candidate) => candidate.stacks.includes(name));
-  const listed = data.lanes[lane]?.stacks.filter((candidate) => candidate in data.series) ?? [];
-  const index = listed.indexOf(name);
-  if (lane < 0 || index < 0) throw new Error(`No Lane draws the Stack ${name}`);
-  return page.locator('section').nth(lane).locator('figure.stack').nth(index);
-}
+const owned = (name: string) => seriesOf(name).positions.filter((position) => position.book !== null);
+const stack = (page: Page, name: string) => page.getByRole('figure', { name, exact: true });
 
-test('draws each Stack in the Lane that names it, first position in front', async ({ page }) => {
+test('draws each Stack once, in the Lane that names it', async ({ page }) => {
   await page.goto(url);
+  expect(placed().length).toBeGreaterThan(1);
 
   for (const { name, lane } of placed()) {
-    const figure = stack(page, name);
-    await expect(figure).toHaveAttribute('aria-label', name);
-    const parent = await figure.evaluate((node) =>
-      Array.from(document.querySelectorAll('section')).indexOf(node.closest('section') as HTMLElement),
-    );
-    expect(parent).toBe(lane);
-
-    const positions = figure.locator('.position');
-    const numbers = await positions.evaluateAll((nodes) =>
-      nodes.map((node) => node.getAttribute('data-number')),
-    );
-    expect(numbers).toEqual(collapsed(name).map((position) => position.number));
-
-    const layers = await positions.evaluateAll((nodes) =>
-      nodes.map((node) => Number(getComputedStyle(node).zIndex)),
-    );
-    expect(layers[0]).toBe(Math.max(...layers));
-    expect(layers.slice(1).every((layer) => layer < Number(layers[0]))).toBe(true);
+    await expect(stack(page, name)).toHaveCount(1);
+    await expect(page.locator('section').nth(lane).getByRole('figure', { name, exact: true })).toHaveCount(1);
   }
 });
 
-test('dims the positions of unread books and leaves read ones alone', async ({ page }) => {
+test('shows the cover of the first owned book that has one in front', async ({ page }) => {
   await page.goto(url);
-  let unread = 0;
+  let fronted = 0;
 
   for (const { name } of placed()) {
-    const positions = stack(page, name).locator('.position');
-    for (const [index, position] of collapsed(name).entries()) {
-      if (position.book === null) continue;
-      const dimmed = !bookOf(position.book).read;
-      const classes = ((await positions.nth(index).getAttribute('class')) ?? '').split(/\s+/);
-      expect(classes.includes('unread')).toBe(dimmed);
-      unread += dimmed ? 1 : 0;
-    }
-  }
-
-  expect(unread).toBeGreaterThan(0);
-});
-
-test('draws a Placeholder for every position without an owned book', async ({ page }) => {
-  await page.goto(url);
-  let drawn = 0;
-
-  for (const { name } of placed()) {
-    const expected = collapsed(name).filter((position) => position.book === null);
-    const placeholders = stack(page, name).locator('.position.placeholder');
-    await expect(placeholders).toHaveCount(expected.length);
-
-    for (const [index, position] of expected.entries()) {
-      const placeholder = placeholders.nth(index);
-      await expect(placeholder).toHaveAttribute('data-number', position.number);
-      await expect(placeholder.locator('.series-name')).toHaveText(name);
-      await expect(placeholder.locator('.number')).toHaveText(position.number);
-      await expect(placeholder.locator('img')).toHaveCount(0);
-      drawn += 1;
-    }
-  }
-
-  expect(drawn).toBeGreaterThan(0);
-});
-
-test('shows how many positions were cut from each Stack', async ({ page }) => {
-  await page.goto(url);
-  let cut = 0;
-
-  for (const { name } of placed()) {
-    const more = seriesOf(name).more;
-    const badge = stack(page, name).locator('.more');
-    if (more > 0) {
-      await expect(badge).toHaveText(`+${more}`);
-      cut += 1;
+    const first = owned(name).find((position) => position.book !== null && position.book in data.covers);
+    const image = stack(page, name).locator('.front img.cover');
+    if (first?.book) {
+      await expect(image).toHaveCount(1);
+      await expect(image).toHaveAttribute('src', data.covers[first.book]?.src ?? '');
+      fronted += 1;
     } else {
-      await expect(badge).toHaveCount(0);
+      await expect(image).toHaveCount(0);
     }
   }
 
-  expect(cut).toBeGreaterThan(0);
+  expect(fronted).toBeGreaterThan(0);
 });
 
-test('labels every owned position with its Book Tier', async ({ page }) => {
+test('fills a Stack with no cover with its series colour and dims an unread front', async ({ page }) => {
   await page.goto(url);
-  const seen: string[] = [];
+  const bare = placed().find(({ name }) => owned(name).every(({ book }) => book === null || !(book in data.covers)));
+  if (!bare) throw new Error('Fixture has no Stack without covers');
+  const front = owned(bare.name)[0]?.book;
+  if (!front || data.books[front]?.read !== false) throw new Error('Fixture bare Stack should front an unread book');
+
+  const button = stack(page, bare.name).locator('.front');
+  await expect(button).toHaveCSS('background-image', /linear-gradient/);
+  await expect(button).toHaveClass(/\bunread\b/);
+});
+
+test('counts owned books over every position, cut ones included', async ({ page }) => {
+  await page.goto(url);
 
   for (const { name } of placed()) {
-    const labels = collapsed(name).flatMap((position) =>
-      position.book === null ? [] : [labelOf(position.book)],
-    );
-    await expect(stack(page, name).locator('.tier-badge')).toHaveText(labels);
-    seen.push(...labels);
+    const { positions } = seriesOf(name);
+    await expect(stack(page, name).locator('.count')).toHaveText(`${owned(name).length}/${positions.length}`);
   }
+});
 
-  expect(seen).toContain('-');
+test('names the series in a box and in the button that opens it', async ({ page }) => {
+  await page.goto(url);
+
+  for (const { name } of placed()) {
+    const total = seriesOf(name).positions.length;
+    await expect(stack(page, name).locator('.name')).toHaveText(name);
+    await expect(
+      stack(page, name).getByRole('button', { name: `${name}, ${owned(name).length} of ${total} books` }),
+    ).toBeVisible();
+  }
+});
+
+test('peeks at most two sheets out behind the front', async ({ page }) => {
+  await page.goto(url);
+
+  for (const { name } of placed()) {
+    const expected = Math.min(2, seriesOf(name).positions.length - 1);
+    await expect(stack(page, name).locator('.behind')).toHaveCount(expected);
+  }
+});
+
+test('draws no per-position elements, Tier badges or cut badge', async ({ page }) => {
+  await page.goto(url);
+
+  for (const selector of ['.position', '.tier-badge', '.more', 'button.toggle']) {
+    await expect(page.locator(`figure.stack ${selector}`)).toHaveCount(0);
+  }
+  for (const { name } of placed()) {
+    await expect(stack(page, name).getByRole('button')).toHaveCount(1);
+  }
 });

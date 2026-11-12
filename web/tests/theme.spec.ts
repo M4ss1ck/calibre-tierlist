@@ -7,69 +7,79 @@ test.beforeAll(async () => {
   url = await fixtureBoardUrl();
 });
 
-const darkToggle = (page: Page) => page.getByRole('button', { name: 'Dark theme' });
+const choice = (page: Page, name: 'System' | 'Light' | 'Dark') =>
+  page.getByRole('group', { name: 'Theme' }).getByRole('button', { name, exact: true });
+
+/** The one choice the picker shows as pressed. */
+async function expectPressed(page: Page, name: 'System' | 'Light' | 'Dark') {
+  for (const option of ['System', 'Light', 'Dark'] as const) {
+    await expect(choice(page, option)).toHaveAttribute('aria-pressed', String(option === name));
+  }
+}
 
 /** The painted page background, which is what the theme actually changes. */
-const background = (page: Page) =>
-  page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+const background = (page: Page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 
-/** The theme the toggle pinned on the root, or null while the system decides. */
-const pinned = (page: Page) =>
-  page.evaluate(() => document.documentElement.dataset['theme'] ?? null);
+/** The theme pinned on the root, or null while the system decides. */
+const pinned = (page: Page) => page.evaluate(() => document.documentElement.dataset['theme'] ?? null);
 
-test('follows a live change of the system preference without pinning a theme', async ({ page }) => {
+test('starts on System, pins nothing and follows a live system change', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto(url);
   const light = await background(page);
-  const toggle = darkToggle(page);
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await expectPressed(page, 'System');
   expect(await pinned(page)).toBeNull();
 
   await page.emulateMedia({ colorScheme: 'dark' });
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expect.poll(() => background(page)).not.toBe(light);
-  expect(await pinned(page)).toBeNull();
-
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-  expect(await pinned(page)).toBe('light');
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
+  await expectPressed(page, 'System');
   expect(await pinned(page)).toBeNull();
 });
 
-test('pins the theme the system does not ask for and unpins it again', async ({ page }) => {
+test('pins Dark over a light system and unpins it with System', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto(url);
   const light = await background(page);
-  const toggle = darkToggle(page);
   const root = page.locator('html');
 
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
-
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await choice(page, 'Dark').click();
+  await expectPressed(page, 'Dark');
   expect(await pinned(page)).toBe('dark');
   await expect(root).toHaveCSS('color-scheme', 'dark');
-  const dark = await background(page);
-  expect(dark).not.toBe(light);
+  expect(await background(page)).not.toBe(light);
 
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await choice(page, 'System').click();
+  await expectPressed(page, 'System');
   expect(await pinned(page)).toBeNull();
   await expect(root).toHaveCSS('color-scheme', 'light');
   expect(await background(page)).toBe(light);
 });
 
-test('pins light over a dark system', async ({ page }) => {
+test('pins Light over a dark system and holds it through a system change', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.goto(url);
   const dark = await background(page);
-  const toggle = darkToggle(page);
 
-  await toggle.click();
-  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  await choice(page, 'Light').click();
+  await expectPressed(page, 'Light');
   expect(await pinned(page)).toBe('light');
   await expect(page.locator('html')).toHaveCSS('color-scheme', 'light');
-  expect(await background(page)).not.toBe(dark);
+  const light = await background(page);
+  expect(light).not.toBe(dark);
+
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  expect(await background(page)).toBe(light);
+  expect(await pinned(page)).toBe('light');
+});
+
+test('pins the same palette the system shows when chosen explicitly', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto(url);
+
+  await choice(page, 'Dark').click();
+  expect(await pinned(page)).toBe('dark');
+  await page.emulateMedia({ colorScheme: 'light' });
+  await expect(page.locator('html')).toHaveCSS('color-scheme', 'dark');
 });

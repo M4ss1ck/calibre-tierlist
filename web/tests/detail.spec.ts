@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import type { TierListData } from '../src/contract/tierlist';
 import { fixtureBoardUrl, loadFixture } from './page';
 
@@ -9,6 +9,14 @@ test.beforeAll(async () => {
   data = await loadFixture();
   url = await fixtureBoardUrl();
 });
+
+/** Open the Dune Stack's series panel and pick the row that says `text`. */
+async function pickFromDune(page: Page, text: string) {
+  await page.getByRole('figure', { name: 'Dune' }).getByRole('button').click();
+  const panel = page.getByRole('dialog', { name: 'Dune' });
+  const row = panel.getByRole('listitem').filter({ hasText: text }).first().getByRole('button');
+  await row.click();
+}
 
 function bookOf(id: string) {
   const book = data.books[id];
@@ -37,7 +45,7 @@ test('shows a Stack book with its series and omits what it lacks', async ({ page
   const book = bookOf('3');
   await page.goto(url);
 
-  await page.getByRole('figure', { name: 'Dune' }).getByRole('button', { name: book.title }).click();
+  await pickFromDune(page, book.title);
   const panel = page.getByRole('dialog', { name: book.title });
   await expect(panel.locator('.series')).toHaveText(`Dune #${book.seriesIndex}`);
   for (const missing of ['.rating', '.tags', '.blurb', '.library']) {
@@ -48,7 +56,7 @@ test('shows a Stack book with its series and omits what it lacks', async ({ page
 test('opens a Placeholder with its series, number and that it is not owned', async ({ page }) => {
   await page.goto(url);
 
-  await page.getByRole('button', { name: 'Dune #1, not in your library' }).click();
+  await pickFromDune(page, '#1');
   const panel = page.getByRole('dialog', { name: 'Dune #1' });
   await expect(panel.locator('.series')).toHaveText('Dune #1');
   await expect(panel.locator('.library')).toHaveText('Not in your library');
@@ -81,13 +89,14 @@ test('opens from the keyboard, closes on Escape and returns focus', async ({ pag
   await expect(card).toBeFocused();
 });
 
-test('closes with the close button and returns focus', async ({ page }) => {
+test('closes with the close button and returns focus to the Stack it came from', async ({ page }) => {
   await page.goto(url);
 
-  const placeholder = page.getByRole('button', { name: 'Dune #1, not in your library' });
-  await placeholder.focus();
+  const stack = page.getByRole('figure', { name: 'Dune' }).getByRole('button');
+  await stack.focus();
   await page.keyboard.press('Space');
-  await page.getByRole('dialog').getByRole('button', { name: 'Close' }).click();
-  await expect(page.getByRole('dialog')).toBeHidden();
-  await expect(placeholder).toBeFocused();
+  await page.getByRole('dialog', { name: 'Dune' }).getByRole('listitem').first().getByRole('button').press('Enter');
+  await page.getByRole('dialog', { name: 'Dune #1' }).getByRole('button', { name: 'Close' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(stack).toBeFocused();
 });
