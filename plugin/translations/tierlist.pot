@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tier List 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 23:07-0300\n"
+"POT-Creation-Date: 2026-11-11 23:54-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,7 @@ msgstr ""
 msgid "Compile a tier list of your series"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:113
+#: plugin/src/tierlist/calibre_ui/action.py:117
 msgid ""
 "This plugin was built without the web template, so it cannot compile a tier "
 "list."
@@ -44,7 +44,7 @@ msgstr ""
 #: plugin/src/tierlist/calibre_ui/column.py:58
 #: plugin/src/tierlist/calibre_ui/column.py:60
 #: plugin/src/tierlist/calibre_ui/config_io.py:20
-#: plugin/src/tierlist/calibre_ui/config_widget.py:41
+#: plugin/src/tierlist/calibre_ui/config_widget.py:44
 msgid "Tier List"
 msgstr ""
 
@@ -137,6 +137,16 @@ msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/compile_job.py:47
 msgid "Compile tier list"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_arrange.py:39
+msgid ""
+"Drag covers between Lanes; OK saves the new order. Save and reopen Settings "
+"after changing Tiers."
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_arrange.py:64
+msgid "Unranked"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/config_backup.py:24
@@ -266,15 +276,19 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:28
+#: plugin/src/tierlist/calibre_ui/config_widget.py:30
 msgid "Tiers"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:29
+#: plugin/src/tierlist/calibre_ui/config_widget.py:31
 msgid "Page"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:30
+#: plugin/src/tierlist/calibre_ui/config_widget.py:32
+msgid "Arrange"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:33
 msgid "Backup"
 msgstr ""
 
@@ -315,18 +329,22 @@ msgid "Set up read column…"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/menu.py:87
+msgid "Arrange board…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:88
 msgid "Settings…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:103
+#: plugin/src/tierlist/calibre_ui/menu.py:104
 msgid "Restart calibre to finish adding the tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:105
+#: plugin/src/tierlist/calibre_ui/menu.py:106
 msgid "This library has no tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:108
+#: plugin/src/tierlist/calibre_ui/menu.py:109
 msgid "Create tier column…"
 msgstr ""
 

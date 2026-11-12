@@ -34,7 +34,12 @@ class ArrangeTab(QWidget):
     def _build(self) -> None:
         body = QWidget(self)
         column = QVBoxLayout(body)
-        column.addWidget(QLabel(_('Drag covers between Lanes. Settings saves the new order when you press OK.'), body))
+        column.addWidget(
+            QLabel(
+                _('Drag covers between Lanes; OK saves the new order. Save and reopen Settings after changing Tiers.'),
+                body,
+            )
+        )
         for tier, items in self._staged.lanes():
             column.addWidget(self._header(tier, body))
             lane = LaneList(None if tier is None else tier.id, self._on_drop, body)
@@ -116,6 +121,7 @@ class ArrangeTab(QWidget):
             self._fill(lane, items)
 
     def save(self) -> None:
-        """Write the staged drags, when there are any."""
-        if self._dirty:
+        """Write the staged drags, when there are any and the Tiers still match the board."""
+        tiers = {tier.id for tier in self._staged.tiers}
+        if self._dirty and tiers == {tier.id for tier in self._admin.tier_config().tiers}:
             self._admin.save_arrange(self._staged)

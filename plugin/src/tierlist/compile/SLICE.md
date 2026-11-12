@@ -23,12 +23,13 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 - `dominant_colour(pixels) -> str`: the most common colour of these RGB pixels, or grey when there are none.
 - `READ_COLUMN_TYPES`: the calibre column datatypes that can hold Read State.
 - `compile_data(generated, library, covers, fmt, config, book_ids, overrides, order=None, page_defaults=DEFAULT_PAGE_DEFAULTS) -> TierListData`: reads title, authors, series, series index, Series total, rating, tags, comments, Book Tier, and Read State through the Library port, builds the board, then reads a `fmt` cover at `COVER_WIDTH` for each book on it. `overrides` maps a series name to its Override Tier id; an applicable Override also puts an otherwise unread, untiered series on the board. `order` maps a Lane key (a Tier id or `unranked`) to its stored Lane Order places: they come first in stored order, then every unplaced Stack and Card by date read, undated last, then name or title, then id. `page_defaults` is carried in the payload so the page opens with the reader's choices.
+- `build_data(generated, library, config, book_ids, overrides, order=None, page_defaults=DEFAULT_PAGE_DEFAULTS) -> TierListData`: the same board as `compile_data`, with the same Tiers, Series Tier rule, and Lane Order, but without reading any cover thumbnails. The Arrange View builds its rows from this.
 - `count_series(library, book_ids) -> int`: the number of distinct non-empty series among these books.
 
 ## Files
 
 - `data.py`: the frozen data types and their JSON serialisation.
-- `build.py`: decides which books are on the board, resolves Book Tiers and Series Tiers, orders each Lane's Stacks and Cards, and reads the ports.
+- `build.py`: reads the ports, decides which books are on the board, resolves Book Tiers and Series Tiers, and orders each Lane's Stacks and Cards; `build_data` stops before covers.
 - `rows.py`: one library row, the rule for which rows belong on the board, and its Details.
 - `blurb.py`: the HTML-to-plain-text blurb sanitiser.
 - `series.py`: Series Stacks, their positions, Placeholders, Lane Order, and the Series Tier rule.

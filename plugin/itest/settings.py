@@ -78,7 +78,7 @@ def check_menu(path: str) -> None:
         found = [item for item in items if item.text() == ITEM]
         expect(len(found) == 1, [item.text() for item in items])
         expect(items[-1] is found[0], f'{ITEM} is not the last item')
-        expect(items[-2].isSeparator(), f'no separator above {ITEM}')
+        expect(items[-2].text() == 'Arrange board…' and items[-3].isSeparator(), 'Arrange is not above Settings')
         original = action_module.SettingsDialog
         action_module.SettingsDialog = FakeDialog
         try:
