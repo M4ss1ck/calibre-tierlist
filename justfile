@@ -67,6 +67,7 @@ itest: build
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/config_import.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/settings_export.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/settings.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/settings_size.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/arrange.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/compile.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/covers.py
