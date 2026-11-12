@@ -32,6 +32,9 @@
     --muted: #5b5b66;
     --border: #d9d9de;
     --border-strong: #b3b3bd;
+    --surface: #ffffff;
+    --selected: #e4e4e8;
+    --accent: #2563eb;
     --scrim: rgb(0 0 0 / 45%);
   }
 
