@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",
     "libraryName": "Fixture Library",
@@ -29,33 +29,41 @@
   "lanes": [
     {
       "tier": "s",
-      "cards": [
-        "7",
-        "1"
-      ],
-      "stacks": []
+      "items": [
+        {
+          "card": "7"
+        },
+        {
+          "card": "1"
+        }
+      ]
     },
     {
       "tier": "a",
-      "cards": [
-        "4"
-      ],
-      "stacks": []
+      "items": [
+        {
+          "card": "4"
+        }
+      ]
     },
     {
       "tier": "b",
-      "cards": [],
-      "stacks": [
-        "Dune",
-        "Earthsea"
+      "items": [
+        {
+          "stack": "Dune"
+        },
+        {
+          "stack": "Earthsea"
+        }
       ]
     },
     {
       "tier": null,
-      "cards": [
-        "8"
-      ],
-      "stacks": []
+      "items": [
+        {
+          "card": "8"
+        }
+      ]
     }
   ],
   "books": {

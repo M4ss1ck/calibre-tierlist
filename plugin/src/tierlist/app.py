@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterable
 from datetime import date, datetime
 from pathlib import Path
 
-from . import read_state, series_tiers
+from . import lane_order, read_state, series_tiers
 from .compile import CompileRequest, TierListData, choose_format, compile_data, count_series
 from .compile.data import Generated
 from .ports import NULL_COVERS, Covers, Library, Prefs
@@ -122,8 +122,9 @@ class TierList:
         generated = Generated(self._now(), request.library_name, request.scope, request.plugin_version)
         fmt = choose_format(self._covers.formats())
         overrides = self.series_tier_overrides()
+        order = lane_order.load_order(self._prefs)
         return compile_data(
-            generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids, overrides
+            generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids, overrides, order
         )
 
     def output_path(self) -> str:

@@ -12,7 +12,9 @@ test.beforeAll(async () => {
 
 /** Every series Stack the fixture places on the board. */
 function placed(): string[] {
-  return data.lanes.flatMap((lane) => lane.stacks.filter((name) => name in data.series));
+  return data.lanes.flatMap((lane) =>
+    lane.items.flatMap((item) => ('stack' in item && item.stack in data.series ? [item.stack] : [])),
+  );
 }
 
 function seriesOf(name: string): Series {

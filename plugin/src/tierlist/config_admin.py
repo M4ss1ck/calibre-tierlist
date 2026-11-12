@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable, Mapping
 
-from . import series_tiers
+from . import lane_order, series_tiers
 from .app import TIER_CONFIG_KEY, TierList
 from .ports import Library, Prefs, SavedSearches
 from .tiers import TierConfig, dump_config, parse_config, validate
@@ -40,6 +40,7 @@ class ConfigAdmin:
         self._clear_removed(old, new)
         self._prefs.set(TIER_CONFIG_KEY, new.to_dict())
         self._sync_searches(old, new)
+        lane_order.prune(self._prefs, self._library.series_names(), self._library.all_book_ids())
 
     def import_json(self, text: str) -> TierConfig:
         """Parse an imported Tier Config without storing it."""

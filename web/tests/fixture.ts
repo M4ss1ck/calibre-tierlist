@@ -9,7 +9,7 @@ export async function oversized(): Promise<TierListData> {
   const base = await loadFixture();
   const books: Record<string, Book> = {};
   const lanes = base.lanes.map((lane) => {
-    if (lane.tier === null) return { ...lane, cards: [], stacks: [] };
+    if (lane.tier === null) return { ...lane, items: [] };
     const tier: string = lane.tier;
     const cards = Array.from({ length: 40 }, (_, index) => {
       const id = `${tier}-${index}`;
@@ -27,7 +27,7 @@ export async function oversized(): Promise<TierListData> {
       };
       return id;
     });
-    return { tier, cards, stacks: [] };
+    return { tier, items: cards.map((card) => ({ card })) };
   });
 
   return { ...base, lanes, books, series: {}, covers: {} };

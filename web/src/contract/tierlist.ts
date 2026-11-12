@@ -1,5 +1,19 @@
 /* Generated from contract/tierlist.schema.json by pnpm gen:types. Do not edit. */
 
+export type LaneItem =
+  | {
+      /**
+       * Series name (key of series) of a Stack in this Lane.
+       */
+      stack: string;
+    }
+  | {
+      /**
+       * Book id (key of books) of a standalone Card in this Lane.
+       */
+      card: string;
+    };
+
 /**
  * The versioned payload the plugin embeds in the compiled tier list HTML.
  */
@@ -7,7 +21,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 6;
+  schemaVersion: 7;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -57,13 +71,9 @@ export interface Lane {
    */
   tier: string | null;
   /**
-   * Book ids (keys of books) of the standalone Cards in this Lane, ordered by date read ascending, undated last, then title.
+   * The Stacks and Cards in this Lane, in Lane Order: stored places first, then unplaced items by date read ascending, undated last, then name or title, then id.
    */
-  cards: string[];
-  /**
-   * Series names (keys of series) whose Stack sits in this Lane, ordered by earliest date read, undated last, then name.
-   */
-  stacks: string[];
+  items: LaneItem[];
 }
 export interface Book {
   title: string;

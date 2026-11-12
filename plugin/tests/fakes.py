@@ -5,6 +5,7 @@ from collections.abc import Iterable, Mapping
 from threading import current_thread
 from time import sleep
 
+from tierlist.compile import Lane
 from tierlist.ports import Cover
 
 STANDARD_FIELDS = ('title', 'series', 'series_index', 'authors', 'rating', 'tags', 'comments')
@@ -62,6 +63,16 @@ class FakePrefs:
 
     def set(self, key: str, value: object) -> None:
         self.data[key] = value
+
+
+def lane_cards(lane: Lane) -> tuple[int, ...]:
+    """The Card book ids of a Lane, in order."""
+    return tuple(item.card for item in lane.items if item.card is not None)
+
+
+def lane_stacks(lane: Lane) -> tuple[str, ...]:
+    """The Stack series names of a Lane, in order."""
+    return tuple(item.stack for item in lane.items if item.stack is not None)
 
 
 class FakeSavedSearches:

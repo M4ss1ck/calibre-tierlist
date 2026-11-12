@@ -2,7 +2,7 @@
 
 from datetime import UTC, date, datetime
 
-from fakes import FakeCovers, FakeLibrary, FakePrefs
+from fakes import FakeCovers, FakeLibrary, FakePrefs, lane_cards, lane_stacks
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
 from tierlist.compile import CompileRequest
@@ -35,8 +35,8 @@ def test_a_clear_majority_tier_wins() -> None:
 
     data = app.compile(request(1, 2, 3))
 
-    assert data.lanes[0].stacks == ('Dune',)
-    assert data.lanes[1].stacks == ()
+    assert lane_stacks(data.lanes[0]) == ('Dune',)
+    assert lane_stacks(data.lanes[1]) == ()
 
 
 def test_a_tie_goes_to_the_lower_tier() -> None:
@@ -46,8 +46,8 @@ def test_a_tie_goes_to_the_lower_tier() -> None:
 
     data = app.compile(request(1, 2))
 
-    assert data.lanes[0].stacks == ()
-    assert data.lanes[1].stacks == ('Dune',)
+    assert lane_stacks(data.lanes[0]) == ()
+    assert lane_stacks(data.lanes[1]) == ('Dune',)
 
 
 def test_a_single_tiered_book_places_the_series() -> None:
@@ -57,7 +57,7 @@ def test_a_single_tiered_book_places_the_series() -> None:
 
     data = app.compile(request(1))
 
-    assert data.lanes[2].stacks == ('Dune',)
+    assert lane_stacks(data.lanes[2]) == ('Dune',)
 
 
 def test_only_unranked_read_books_put_the_series_in_the_unranked_lane() -> None:
@@ -67,7 +67,7 @@ def test_only_unranked_read_books_put_the_series_in_the_unranked_lane() -> None:
 
     data = app.compile(request(1, 2))
 
-    assert data.lanes[-1].stacks == ('Dune',)
+    assert lane_stacks(data.lanes[-1]) == ('Dune',)
 
 
 def test_an_owned_unread_member_is_in_books_and_not_read() -> None:
@@ -89,6 +89,6 @@ def test_a_standalone_book_stays_a_card_and_never_a_stack() -> None:
 
     data = app.compile(request(1, 2))
 
-    assert data.lanes[0].cards == (1,)
-    assert data.lanes[0].stacks == ('Dune',)
+    assert lane_cards(data.lanes[0]) == (1,)
+    assert lane_stacks(data.lanes[0]) == ('Dune',)
     assert 'Dune' in data.series

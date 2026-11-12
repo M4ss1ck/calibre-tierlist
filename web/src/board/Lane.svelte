@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Book, Cover, Lane, Series } from '../contract/tierlist';
   import type { Filters } from '../filter/filter';
-  import { matchesBook, matchesSeries } from '../filter/filter';
   import Card from './Card.svelte';
   import type { Selection } from './Detail.svelte';
   import { editable } from './editable';
+  import { laneEntries } from './lane';
   import Stack from './Stack.svelte';
   import type { StackPick } from './stack';
 
@@ -21,23 +21,7 @@
   };
   let { lane, label, colour, books, covers, series, filters, onopen, onrename }: Props = $props();
 
-  const cards = $derived(
-    lane.cards.flatMap((id) => {
-      const book = books[id];
-      return book && matchesBook(book, filters) ? [{ id, book, cover: covers[id] }] : [];
-    }),
-  );
-  const stacks = $derived(
-    lane.stacks.flatMap((name) => {
-      const entry = series[name];
-      if (!entry) return [];
-      const owned = entry.positions.flatMap((position) => {
-        const book = position.book === null ? undefined : books[position.book];
-        return book ? [book] : [];
-      });
-      return matchesSeries(name, owned, filters) ? [{ name, series: entry }] : [];
-    }),
-  );
+  const entries = $derived(laneEntries(lane, books, covers, series, filters));
   const long = $derived(label.length > 3);
 </script>
 
@@ -46,13 +30,14 @@
     <h2 class:long title="Click to rename" use:editable={{ value: label, onchange: onrename }}></h2>
   </div>
   <div class="cards">
-    {#each stacks as stack (stack.name)}
-      <Stack name={stack.name} series={stack.series} {books} {covers} {onopen} />
+    {#each entries as entry (entry.kind === 'stack' ? `stack:${entry.name}` : `card:${entry.id}`)}
+      {#if entry.kind === 'stack'}
+        <Stack name={entry.name} series={entry.series} {books} {covers} {onopen} />
+      {:else}
+        <Card title={entry.book.title} cover={entry.cover} onopen={() => onopen({ book: entry.book })} />
+      {/if}
     {/each}
-    {#each cards as card (card.id)}
-      <Card title={card.book.title} cover={card.cover} onopen={() => onopen({ book: card.book })} />
-    {/each}
-    {#if stacks.length === 0 && cards.length === 0}
+    {#if entries.length === 0}
       <p class="empty">No books in this tier</p>
     {/if}
   </div>

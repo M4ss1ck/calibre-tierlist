@@ -1,15 +1,16 @@
 """Build Tier List Data from the books the library holds."""
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import replace
-from datetime import date
+from typing import cast
 
+from ..lane_order import UNRANKED_LANE, Place
 from ..ports import Covers, Library
 from ..tiers import TierConfig
 from .covers import COVER_WIDTH, cover_thumbs
-from .data import Book, Generated, Lane, TierListData
+from .data import Book, Generated, Lane, LaneItem, TierListData
 from .rows import Row, book_of, on_board, series_name
-from .series import build_series, earliest, series_tier, stacks_for
+from .series import Rank, build_series, earliest, ordered_lane, series_tier
 
 READ_COLUMN_TYPES = ('datetime', 'bool')
 DETAIL_FIELDS = ('authors', 'rating', 'tags', 'comments')
@@ -23,6 +24,7 @@ def compile_data(
     config: TierConfig,
     book_ids: Iterable[int],
     overrides: Mapping[str, str],
+    order: Mapping[str, Sequence[Place]] | None = None,
 ) -> TierListData:
     """Read these books from the library, build their Tier List Data, then attach their covers."""
     ids = list(book_ids)
@@ -51,7 +53,7 @@ def compile_data(
     board = on_board(rows, datatype == 'bool', _overridden(config, overrides))
     shots = cover_thumbs(covers, (row.id for row in board), fmt, COVER_WIDTH)
     colours = {book_id: cover.colour for book_id, cover in shots.items()}
-    return replace(build(generated, config, board, datatype == 'bool', colours, overrides), covers=shots)
+    return replace(build(generated, config, board, datatype == 'bool', colours, overrides, order), covers=shots)
 
 
 def count_series(library: Library, book_ids: Iterable[int]) -> int:
@@ -66,6 +68,7 @@ def build(
     read_is_bool: bool,
     colours: Mapping[int, str],
     overrides: Mapping[str, str],
+    order: Mapping[str, Sequence[Place]] | None = None,
 ) -> TierListData:
     """Resolve the board rows into Books and place them in ordered Lanes and Series Stacks."""
     known = {tier.id for tier in config.tiers}
@@ -91,19 +94,32 @@ def build(
         )
         for name, group in groups.items()
     }
-    stacks = {
-        name: (resolved[name].tier_id, earliest([book.date_read for _, book in group if book.read]))
-        for name, group in groups.items()
-    }
-    lanes = tuple(Lane(tier.id, _cards(standalone, tier.id), stacks_for(stacks, tier.id)) for tier in config.tiers)
-    unranked = Lane(None, _cards(standalone, None), stacks_for(stacks, None))
+    read_dates = {name: earliest([book.date_read for _, book in group if book.read]) for name, group in groups.items()}
+    members: dict[str, dict[Place, Rank]] = {tier.id: {} for tier in config.tiers}
+    members[UNRANKED_LANE] = {}
+    for name in groups:
+        key = resolved[name].tier_id or UNRANKED_LANE
+        members[key][('series', name)] = (read_dates[name], name, 0)
+    for book in standalone:
+        members[book.tier or UNRANKED_LANE][('book', book.id)] = (book.date_read, book.title, book.id)
+    lanes = tuple(Lane(tier.id, _items(members[tier.id], _stored(order, tier.id))) for tier in config.tiers)
+    unranked = Lane(None, _items(members[UNRANKED_LANE], _stored(order, None)))
     return TierListData(generated, config.tiers, (*lanes, unranked), books, series=series)
 
 
-def _cards(books: list[Book], tier: str | None) -> tuple[int, ...]:
-    matches = [book for book in books if book.tier == tier]
-    matches.sort(key=lambda book: (book.date_read is None, book.date_read or date.min, book.title.casefold(), book.id))
-    return tuple(book.id for book in matches)
+def _stored(order: Mapping[str, Sequence[Place]] | None, tier: str | None) -> Sequence[Place]:
+    if order is None:
+        return ()
+    return order.get(tier or UNRANKED_LANE, ())
+
+
+def _items(present: Mapping[Place, Rank], stored: Iterable[Place]) -> tuple[LaneItem, ...]:
+    return tuple(_lane_item(place) for place in ordered_lane(present, stored))
+
+
+def _lane_item(place: Place) -> LaneItem:
+    kind, key = place
+    return LaneItem(stack=cast(str, key)) if kind == 'series' else LaneItem(card=cast(int, key))
 
 
 def _overridden(config: TierConfig, overrides: Mapping[str, str]) -> set[str]:

@@ -1,7 +1,7 @@
 """Series Tier Overrides through the facade, over the fake ports."""
 
 import pytest
-from fakes import FakeLibrary, FakePrefs
+from fakes import FakeLibrary, FakePrefs, lane_stacks
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
 from tierlist.compile import CompileRequest, TierListData
@@ -109,8 +109,8 @@ def test_set_series_tier_puts_an_unread_untiered_stack_on_the_board() -> None:
 
     data = compile_lanes(app, 1, 2)
 
-    assert data.lanes[0].stacks == ()
-    assert data.lanes[1].stacks == ('Dune',)
+    assert lane_stacks(data.lanes[0]) == ()
+    assert lane_stacks(data.lanes[1]) == ('Dune',)
     assert data.series['Dune'].override is True
 
 
@@ -123,8 +123,8 @@ def test_clear_series_tier_returns_the_stack_to_the_auto_lane() -> None:
 
     data = compile_lanes(app, 1, 2)
 
-    assert data.lanes[0].stacks == ('Dune',)
-    assert data.lanes[1].stacks == ()
+    assert lane_stacks(data.lanes[0]) == ('Dune',)
+    assert lane_stacks(data.lanes[1]) == ()
     assert data.series['Dune'].override is False
 
 
@@ -139,6 +139,6 @@ def test_a_book_added_after_the_override_joins_the_override_lane() -> None:
 
     data = compile_lanes(app, 1, 2)
 
-    assert data.lanes[0].stacks == ('Dune',)
+    assert lane_stacks(data.lanes[0]) == ('Dune',)
     assert data.series['Dune'].override is True
     assert [position.book for position in data.series['Dune'].positions] == [1, 2]

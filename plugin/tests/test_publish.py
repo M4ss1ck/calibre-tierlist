@@ -9,7 +9,7 @@ import pytest
 from fakes import FakeLibrary, FakePrefs
 
 from tierlist.app import TierList
-from tierlist.compile import Book, CompileRequest, Generated, Lane, TierListData
+from tierlist.compile import Book, CompileRequest, Generated, Lane, LaneItem, TierListData
 from tierlist.publish import MARKER, render_html
 from tierlist.tiers import DEFAULT_TIER_CONFIG
 
@@ -24,7 +24,7 @@ LOG_LINE = re.compile(
 
 def sample_data() -> TierListData:
     tiers = DEFAULT_TIER_CONFIG.tiers
-    lanes = (Lane('s', (1,)),) + tuple(Lane(tier.id, ()) for tier in tiers[1:]) + (Lane(None, ()),)
+    lanes = (Lane('s', (LaneItem(card=1),)),) + tuple(Lane(tier.id, ()) for tier in tiers[1:]) + (Lane(None, ()),)
     books = (Book(1, 'The </script> Problem', 's', date(2024, 1, 1)),)
     return TierListData(Generated(NOW, 'Lib', 'library', '0.1.0'), tiers, lanes, books)
 

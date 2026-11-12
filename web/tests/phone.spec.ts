@@ -51,7 +51,12 @@ function crowded(base: TierListData): TierListData {
     ...base,
     books,
     lanes: base.lanes.map((lane) =>
-      lane.tier === 's' ? { ...lane, cards: [...lane.cards, ...cards], stacks: [seriesName] } : lane,
+      lane.tier === 's'
+        ? {
+            ...lane,
+            items: [...lane.items, ...cards.map((card) => ({ card })), { stack: seriesName }],
+          }
+        : lane,
     ),
     series: {
       ...base.series,
