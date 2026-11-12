@@ -9,8 +9,16 @@ A user-defined rank with a stable id, label, colour, optional description, and p
 Avoid: rank, grade, bucket, category.
 
 **Tier Config**
-The ordered list of Tiers for one library, plus plugin settings (column mapping). Stored in per-library prefs and importable/exportable as JSON.
+The ordered list of Tiers for one library, plus plugin settings (column mapping). Stored in per-library prefs and carried between libraries by a Settings Export.
 Avoid: tier scheme, tier list (that is the compiled board).
+
+**Settings**
+The one dialog that edits everything the plugin keeps per library: Tier Config, Page Defaults, Lane Order (through the Arrange View) and Settings Export. It opens from the Tier List toolbar menu and from calibre's plugin preferences.
+Avoid: config dialog, preferences, options.
+
+**Settings Export**
+A JSON file holding a library's Tier Config and Page Defaults, plus its Overrides and Lane Order when the reader opts in. Importing one replaces those settings in another library.
+Avoid: backup (Book Tiers and Read State stay in columns and are not in it), config export.
 
 **Book Tier**
 The Tier id stored on a book in a Text custom column. Setting one also marks the book read.
@@ -25,7 +33,7 @@ The Tier a series is shown in. Either an Override or Auto (resolved from the ser
 Avoid: series rank, series placement.
 
 **Override**
-A Series Tier set explicitly for a series by name. It wins over the computed tier and applies to every book in the series, including books added later.
+A Series Tier set explicitly for a series by name, from the book list menu or by dragging the series to another Lane in the Arrange View. It wins over the computed tier and applies to every book in the series, including books added later.
 Avoid: manual tier, pinned tier.
 
 **Auto**
@@ -54,7 +62,7 @@ The dialog a Stack opens: the series name, how many of its books are in the libr
 Avoid: expanded Stack, series popup.
 
 **Sheet**
-Everything the reader keeps of the page: the title, the Lanes and the footer. The title and each Lane's label can be renamed in place on the page (not saved); the PNG export draws the Sheet without its controls and filters.
+Everything the reader keeps of the page: the title, the Lanes and the footer. The title and each Lane's label start from Page Defaults and Tier labels and can be renamed in place on the page (not saved); the PNG export draws the Sheet without its controls and filters.
 Avoid: canvas, page (that is the whole HTML file).
 
 **Series Total**
@@ -65,8 +73,20 @@ Avoid: series length, series count.
 A row on the board. Each Tier is a Lane, plus the Unranked Lane.
 Avoid: row, section, column.
 
+**Lane Order**
+The reader's hand-set order of the Stacks and Cards inside each Lane, kept per library. A Stack or Card with no place yet (a new series, a book newly tiered, or a series Auto moved to another Tier) goes at the end of its Lane; several at once go earliest date read first, then by name. A renamed series loses its place.
+Avoid: sort, stack order, ranking.
+
+**Arrange View**
+The part of Settings that shows the board as Lanes of covers so the reader can drag. Dragging within a Lane sets Lane Order; dragging a series to another Tier's Lane sets its Override, and to the Unranked Lane clears it; dragging a standalone book to another Lane sets or clears its Book Tier.
+Avoid: board editor, sorter, drag mode.
+
+**Page Defaults**
+The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Unranked Lane label and whether it is shown, and whether the header shows the counts and library name. A query in the page's address can override any of them for that one opening; changes made on the page are never saved.
+Avoid: page settings, view options, preferences.
+
 **Unranked Lane**
-The Lane at the bottom of the board holding read books with no Book Tier. An "Unranked lane" switch shows or hides it on the page; it is shown by default and not saved.
+The Lane at the bottom of the board holding read books with no Book Tier. An "Unranked lane" switch shows or hides it on the page; whether it starts shown, and its label, are Page Defaults, and the switch is not saved.
 Avoid: unread lane, read lane.
 
 **Detail Panel**
