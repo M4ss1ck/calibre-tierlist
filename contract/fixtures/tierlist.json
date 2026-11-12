@@ -249,8 +249,12 @@
       "colour": "#336699"
     },
     "3": {
-      "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",
-      "colour": "#336699"
+      "src": "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAYAAAAdQvCIXpf+BiOh/AAA=",
+      "colour": "#c87828"
+    },
+    "5": {
+      "src": "data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAYAAAAdQ0KJUq/+BiOh/AAA=",
+      "colour": "#28a05a"
     },
     "7": {
       "src": "data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==",

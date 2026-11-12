@@ -76,7 +76,7 @@ test('opens the Detail panel for an owned book picked from the list', async ({ p
   await page.goto(url);
   const { panel, rows } = await openPanel(page, name, series);
 
-  await rows.filter({ hasText: book.title }).getByRole('button').click();
+  await rows.filter({ hasText: book.title }).locator('button.title').click();
   await expect(panel).toBeHidden();
   await expect(page.getByRole('dialog', { name: book.title })).toBeVisible();
 });
@@ -88,7 +88,7 @@ test('opens the Detail panel for a trailing Placeholder picked from the list', a
   await page.goto(url);
   const { rows } = await openPanel(page, name, series);
 
-  await rows.last().getByRole('button').click();
+  await rows.last().locator('button.title').click();
   const detail = page.getByRole('dialog', { name: `${name} #${last.number}` });
   await expect(detail).toBeVisible();
   await expect(detail.locator('.library')).toHaveText('Not in your library');

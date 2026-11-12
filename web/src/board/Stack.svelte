@@ -5,16 +5,18 @@
   type Props = {
     name: string;
     series: Series;
+    /** The book id picked as the Series Cover for the session, if any. */
+    chosen: string | undefined;
     showCaption: boolean;
     showReadCount: boolean;
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     onopen: (pick: StackPick) => void;
   };
-  let { name, series, showCaption, showReadCount, books, covers, onopen }: Props = $props();
+  let { name, series, chosen, showCaption, showReadCount, books, covers, onopen }: Props = $props();
 
   const all = $derived(resolve(series, books, covers));
-  const front = $derived(frontOf(all));
+  const front = $derived(frontOf(all, chosen));
   const count = $derived(readCount(all));
   const shade = (amount: number) => `color-mix(in srgb, ${series.colour} ${amount}%, #000)`;
 </script>

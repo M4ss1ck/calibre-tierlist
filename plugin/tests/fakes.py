@@ -109,11 +109,13 @@ class FakeCovers:
         formats: frozenset[str] = frozenset({'webp', 'jpeg'}),
         with_cover: Iterable[int] = (),
         colours: Mapping[int, str] | None = None,
+        images: Mapping[int, bytes] | None = None,
         delay: float = 0.0,
     ) -> None:
         self._formats = formats
         self._with_cover = set(with_cover)
         self._colours = dict(colours or {})
+        self._images = dict(images or {})
         self._delay = delay
         self.calls: list[tuple[int, str, int]] = []
         self.threads: set[str] = set()
@@ -128,4 +130,4 @@ class FakeCovers:
             sleep(self._delay)
         if book_id not in self._with_cover:
             return None
-        return Cover(fmt, TINY_WEBP, self._colours.get(book_id, '#336699'))
+        return Cover(fmt, self._images.get(book_id, TINY_WEBP), self._colours.get(book_id, '#336699'))

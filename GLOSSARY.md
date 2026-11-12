@@ -46,7 +46,7 @@ An Override whose series name matches no series in the library, usually after a 
 ## Board
 
 **Stack**
-The visual group for one series inside a Tier row: a single front cover (the first owned book with a cover, else the series colour), a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
+The visual group for one series inside a Tier row: a single cover, its Series Cover (or the series colour when no owned book has one), a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
 Avoid: pile, deck.
 
 **Card**
@@ -57,8 +57,12 @@ Avoid: tile, chip.
 A series position the user does not own. The Series Panel lists it as "Not in your library" and it opens the Detail Panel like an owned position; a Stack with no owned cover is drawn in the series colour (the dominant cover colour of its first covered book in index order). An owned book without a cover uses the Placeholder style with a "no cover" mark on its Card.
 Avoid: ghost cover, missing book (that is the position, not the drawing).
 
+**Series Cover**
+The book whose cover a Stack shows: the first owned book with a cover, unless the reader picks another with its eye in the Series Panel. The pick lasts for the session and is never saved; pressing the picked eye again returns to the first.
+Avoid: front, thumbnail, poster.
+
 **Series Panel**
-The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier and each Placeholder as "Not in your library". Picking a row opens the Detail Panel.
+The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier and each Placeholder as "Not in your library". Picking a row's title opens the Detail Panel; the eye on a row with a cover picks the Series Cover.
 Avoid: expanded Stack, series popup.
 
 **Sheet**

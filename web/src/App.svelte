@@ -6,7 +6,7 @@
   import { resolvePageDefaults } from './board/query';
   import SeriesPanel from './board/SeriesPanel.svelte';
   import SheetHeader from './board/SheetHeader.svelte';
-  import type { StackPick } from './board/stack';
+  import { withFront, type StackPick } from './board/stack';
   import { emptyMessage, viewStyle } from './board/view';
   import ViewPanel from './board/ViewPanel.svelte';
   import type { PageDefaults, TierListData } from './contract/tierlist';
@@ -21,6 +21,7 @@
   let sheet = $state<HTMLElement>();
   let selection = $state<Selection | undefined>();
   let opened = $state<string | undefined>();
+  let fronts = $state<Record<string, string>>({});
   const defaults = untrack(() => resolvePageDefaults(data.pageDefaults, location.search));
   let view = $state<PageDefaults>({ ...defaults });
   let theme = $state<ThemeChoice>(defaults.theme);
@@ -74,6 +75,7 @@
           books={data.books}
           covers={data.covers}
           series={data.series}
+          {fronts}
           {filters}
           onopen={open}
           onrename={(label) => (labels = { ...labels, [entry.id]: label })}
@@ -91,7 +93,9 @@
     books={data.books}
     covers={data.covers}
     tiers={data.tiers}
+    chosen={opened === undefined ? undefined : fronts[opened]}
     onpick={(picked) => (selection = picked)}
+    onfront={(chosen) => opened !== undefined && (fronts = withFront(fronts, opened, chosen))}
     onclose={() => (opened = undefined)}
   />
   <Detail {selection} tiers={data.tiers} onclose={() => (selection = undefined)} />

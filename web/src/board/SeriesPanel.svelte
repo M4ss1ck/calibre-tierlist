@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { Book, Cover, Series, Tier } from '../contract/tierlist';
   import type { Selection } from './Detail.svelte';
-  import { resolve } from './stack';
+  import SeriesRow from './SeriesRow.svelte';
+  import { canFront, frontOf, pickFront, resolve } from './stack';
 
   type Props = {
     name: string | undefined;
@@ -9,21 +10,25 @@
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     tiers: Tier[];
+    /** The book id picked as this series' Series Cover for the session, if any. */
+    chosen: string | undefined;
     onpick: (selection: Selection) => void;
+    onfront: (chosen: string | undefined) => void;
     onclose: () => void;
   };
-  let { name, series, books, covers, tiers, onpick, onclose }: Props = $props();
+  let { name, series, books, covers, tiers, chosen, onpick, onfront, onclose }: Props = $props();
   let dialog: HTMLDialogElement;
 
+  const resolved = $derived(series && name ? resolve(series, books, covers) : []);
+  const front = $derived(frontOf(resolved, chosen)?.position.book);
   const rows = $derived(
-    series && name
-      ? resolve(series, books, covers).map(({ position, book }) => ({
-          number: position.number,
-          book,
-          tier: book ? tiers.find((candidate) => candidate.id === book.tier) : undefined,
-          pick: (): Selection => (book ? { book } : { series: name, number: position.number }),
-        }))
-      : [],
+    resolved.map((entry) => ({
+      number: entry.position.number,
+      id: entry.position.book,
+      book: entry.book,
+      tier: entry.book ? tiers.find((candidate) => candidate.id === entry.book?.tier) : undefined,
+      eligible: canFront(entry),
+    })),
   );
   const owned = $derived(rows.filter((row) => row.book !== undefined).length);
 
@@ -34,6 +39,11 @@
   function choose(selection: Selection) {
     dialog.close();
     onpick(selection);
+  }
+
+  function selectionOf(row: (typeof rows)[number]): Selection | undefined {
+    if (row.book) return { book: row.book };
+    return name ? { series: name, number: row.number } : undefined;
   }
 </script>
 
@@ -48,17 +58,18 @@
     </header>
     <ol>
       {#each rows as row, index (index)}
-        <li>
-          <button type="button" class="row" class:missing={!row.book} onclick={() => choose(row.pick())}>
-            <span class="number">#{row.number}</span>
-            <span class="title">{row.book?.title ?? 'Not in your library'}</span>
-            {#if row.tier}
-              <span class="tier" style:background-color={row.tier.colour}>{row.tier.label}</span>
-            {:else if row.book}
-              <span class="tier unranked">Unranked</span>
-            {/if}
-          </button>
-        </li>
+        <SeriesRow
+          number={row.number}
+          book={row.book}
+          tier={row.tier}
+          eligible={row.eligible}
+          front={row.eligible && row.id === front}
+          onopen={() => {
+            const selection = selectionOf(row);
+            if (selection) choose(selection);
+          }}
+          onfront={() => row.id !== null && onfront(pickFront(resolved, chosen, row.id))}
+        />
       {/each}
     </ol>
   {/if}
@@ -84,18 +95,4 @@
   }
   .close:hover, .close:focus-visible { color: var(--fg); }
   ol { display: flex; flex-direction: column; gap: 0.25rem; margin: 0; padding: 0; list-style: none; }
-  .row {
-    display: flex; align-items: center; gap: 0.75rem; width: 100%; min-height: 2.75rem;
-    padding: 0 0.625rem; border: 1px solid var(--border); border-radius: 0.375rem;
-    background: var(--surface); color: var(--fg); font: inherit; text-align: start; cursor: pointer;
-  }
-  .row:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; }
-  .row.missing { color: var(--muted); border-style: dashed; background: transparent; }
-  .number { flex: none; min-width: 2.5rem; color: var(--muted); font-size: 0.85rem; }
-  .title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-  .tier {
-    flex: none; padding: 0 0.45rem; border-radius: 0.25rem;
-    color: var(--tier-ink); font-size: 0.8rem; font-weight: 600;
-  }
-  .tier.unranked { color: var(--muted); border: 1px solid var(--border-strong); }
 </style>
