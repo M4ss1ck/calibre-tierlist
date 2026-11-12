@@ -8,8 +8,10 @@ plugin_zip := "dist/tierlist.zip"
 default:
     @just --list
 
-# Lint, type check, file length, plus the web package when it exists.
+# Lock in step with pyproject (before any `uv run` re-locks it), lint, type check,
+# file length, plus the web package when it exists.
 check:
+    cd {{plugin}} && uv lock --check
     cd {{plugin}} && uv run ruff check .
     cd {{plugin}} && uv run ruff format --check .
     cd {{plugin}} && uv run pyright
