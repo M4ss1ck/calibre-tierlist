@@ -21,7 +21,8 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 7;
+  schemaVersion: 8;
+  pageDefaults: PageDefaults;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -49,6 +50,32 @@ export interface TierListData {
   covers: {
     [k: string]: Cover;
   };
+}
+export interface PageDefaults {
+  /**
+   * The palette the page opens with; system follows the reader's operating system.
+   */
+  theme: "system" | "light" | "dark";
+  /**
+   * The Sheet title the page opens with.
+   */
+  title: string;
+  /**
+   * The Unranked Lane label the page opens with.
+   */
+  unrankedLabel: string;
+  /**
+   * Whether the Unranked Lane starts shown.
+   */
+  showUnranked: boolean;
+  /**
+   * Whether the header line shows the book and series counts.
+   */
+  showCounts: boolean;
+  /**
+   * Whether the header line and footer show the library name.
+   */
+  showLibrary: boolean;
 }
 export interface Generated {
   /**

@@ -20,9 +20,10 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `create_column(gui, lookup, heading, datatype) -> bool`: creates any custom column; True means restart calibre.
 - `create_tier_column(gui, lookup) -> bool`: creates the Text Tier column; True means restart calibre.
 - `CompileDialog(gui, db, app)`: the Compile dialog; `scope()` returns `'library'`, `'virtual_library'`, or `'selection'`, and `path()` the output file.
-- `ConfigWidget(gui)`: the tabbed Settings widget calibre shows under Customize and the Settings dialog hosts; its `tiers` and `backup` tabs hold the widgets; `build_config()` reads the Tier Config they show, `validate()` returns False after showing why an invalid one cannot be saved, and `save()` stores it and refreshes saved searches and the Tier menu.
+- `ConfigWidget(gui)`: the tabbed Settings widget calibre shows under Customize and the Settings dialog hosts; its `tiers`, `page` and `backup` tabs hold the widgets; `build_config()` reads the Tier Config they show, `validate()` returns False after showing why an invalid one cannot be saved, and `save()` stores the Tier Config and Page Defaults and refreshes saved searches and the Tier menu.
 - `SettingsDialog(gui, parent=None)`: the Settings dialog, OK and Cancel; `accept()` validates then saves, and Cancel writes nothing.
 - `TiersTab(admin, parent)`: the Tier table, its buttons, the column mapping and the Orphaned Overrides; `build_config()` reads them, `load()` and `load_tiers()` show them.
+- `PageTab(admin, parent)`: the theme combo, the title and Unranked Lane label fields, and the show-Unranked, show-counts and show-library checkboxes; `build_defaults()` reads them and `load(defaults)` shows them.
 - `BackupTab(admin, tiers, parent)`: the Import JSON… and Export JSON… buttons; an import asks first when it drops Tiers books still hold, and only loads the Tiers tab until Settings is saved.
 - `TierTable(parent)`: the Tier rows; `tiers()` and `set_tiers()` convert to and from `Tier`s, `add()`, `remove(row)`, and `move(row, offset)` edit them.
 - `OrphanPanel(admin, series_names, parent)`: the Orphaned Overrides list, reattaching and deleting immediately.
@@ -44,6 +45,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `config_widget.py`: the tabbed Settings widget: its tabs and the validating save.
 - `settings_dialog.py`: the Settings dialog the Tier List menu opens, with OK and Cancel.
 - `config_tiers.py`: the Tiers tab: the Tier table, the column mapping, and the Orphaned Overrides.
+- `config_page.py`: the Page tab: the theme combo, title and Unranked Lane label fields, and the three header switches.
 - `config_backup.py`: the Backup tab: importing and exporting Tier Config JSON.
 - `tier_table.py`: the Tier table rows and their colour swatch button.
 - `config_extras.py`: the column mapping combos and the Orphaned Overrides panel.
@@ -53,5 +55,5 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 ## Depends on
 
 - Ports: `Library`, `Prefs`, `SavedSearches`, and `Covers`, implemented here by `CalibreLibrary`, `CalibrePrefs`, `CalibreSavedSearches`, and `CalibreCovers`.
-- Slices: `tierlist.app`, `tierlist.config_admin`, and `tierlist.tiers` for the use cases and Tier Config.
+- Slices: `tierlist.app`, `tierlist.config_admin`, `tierlist.page_defaults` for Page Defaults, and `tierlist.tiers` for the use cases and Tier Config.
 - Imports calibre and Qt; the only slice allowed to.

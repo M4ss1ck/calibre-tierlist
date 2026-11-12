@@ -15,14 +15,14 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 - `LaneItem(stack, card)`: one item in a Lane, a Stack by series name or a Card by book id; exactly one is set.
 - `Series(colour, positions, override)`: one series on the board, the colour its Placeholders are drawn in, every position (the Series Panel lists them all), and whether its Series Tier is an Override.
 - `Position(number, book)`: one Stack position, the series index as displayed, and the owned book id or None for a Placeholder.
-- `TierListData(generated, tiers, lanes, books, covers, series)`: the whole board; `books` holds every book on it, `series` maps series name to `Series`, `covers` maps book id to `Cover` for books that have one, and `to_dict()` returns the schema's camelCase JSON shape.
+- `TierListData(generated, tiers, lanes, books, covers, series, page_defaults)`: the whole board; `books` holds every book on it, `series` maps series name to `Series`, `covers` maps book id to `Cover` for books that have one, `page_defaults` is the Page Defaults the page opens with, and `to_dict()` returns the schema's camelCase JSON shape.
 - `Cover(format, data, colour)`: one book's cover thumbnail bytes, their image format, and its dominant colour.
 - `COVER_WIDTH`: the pixel width every embedded cover thumbnail is rendered at.
 - `choose_format(available) -> str`: the first preferred cover format the host encodes, or JPEG.
 - `cover_thumbs(covers, book_ids, fmt, width) -> dict[int, Cover]`: the thumbnails these books have, by id, encoded on a small pool (a pool, because the host's codec dominates a compile and releases the GIL); a host that cannot encode raises as it would have walked in order.
 - `dominant_colour(pixels) -> str`: the most common colour of these RGB pixels, or grey when there are none.
 - `READ_COLUMN_TYPES`: the calibre column datatypes that can hold Read State.
-- `compile_data(generated, library, covers, fmt, config, book_ids, overrides, order=None) -> TierListData`: reads title, authors, series, series index, Series total, rating, tags, comments, Book Tier, and Read State through the Library port, builds the board, then reads a `fmt` cover at `COVER_WIDTH` for each book on it. `overrides` maps a series name to its Override Tier id; an applicable Override also puts an otherwise unread, untiered series on the board. `order` maps a Lane key (a Tier id or `unranked`) to its stored Lane Order places: they come first in stored order, then every unplaced Stack and Card by date read, undated last, then name or title, then id.
+- `compile_data(generated, library, covers, fmt, config, book_ids, overrides, order=None, page_defaults=DEFAULT_PAGE_DEFAULTS) -> TierListData`: reads title, authors, series, series index, Series total, rating, tags, comments, Book Tier, and Read State through the Library port, builds the board, then reads a `fmt` cover at `COVER_WIDTH` for each book on it. `overrides` maps a series name to its Override Tier id; an applicable Override also puts an otherwise unread, untiered series on the board. `order` maps a Lane key (a Tier id or `unranked`) to its stored Lane Order places: they come first in stored order, then every unplaced Stack and Card by date read, undated last, then name or title, then id. `page_defaults` is carried in the payload so the page opens with the reader's choices.
 - `count_series(library, book_ids) -> int`: the number of distinct non-empty series among these books.
 
 ## Files
@@ -37,5 +37,5 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 ## Depends on
 
 - Ports: `Library` for titles, series, series index, Book Tier, Read State, and column readiness; `Covers` for cover thumbnails.
-- Slices: `tiers` for `Tier` and `TierConfig`; `lane_order` for the `Place` a stored Lane Order holds.
+- Slices: `tiers` for `Tier` and `TierConfig`; `lane_order` for the `Place` a stored Lane Order holds; `page_defaults` for the `PageDefaults` baked into the payload.
 - Imports nothing from calibre or Qt.

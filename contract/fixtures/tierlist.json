@@ -1,5 +1,13 @@
 {
-  "schemaVersion": 7,
+  "schemaVersion": 8,
+  "pageDefaults": {
+    "theme": "system",
+    "title": "Tier List",
+    "unrankedLabel": "Unranked",
+    "showUnranked": true,
+    "showCounts": true,
+    "showLibrary": true
+  },
   "generated": {
     "at": "2026-11-06T12:00:00+00:00",
     "libraryName": "Fixture Library",

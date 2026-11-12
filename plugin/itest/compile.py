@@ -21,6 +21,7 @@ from calibre_plugins.tierlist.calibre_ui import compile_job
 from calibre_plugins.tierlist.calibre_ui.adapters import tier_list
 from calibre_plugins.tierlist.calibre_ui.compile_dialog import CompileDialog
 from calibre_plugins.tierlist.calibre_ui.compile_job import run_compile, scope_book_ids, start_compile
+from calibre_plugins.tierlist.calibre_ui.settings_dialog import SettingsDialog
 from calibre_plugins.tierlist.compile import CompileRequest
 from fake_gui import FakeGui
 from fake_job import FakeJobAction
@@ -80,6 +81,9 @@ def check_dialog(db: Any, app: TierList) -> None:
 
 
 def check_compile(db: Any, ids: list[int], app: TierList) -> None:
+    dialog = SettingsDialog(FakeGui(db, []))
+    dialog.widget.page.theme.setCurrentIndex(dialog.widget.page.theme.findData('light'))
+    dialog.accept()
     request = CompileRequest('library', tuple(sorted(ids)), os.path.basename(db.library_path), '0.1.0')
     lines: list[str] = []
     written = run_compile(app, request, TEMPLATE.read_text(encoding='utf-8'), str(OUTPUT), lines.append)
@@ -89,6 +93,7 @@ def check_compile(db: Any, ids: list[int], app: TierList) -> None:
     expect('Alpha' in html, 'Alpha missing from the compiled HTML')
     expect('__TIERLIST_DATA__' not in html, 'the template marker survived')
     expect(len(lines) == 1 and lines[0].startswith('Tier List compiled: 3 of 4 books'), lines)
+    expect('"pageDefaults":{"theme":"light"' in html, 'the compiled page did not carry the Light theme')
     expect('</script> Problem' not in html, 'the script-closing title was not escaped')
 
 

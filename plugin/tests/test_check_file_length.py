@@ -32,3 +32,10 @@ def test_node_modules_is_skipped(tmp_path: Path, capsys: pytest.CaptureFixture[s
     make(tmp_path / 'node_modules' / 'dep' / 'long.ts', 400)
     assert main([str(tmp_path)]) == 0
     assert 'ERROR' not in capsys.readouterr().out
+
+
+def test_a_generated_file_is_skipped(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    generated = tmp_path / 'types.ts'
+    generated.write_text('/* Generated from a schema. Do not edit. */\n' + 'x\n' * 400, encoding='utf-8')
+    assert main([str(tmp_path)]) == 0
+    assert 'ERROR' not in capsys.readouterr().out

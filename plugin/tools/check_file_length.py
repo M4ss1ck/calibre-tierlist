@@ -15,6 +15,7 @@ HARD = 150
 SUFFIXES = {'.py', '.ts', '.svelte'}
 SKIP_DIRS = {'node_modules', '.venv', 'dist', '__pycache__', 'typings', '.git'}
 SKIP_NAMES = ('.d.ts',)
+GENERATED_MARKERS = ('Generated from', 'Do not edit')
 
 
 def source_files(roots: Iterable[str]) -> Iterator[Path]:
@@ -31,7 +32,15 @@ def source_files(roots: Iterable[str]) -> Iterator[Path]:
                 continue
             if path.name.endswith(SKIP_NAMES):
                 continue
+            if _is_generated(path):
+                continue
             yield path
+
+
+def _is_generated(path: Path) -> bool:
+    """True when the file's first line says it is generated and must not be edited."""
+    first = path.read_text(encoding='utf-8').partition('\n')[0]
+    return all(marker in first for marker in GENERATED_MARKERS)
 
 
 def main(argv: list[str] | None = None) -> int:

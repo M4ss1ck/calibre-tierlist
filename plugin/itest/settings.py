@@ -102,10 +102,12 @@ def check_ok(path: str) -> None:
         gui.iactions = {'Tier List': action}
         dialog = SettingsDialog(gui)
         widget = dialog.widget
-        expect([widget.tabText(index) for index in range(widget.count())] == ['Tiers', 'Backup'], 'the tabs changed')
+        expect([widget.tabText(index) for index in range(widget.count())] == ['Tiers', 'Page', 'Backup'], 'tabs')
         backup: Any = widget.backup
         texts = {button.text() for button in backup.findChildren(QPushButton)}
         expect(texts == {'Import JSON…', 'Export JSON…'}, f'the Backup tab holds {sorted(texts)}')
+        page: Any = widget.page
+        page.theme.setCurrentIndex(page.theme.findData('light'))
 
         table = widget.tiers.table
         expect(len(table.tiers()) == 6, f'the Tiers tab shows {len(table.tiers())} Tiers')
@@ -113,6 +115,7 @@ def check_ok(path: str) -> None:
         expect(labels(db)['s'] == 'S', 'editing the widget changed the stored config before OK')
         dialog.accept()
         expect(labels(db)['s'] == 'Top', f'OK did not store the label: {labels(db)}')
+        expect(config_admin(db).page_defaults().theme == 'light', 'OK did not store the Page Defaults')
         expect('Tier Top' in db.new_api.saved_search_names(), sorted(db.new_api.saved_search_names()))
         shown = [item.text() for item in action.tier_menu._submenu.actions()]
         expect('Top' in shown, f'OK did not rebuild the Tier menu: {shown}')

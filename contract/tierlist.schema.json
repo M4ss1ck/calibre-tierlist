@@ -5,13 +5,14 @@
   "description": "The versioned payload the plugin embeds in the compiled tier list HTML.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "generated", "tiers", "lanes", "books", "series", "covers"],
+  "required": ["schemaVersion", "pageDefaults", "generated", "tiers", "lanes", "books", "series", "covers"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 7,
+      "const": 8,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
+    "pageDefaults": { "$ref": "#/$defs/PageDefaults" },
     "generated": { "$ref": "#/$defs/Generated" },
     "tiers": {
       "type": "array",
@@ -40,6 +41,26 @@
     }
   },
   "$defs": {
+    "PageDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["theme", "title", "unrankedLabel", "showUnranked", "showCounts", "showLibrary"],
+      "properties": {
+        "theme": {
+          "type": "string",
+          "enum": ["system", "light", "dark"],
+          "description": "The palette the page opens with; system follows the reader's operating system."
+        },
+        "title": { "type": "string", "description": "The Sheet title the page opens with." },
+        "unrankedLabel": { "type": "string", "description": "The Unranked Lane label the page opens with." },
+        "showUnranked": { "type": "boolean", "description": "Whether the Unranked Lane starts shown." },
+        "showCounts": { "type": "boolean", "description": "Whether the header line shows the book and series counts." },
+        "showLibrary": {
+          "type": "boolean",
+          "description": "Whether the header line and footer show the library name."
+        }
+      }
+    },
     "Generated": {
       "type": "object",
       "additionalProperties": false,

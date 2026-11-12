@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tier List 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 22:40-0300\n"
+"POT-Creation-Date: 2026-11-11 23:07-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgstr ""
 #: plugin/src/tierlist/calibre_ui/column.py:58
 #: plugin/src/tierlist/calibre_ui/column.py:60
 #: plugin/src/tierlist/calibre_ui/config_io.py:20
-#: plugin/src/tierlist/calibre_ui/config_widget.py:38
+#: plugin/src/tierlist/calibre_ui/config_widget.py:41
 msgid "Tier List"
 msgstr ""
 
@@ -210,6 +210,30 @@ msgstr[1] ""
 msgid "Remove Tier"
 msgstr ""
 
+#: plugin/src/tierlist/calibre_ui/config_page.py:23
+msgid "Show the Unranked Lane"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:24
+msgid "Show the book and series counts"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:25
+msgid "Show the library name"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:27
+msgid "Theme"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:28
+msgid "Title"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:29
+msgid "Unranked Lane label"
+msgstr ""
+
 #: plugin/src/tierlist/calibre_ui/config_tiers.py:39
 msgid "Add"
 msgstr ""
@@ -242,11 +266,15 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:26
+#: plugin/src/tierlist/calibre_ui/config_widget.py:28
 msgid "Tiers"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:27
+#: plugin/src/tierlist/calibre_ui/config_widget.py:29
+msgid "Page"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:30
 msgid "Backup"
 msgstr ""
 

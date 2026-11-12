@@ -19,6 +19,7 @@ test('shows the compiled lanes and escaped titles without errors', async ({ page
   await expect(lanes.last()).toBeVisible();
   await expect(lanes.first()).toHaveAttribute('aria-label', 'S');
   await expect(lanes.last()).toHaveAttribute('aria-label', 'Unranked');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
 
   await expect(page.getByText('The </script> Problem', { exact: true })).toBeVisible();
   await expect(page.getByText('Alpha', { exact: true })).toBeVisible();

@@ -1,18 +1,20 @@
 <script lang="ts">
   import type { TierListData } from '../contract/tierlist';
   import { editable } from './editable';
+  import { headerMeta } from './page';
 
   /** The board's editable title and what it holds; part of the exported sheet. */
-  type Props = { data: TierListData; title: string };
-  let { data, title = $bindable() }: Props = $props();
+  type Props = {
+    data: TierListData;
+    title: string;
+    showCounts: boolean;
+    showLibrary: boolean;
+  };
+  let { data, title = $bindable(), showCounts, showLibrary }: Props = $props();
 
   const books = $derived(Object.keys(data.books).length);
   const series = $derived(Object.keys(data.series).length);
-  const meta = $derived(
-    [`${books} ${books === 1 ? 'book' : 'books'}`, `${series} series`, data.generated.libraryName]
-      .filter(Boolean)
-      .join(' · '),
-  );
+  const meta = $derived(headerMeta(books, series, data.generated.libraryName, showCounts, showLibrary));
 
   $effect(() => {
     document.title = title;
@@ -21,7 +23,7 @@
 
 <div class="heading">
   <h1 title="Click to rename" use:editable={{ value: title, onchange: (next) => (title = next) }}></h1>
-  <p class="meta">{meta}</p>
+  {#if meta}<p class="meta">{meta}</p>{/if}
 </div>
 
 <style>

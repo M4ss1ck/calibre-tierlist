@@ -6,8 +6,11 @@ Draws the compiled Tier List as a Sheet: an editable title, Lanes of Stacks and 
 
 ## Public API
 
-- `App(data)`: the whole page. A `.sheet` wraps the `SheetHeader`, the `.controls` toolbar (View: `UnrankedSwitch` and the `theme` slice's `ThemePicker`; Export: the `export` slice's buttons, handed the sheet element), the `FilterBar` whose `Filters` it holds, the `.lanes` and the footer. It keeps the renamed title and Lane labels (by Tier id, or `unranked`) for the session, so a label survives the Unranked Lane being switched off and on. Outside the sheet it mounts the `SeriesPanel` for the opened Stack and the `Detail` for the last pick.
-- `SheetHeader(data, title)`: the editable `h1` title (bindable, default "Tier List", mirrored to `document.title`) and a line with the book count, series count and library name.
+- `App(data)`: the whole page. A `.sheet` wraps the `SheetHeader`, the `.controls` toolbar (View: `UnrankedSwitch` and the `theme` slice's `ThemePicker`; Export: the `export` slice's buttons, handed the sheet element), the `FilterBar` whose `Filters` it holds, the `.lanes` and the footer. It opens with the payload's Page Defaults: `initialView` seeds the theme, title, Unranked Lane label and visibility, and `shownLanes` leaves the Unranked Lane out when they hide it. It keeps the renamed title and Lane labels (by Tier id, or `unranked`) for the session, so a label survives the Unranked Lane being switched off and on. Outside the sheet it mounts the `SeriesPanel` for the opened Stack and the `Detail` for the last pick.
+- `SheetHeader(data, title, showCounts, showLibrary)`: the editable `h1` title (bindable, seeded from Page Defaults and mirrored to `document.title`) and a line from `headerMeta`: the book and series counts when `showCounts`, and the library name when `showLibrary`.
+- `initialView(pageDefaults) -> InitialView`: the theme, title, Unranked Lane label and visibility, and header choices a compiled page starts from.
+- `shownLanes(lanes, showUnranked) -> Lane[]`: every Lane, or every Lane but the Unranked one when it is hidden.
+- `headerMeta(bookCount, seriesCount, libraryName, showCounts, showLibrary) -> string` / `footerMeta(libraryName, showLibrary, compiled) -> string`: the meta line above the board and the footer's left part, each dropping the parts the reader turned off.
 - `UnrankedSwitch(on)`: a `role="switch"` button labelled "Unranked lane", `aria-checked` bound to `on`; its visible label toggles it too.
 - `Lane(lane, label, colour, books, covers, series, filters, onopen, onrename)`: one Lane as a `section` whose `aria-label` is the shown label and whose `data-lane-id` is the Tier id or `unranked`. A full-height label cell in the Tier colour holds the editable `h2` (smaller when longer than three characters); it draws `laneEntries`, so its Stacks and Cards stay interleaved in Lane Order. Only Cards whose book `matchesBook` and Stacks whose series `matchesSeries` (over the series' books) are drawn; the Lane itself stays even when empty.
 - `laneEntries(lane, books, covers, series, filters) -> LaneEntry[]`: the Lane's items that survive the Board Filter, in Lane Order; each `LaneEntry` is a `stack` with its name and `Series`, or a `card` with its id, `Book` and cover. References the payload does not hold are skipped.
@@ -23,10 +26,11 @@ Draws the compiled Tier List as a Sheet: an editable title, Lanes of Stacks and 
 - `SheetHeader.svelte`, `UnrankedSwitch.svelte`, `Lane.svelte`, `Stack.svelte`, `SeriesPanel.svelte`, `Card.svelte`, `Detail.svelte`: the components above.
 - `OverrideMark.svelte`: the Override badge (top corner) on a Stack whose Series Tier is an Override, which also carries `data-override="true"`.
 - `lane.ts`: `LaneEntry` and `laneEntries`, the Board Filter applied to a Lane's interleaved items; unit tested in `lane.test.ts`.
+- `page.ts`: `InitialView`, `initialView`, `shownLanes`, `headerMeta` and `footerMeta`, the Page Defaults the page opens with; unit tested in `page.test.ts`.
 - `stack.ts`, `editable.ts`: the pure Stack helpers and the rename action, unit tested in `stack.test.ts` and `editable.test.ts`.
 
 ## Depends on
 
 - Ports: none; it draws the Tier List Data passed as props.
-- Slices: `contract` for `TierListData`, `Tier`, `Lane`, `Book`, `Series`, `Position`, and `Cover` types; `filter` for the `Filters` type and its predicates (App also mounts `FilterBar`); `theme` for the colour tokens and `ThemePicker`; `export` for `ExportButton` and `PdfButton`. The `export` slice reads the `.sheet`, `.controls`, `.lanes`, Lanes' `data-lane-id` and, in `print.css`, the `.stack`, `.card`, `dialog.series-panel` and `dialog.detail` markup.
+- Slices: `contract` for `TierListData`, `PageDefaults`, `Tier`, `Lane`, `Book`, `Series`, `Position`, and `Cover` types; `filter` for the `Filters` type and its predicates (App also mounts `FilterBar`); `theme` for the colour tokens and `ThemePicker`; `export` for `ExportButton` and `PdfButton`. The `export` slice reads the `.sheet`, `.controls`, `.lanes`, Lanes' `data-lane-id` and, in `print.css`, the `.stack`, `.card`, `dialog.series-panel` and `dialog.detail` markup.
 - Svelte only; no calibre or network access.

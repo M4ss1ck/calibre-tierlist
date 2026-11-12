@@ -5,6 +5,7 @@ from dataclasses import replace
 from typing import cast
 
 from ..lane_order import UNRANKED_LANE, Place
+from ..page_defaults import DEFAULT_PAGE_DEFAULTS, PageDefaults
 from ..ports import Covers, Library
 from ..tiers import TierConfig
 from .covers import COVER_WIDTH, cover_thumbs
@@ -25,6 +26,7 @@ def compile_data(
     book_ids: Iterable[int],
     overrides: Mapping[str, str],
     order: Mapping[str, Sequence[Place]] | None = None,
+    page_defaults: PageDefaults = DEFAULT_PAGE_DEFAULTS,
 ) -> TierListData:
     """Read these books from the library, build their Tier List Data, then attach their covers."""
     ids = list(book_ids)
@@ -53,7 +55,11 @@ def compile_data(
     board = on_board(rows, datatype == 'bool', _overridden(config, overrides))
     shots = cover_thumbs(covers, (row.id for row in board), fmt, COVER_WIDTH)
     colours = {book_id: cover.colour for book_id, cover in shots.items()}
-    return replace(build(generated, config, board, datatype == 'bool', colours, overrides, order), covers=shots)
+    return replace(
+        build(generated, config, board, datatype == 'bool', colours, overrides, order),
+        covers=shots,
+        page_defaults=page_defaults,
+    )
 
 
 def count_series(library: Library, book_ids: Iterable[int]) -> int:

@@ -2,8 +2,9 @@
 
 from collections.abc import Iterable, Mapping
 
-from . import lane_order, series_tiers
+from . import lane_order, page_defaults, series_tiers
 from .app import TIER_CONFIG_KEY, TierList
+from .page_defaults import PageDefaults
 from .ports import Library, Prefs, SavedSearches
 from .tiers import TierConfig, dump_config, parse_config, validate
 
@@ -19,6 +20,14 @@ class ConfigAdmin:
     def tier_config(self) -> TierConfig:
         """The Tier Config stored for this library, or the default when absent."""
         return TierList(self._library, self._prefs).tier_config()
+
+    def page_defaults(self) -> PageDefaults:
+        """The Page Defaults stored for this library, or the built-in ones."""
+        return page_defaults.load_defaults(self._prefs)
+
+    def save_page_defaults(self, defaults: PageDefaults) -> None:
+        """Store Page Defaults for this library."""
+        page_defaults.save_defaults(self._prefs, defaults)
 
     def book_count(self, tier_id: str) -> int:
         """How many books hold this Tier id, zero when the tier column is missing."""
