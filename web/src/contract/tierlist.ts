@@ -114,10 +114,6 @@ export interface Series {
    */
   positions: Position[];
   /**
-   * How many trailing positions Stack Depth would cut; the board no longer uses it and lists every position in the Series Panel.
-   */
-  more: number;
-  /**
    * True when this series' Series Tier is an Override, false when it is Auto.
    */
   override: boolean;

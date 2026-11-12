@@ -9,7 +9,7 @@ A user-defined rank with a stable id, label, colour, optional description, and p
 Avoid: rank, grade, bucket, category.
 
 **Tier Config**
-The ordered list of Tiers for one library, plus plugin settings (column mapping, stack depth). Stored in per-library prefs and importable/exportable as JSON.
+The ordered list of Tiers for one library, plus plugin settings (column mapping). Stored in per-library prefs and importable/exportable as JSON.
 Avoid: tier scheme, tier list (that is the compiled board).
 
 **Book Tier**
@@ -48,10 +48,6 @@ Avoid: tile, chip.
 **Placeholder**
 A series position the user does not own. The Series Panel lists it as "Not in your library" and it opens the Detail Panel like an owned position; a Stack with no owned cover is drawn in the series colour (the dominant cover colour of its first covered book in index order). An owned book without a cover uses the Placeholder style with a "no cover" mark on its Card.
 Avoid: ghost cover, missing book (that is the position, not the drawing).
-
-**Stack Depth**
-A Tier Config setting, 0 to 6, default 3, that the payload still carries as each series' `more` count. It no longer drives the board: a Stack always shows one front cover and the Series Panel lists every position.
-Avoid: stack size, fan count.
 
 **Series Panel**
 The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier and each Placeholder as "Not in your library". Picking a row opens the Detail Panel.

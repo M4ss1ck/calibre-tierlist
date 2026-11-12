@@ -10,10 +10,10 @@ test.beforeAll(async () => {
   url = await fixtureBoardUrl();
 });
 
-/** The fixture series whose Stack cuts positions: the panel must list those too. */
-function cut(): [string, Series] {
-  const found = Object.entries(data.series).find(([, series]) => series.more > 0);
-  if (!found) throw new Error('Fixture has no Stack with cut positions');
+/** The fixture series with the most positions, Placeholders included: the panel must list them all. */
+function longest(): [string, Series] {
+  const [found] = Object.entries(data.series).sort(([, a], [, b]) => b.positions.length - a.positions.length);
+  if (!found || found[1].positions.length < 3) throw new Error('Fixture has no long series');
   return found;
 }
 
@@ -30,8 +30,8 @@ async function openPanel(page: Page, name: string, series: Series) {
   return { opener, panel, rows: panel.getByRole('listitem') };
 }
 
-test('lists every position of the series, cut ones included, in order', async ({ page }) => {
-  const [name, series] = cut();
+test('lists every position of the series, Placeholders included, in order', async ({ page }) => {
+  const [name, series] = longest();
   await page.goto(url);
   const { panel, rows } = await openPanel(page, name, series);
 
@@ -45,7 +45,7 @@ test('lists every position of the series, cut ones included, in order', async ({
 test('says "Not in your library" for each Placeholder and shows owned books with their Tier', async ({
   page,
 }) => {
-  const [name, series] = cut();
+  const [name, series] = longest();
   await page.goto(url);
   const { rows } = await openPanel(page, name, series);
 
@@ -64,10 +64,10 @@ test('says "Not in your library" for each Placeholder and shows owned books with
 });
 
 test('opens the Detail panel for an owned book picked from the list', async ({ page }) => {
-  const [name, series] = cut();
+  const [name, series] = longest();
   const id = series.positions.find((position) => position.book !== null)?.book;
   const book = id ? data.books[id] : undefined;
-  if (!book) throw new Error('Fixture cut Stack should own a book');
+  if (!book) throw new Error('Fixture long series should own a book');
   await page.goto(url);
   const { panel, rows } = await openPanel(page, name, series);
 
@@ -76,10 +76,10 @@ test('opens the Detail panel for an owned book picked from the list', async ({ p
   await expect(page.getByRole('dialog', { name: book.title })).toBeVisible();
 });
 
-test('opens the Detail panel for a cut Placeholder picked from the list', async ({ page }) => {
-  const [name, series] = cut();
+test('opens the Detail panel for a trailing Placeholder picked from the list', async ({ page }) => {
+  const [name, series] = longest();
   const last = series.positions.at(-1);
-  if (!last || last.book !== null) throw new Error('Fixture cut Stack should end in a Placeholder');
+  if (!last || last.book !== null) throw new Error('Fixture long series should end in a Placeholder');
   await page.goto(url);
   const { rows } = await openPanel(page, name, series);
 
@@ -90,7 +90,7 @@ test('opens the Detail panel for a cut Placeholder picked from the list', async 
 });
 
 test('closes on Escape and on its close button, returning focus to the Stack', async ({ page }) => {
-  const [name, series] = cut();
+  const [name, series] = longest();
   await page.goto(url);
 
   const first = await openPanel(page, name, series);

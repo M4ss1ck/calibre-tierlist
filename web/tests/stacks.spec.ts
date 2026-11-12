@@ -67,7 +67,7 @@ test('fills a Stack with no cover with its series colour and dims an unread fron
   await expect(button).toHaveClass(/\bunread\b/);
 });
 
-test('counts owned books over every position, cut ones included', async ({ page }) => {
+test('counts owned books over every position, Placeholders included', async ({ page }) => {
   await page.goto(url);
 
   for (const { name } of placed()) {
@@ -97,7 +97,7 @@ test('peeks at most two sheets out behind the front', async ({ page }) => {
   }
 });
 
-test('draws no per-position elements, Tier badges or cut badge', async ({ page }) => {
+test('draws no per-position elements, Tier badges or "+N" badge', async ({ page }) => {
   await page.goto(url);
 
   for (const selector of ['.position', '.tier-badge', '.more', 'button.toggle']) {

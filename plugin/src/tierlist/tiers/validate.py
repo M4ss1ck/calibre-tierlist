@@ -5,7 +5,7 @@ import json
 import re
 from typing import Any, cast
 
-from .config import MAX_STACK_DEPTH, MIN_STACK_DEPTH, Tier, TierConfig
+from .config import Tier, TierConfig
 
 HEX_COLOUR = re.compile(r'#[0-9a-fA-F]{6}')
 
@@ -23,17 +23,13 @@ class TierConfigError(ValueError):
 
 
 def validate(config: TierConfig) -> None:
-    """Raise TierConfigError unless every Tier has a unique id, a label, and a hex colour, and the depth is in bounds."""
+    """Raise TierConfigError unless every Tier has a unique id, a label, and a hex colour."""
     if not config.tiers:
         raise TierConfigError(_('Tier Config needs at least one Tier'))
     for tier in config.tiers:
         _validate_tier(tier)
     _validate_ids(config.tiers)
     _validate_labels(config.tiers)
-    if not MIN_STACK_DEPTH <= config.stack_depth <= MAX_STACK_DEPTH:
-        raise TierConfigError(
-            _('Stack depth must be between %d and %d, not %d') % (MIN_STACK_DEPTH, MAX_STACK_DEPTH, config.stack_depth)
-        )
 
 
 def _validate_tier(tier: Tier) -> None:

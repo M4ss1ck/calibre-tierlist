@@ -19,12 +19,10 @@ class Position:
 
 @dataclass(frozen=True)
 class Series:
-    """One series on the board: its Placeholder colour, every position, how many of them the collapsed Stack cuts, and
-    whether it is an Override."""
+    """One series on the board: its Placeholder colour, every position, and whether it is an Override."""
 
     colour: str
     positions: tuple[Position, ...]
-    more: int
     override: bool
 
 
@@ -39,17 +37,15 @@ class SeriesTier:
 def build_series(
     indexes: Mapping[int, object | None],
     totals: Iterable[object | None],
-    stack_depth: int,
     colours: Mapping[int, str],
     override: bool,
 ) -> Series:
-    """Build the Stack for one series from each member's series index and colour; it collapses to `stack_depth` behind."""
+    """Build the Stack for one series from each member's series index and colour."""
     owned = {book: _index(index) for book, index in indexes.items()}
     ordered = _positions(owned, _end(owned, _total(totals)))
     return Series(
         _colour(ordered, colours),
         tuple(Position(display_number(index), book) for index, book in ordered),
-        max(0, len(ordered) - 1 - max(0, stack_depth)),
         override,
     )
 

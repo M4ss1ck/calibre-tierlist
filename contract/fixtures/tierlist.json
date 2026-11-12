@@ -200,7 +200,6 @@
           "book": null
         }
       ],
-      "more": 3,
       "override": true
     },
     "Earthsea": {
@@ -211,7 +210,6 @@
           "book": "9"
         }
       ],
-      "more": 0,
       "override": false
     }
   },

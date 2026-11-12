@@ -6,9 +6,6 @@ from typing import Any
 
 DEFAULT_TIER_COLUMN = '#tier'
 DEFAULT_READ_COLUMN = '#date_read'
-MIN_STACK_DEPTH = 0
-MAX_STACK_DEPTH = 6
-DEFAULT_STACK_DEPTH = 3
 
 
 @dataclass(frozen=True)
@@ -24,12 +21,11 @@ class Tier:
 @dataclass(frozen=True)
 class TierConfig:
     """The ordered Tiers for one library, plus the lookup names of the column holding Book Tier and of the column
-    holding Read State, how deep Stacks fan, and the optional numeric column holding each series' total."""
+    holding Read State, and the optional numeric column holding each series' total."""
 
     tiers: tuple[Tier, ...]
     tier_column: str = DEFAULT_TIER_COLUMN
     read_column: str = DEFAULT_READ_COLUMN
-    stack_depth: int = DEFAULT_STACK_DEPTH
     series_total_column: str = ''
 
     def tier(self, tier_id: str) -> Tier | None:
@@ -45,19 +41,17 @@ class TierConfig:
             ],
             'tier_column': self.tier_column,
             'read_column': self.read_column,
-            'stack_depth': self.stack_depth,
             'series_total_column': self.series_total_column,
         }
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> TierConfig:
-        """Rebuild Tier Config from its JSON shape, the inverse of to_dict."""
-        depth = int(data.get('stack_depth', DEFAULT_STACK_DEPTH))
+        """Rebuild Tier Config from its JSON shape, the inverse of to_dict. Unknown keys are ignored, so prefs and
+        exports from older versions (which carried `stack_depth`) still load."""
         return cls(
             tiers=tuple(_tier_from_dict(raw) for raw in data['tiers']),
             tier_column=data.get('tier_column', DEFAULT_TIER_COLUMN),
             read_column=data.get('read_column', DEFAULT_READ_COLUMN),
-            stack_depth=max(MIN_STACK_DEPTH, min(MAX_STACK_DEPTH, depth)),
             series_total_column=data.get('series_total_column', ''),
         )
 

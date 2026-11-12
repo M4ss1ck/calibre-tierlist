@@ -24,7 +24,6 @@ CONFIG = TierConfig(
         Tier('a', 'A', '#ffbf7f'),
         Tier('b', 'B', '#ffdf7f'),
     ),
-    stack_depth=3,
     series_total_column='#series_total',
 )
 

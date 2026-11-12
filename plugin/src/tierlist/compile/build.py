@@ -5,7 +5,7 @@ from dataclasses import replace
 from datetime import date
 
 from ..ports import Covers, Library
-from ..tiers import MAX_STACK_DEPTH, MIN_STACK_DEPTH, TierConfig
+from ..tiers import TierConfig
 from .covers import COVER_WIDTH, cover_thumbs
 from .data import Book, Generated, Lane, TierListData
 from .rows import Row, book_of, on_board, series_name
@@ -79,7 +79,6 @@ def build(
             standalone.append(book)
         else:
             groups.setdefault(name, []).append((row, book))
-    depth = max(MIN_STACK_DEPTH, min(MAX_STACK_DEPTH, config.stack_depth))
     resolved = {
         name: series_tier(name, [book.tier for _, book in group], config, overrides) for name, group in groups.items()
     }
@@ -87,7 +86,6 @@ def build(
         name: build_series(
             {row.id: row.index for row, _ in group},
             (row.total for row, _ in group),
-            depth,
             colours,
             resolved[name].override,
         )

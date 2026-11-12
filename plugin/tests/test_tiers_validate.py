@@ -1,5 +1,7 @@
 """Tier Config validation, JSON parsing, and JSON dumping."""
 
+import json
+
 import pytest
 
 from tierlist.tiers import (
@@ -56,10 +58,9 @@ def test_a_colour_that_is_not_hex_is_rejected(colour: str) -> None:
         validate(TierConfig(tiers=(Tier('s', 'S', colour),)))
 
 
-@pytest.mark.parametrize('depth', [-1, 7])
-def test_a_stack_depth_outside_the_bounds_is_rejected(depth: int) -> None:
-    with pytest.raises(TierConfigError, match='Stack depth'):
-        validate(TierConfig(tiers=VALID.tiers, stack_depth=depth))
+def test_an_imported_config_with_an_older_stack_depth_still_parses() -> None:
+    older = {**VALID.to_dict(), 'stack_depth': 99}
+    assert parse_config(json.dumps(older)) == VALID
 
 
 def test_parse_accepts_a_dumped_config() -> None:

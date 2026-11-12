@@ -119,7 +119,6 @@ class TierListData:
                         {'number': position.number, 'book': None if position.book is None else str(position.book)}
                         for position in series.positions
                     ],
-                    'more': series.more,
                     'override': series.override,
                 }
                 for name, series in sorted(self.series.items())

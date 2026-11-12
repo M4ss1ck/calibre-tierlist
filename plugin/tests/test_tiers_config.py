@@ -1,5 +1,7 @@
 """Tier Config: the default Tiers, and the JSON shape it round trips through."""
 
+import pytest
+
 from tierlist.tiers import DEFAULT_TIER_CONFIG, Tier, TierConfig
 
 DEFAULT_IDS = ('s', 'a', 'b', 'c', 'd', 'f')
@@ -26,15 +28,14 @@ def test_round_trip_through_dict() -> None:
         tiers=(Tier('s', 'S', '#ff7f7f', 'The best'), Tier('a', 'A', '#ffbf7f')),
         tier_column='#rank',
         read_column='#read',
-        stack_depth=5,
         series_total_column='#total',
     )
     assert TierConfig.from_dict(config.to_dict()) == config
 
 
-def test_to_dict_carries_stack_depth_and_series_total_column() -> None:
-    assert DEFAULT_TIER_CONFIG.to_dict()['stack_depth'] == 3
+def test_to_dict_carries_the_series_total_column_and_no_stack_depth() -> None:
     assert DEFAULT_TIER_CONFIG.to_dict()['series_total_column'] == ''
+    assert 'stack_depth' not in DEFAULT_TIER_CONFIG.to_dict()
 
 
 def test_to_dict_carries_the_read_column() -> None:
@@ -47,24 +48,14 @@ def test_from_dict_fills_missing_description_tier_and_read_columns() -> None:
     assert config.tiers[0].description == ''
 
 
-def test_from_dict_defaults_stack_depth_and_series_total_column() -> None:
-    config = TierConfig.from_dict({'tiers': []})
-    assert config.stack_depth == 3
-    assert config.series_total_column == ''
+def test_from_dict_defaults_the_series_total_column() -> None:
+    assert TierConfig.from_dict({'tiers': []}).series_total_column == ''
 
 
-def test_from_dict_truncates_a_float_stack_depth() -> None:
-    config = TierConfig.from_dict({'tiers': [], 'stack_depth': 3.0})
-    assert config.stack_depth == 3
-    assert isinstance(config.stack_depth, int)
-
-
-def test_from_dict_clamps_stack_depth_above_the_max() -> None:
-    assert TierConfig.from_dict({'tiers': [], 'stack_depth': 99}).stack_depth == 6
-
-
-def test_from_dict_clamps_stack_depth_below_the_min() -> None:
-    assert TierConfig.from_dict({'tiers': [], 'stack_depth': -2}).stack_depth == 0
+@pytest.mark.parametrize('depth', [3, 3.0, 99, -2, 'deep', None])
+def test_from_dict_ignores_a_stack_depth_from_an_older_version(depth: object) -> None:
+    older = {**DEFAULT_TIER_CONFIG.to_dict(), 'stack_depth': depth}
+    assert TierConfig.from_dict(older) == DEFAULT_TIER_CONFIG
 
 
 def test_tier_returns_hit_and_miss() -> None:
