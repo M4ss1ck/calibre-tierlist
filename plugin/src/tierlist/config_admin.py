@@ -3,13 +3,13 @@
 from collections.abc import Callable, Iterable, Mapping
 from datetime import date, datetime
 
-from . import lane_order, page_defaults, series_tiers
+from . import lane_order, page_defaults, series_tiers, settings_export
 from .app import TIER_CONFIG_KEY, TierList
 from .arrange import THUMB_WIDTH, Arrange
 from .compile import Generated, build_data, choose_format
 from .page_defaults import PageDefaults
 from .ports import NULL_COVERS, Cover, Covers, Library, Prefs, SavedSearches
-from .tiers import TierConfig, dump_config, parse_config, validate
+from .tiers import TierConfig, validate
 
 
 class ConfigAdmin:
@@ -88,13 +88,17 @@ class ConfigAdmin:
         self._sync_searches(old, new)
         lane_order.prune(self._prefs, self._library.series_names(), self._library.all_book_ids())
 
-    def import_json(self, text: str) -> TierConfig:
-        """Parse an imported Tier Config without storing it."""
-        return parse_config(text)
+    def export_settings(self, config: TierConfig, defaults: PageDefaults, include: bool) -> str:
+        """The Settings Export JSON for these settings, with Overrides and Lane Order when asked."""
+        return settings_export.export_settings(self._prefs, config, defaults, include)
 
-    def export_json(self) -> str:
-        """The stored Tier Config as indented JSON."""
-        return dump_config(self.tier_config())
+    def parse_settings_export(self, text: str) -> settings_export.SettingsExport:
+        """Parse an imported Settings Export without storing it."""
+        return settings_export.parse_export(text)
+
+    def apply_import(self, export: settings_export.SettingsExport) -> None:
+        """Replace the stored Overrides and Lane Order the export carries, then prune stale places."""
+        settings_export.apply_import(self._prefs, self._library, export)
 
     def orphans(self) -> list[str]:
         """The Override series names that match no series in the library, sorted."""

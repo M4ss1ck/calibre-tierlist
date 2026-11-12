@@ -26,7 +26,7 @@ class ConfigWidget(QTabWidget):
         self.tiers = TiersTab(self.admin, self)
         self.page = PageTab(self.admin, self)
         self.arrange = ArrangeTab(gui, self)
-        self.backup = BackupTab(self.admin, self.tiers, self)
+        self.backup = BackupTab(self.admin, self.tiers, self.page, self)
         self.addTab(self.tiers, _('Tiers'))
         self.addTab(self.page, _('Page'))
         self.addTab(self.arrange, _('Arrange'))
@@ -56,6 +56,7 @@ class ConfigWidget(QTabWidget):
         self.admin.save(self.build_config())
         self.admin.save_page_defaults(self.page.build_defaults())
         self.arrange.save()
+        self.backup.apply_import()
         changed = getattr(self.gui, 'saved_searches_changed', None)
         if callable(changed):
             changed()

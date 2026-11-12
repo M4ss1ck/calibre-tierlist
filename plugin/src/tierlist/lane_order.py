@@ -21,7 +21,7 @@ def load_order(prefs: Prefs) -> dict[str, list[Place]]:
     for lane, items in entries.items():
         if not isinstance(lane, str) or not lane or not isinstance(items, list):
             continue
-        places = [place for item in cast('list[object]', items) if (place := _place(item)) is not None]
+        places = [place for item in cast('list[object]', items) if (place := place_from_dict(item)) is not None]
         if places:
             order[lane] = places
     return order
@@ -46,7 +46,8 @@ def prune(prefs: Prefs, series_names: frozenset[str], book_ids: frozenset[int]) 
     )
 
 
-def _place(item: object) -> Place | None:
+def place_from_dict(item: object) -> Place | None:
+    """One stored place, or None when its shape is not a series name or a book id."""
     if not isinstance(item, Mapping):
         return None
     entry = cast('Mapping[object, object]', item)

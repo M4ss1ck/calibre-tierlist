@@ -8,7 +8,7 @@ from fakes import FakeLibrary, FakePrefs, FakeSavedSearches
 from tierlist.app import TIER_CONFIG_KEY
 from tierlist.config_admin import ConfigAdmin
 from tierlist.series_tiers import SERIES_TIER_OVERRIDES_KEY
-from tierlist.tiers import DEFAULT_TIER_CONFIG, Tier, TierConfig, TierConfigError, dump_config, parse_config
+from tierlist.tiers import DEFAULT_TIER_CONFIG, Tier, TierConfig, TierConfigError, dump_config
 
 SEARCHES = {'Tier S': '#tier:"=s"', 'Tier A': '#tier:"=a"'}
 
@@ -113,16 +113,18 @@ def test_changing_the_tier_column_requeries_and_unrelated_searches_stay() -> Non
 def test_import_parses_without_saving_and_export_round_trips() -> None:
     admin, _, prefs, _ = make()
     before = dict(prefs.data)
-    assert admin.import_json(dump_config(CONFIG)) == CONFIG and prefs.data == before
-    assert admin.export_json() == dump_config(CONFIG) and parse_config(admin.export_json()) == CONFIG
+    old = admin.parse_settings_export(dump_config(CONFIG))
+    assert old.tier_config == CONFIG and old.page_defaults is None and prefs.data == before
+    export = admin.parse_settings_export(admin.export_settings(CONFIG, admin.page_defaults(), include=False))
+    assert export.tier_config == CONFIG and export.page_defaults == admin.page_defaults()
 
 
 def test_import_rejects_bad_json_and_reports_a_missing_field() -> None:
     admin, _, _, _ = make()
     with pytest.raises(TierConfigError, match='Not valid JSON'):
-        admin.import_json('{oops')
+        admin.parse_settings_export('{oops')
     with pytest.raises(TierConfigError, match='Missing field: tiers'):
-        admin.import_json('{}')
+        admin.parse_settings_export('{}')
 
 
 def test_orphans_lists_overrides_with_no_series() -> None:
