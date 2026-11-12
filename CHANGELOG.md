@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.4.1...v0.4.2) (2026-11-12)
+
+
+### Bug Fixes
+
+* accept drops on Arrange View lanes so covers can be dragged ([#47](https://github.com/M4ss1ck/calibre-tierlist/issues/47)) ([bd0a9d6](https://github.com/M4ss1ck/calibre-tierlist/commit/bd0a9d6d737b36bd1a6b6bf961c7d3536eb6e6cf))
+
 ## [0.4.1](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.4.0...v0.4.1) (2026-11-12)
 
 
