@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.3.0...v0.4.0) (2026-11-12)
+
+
+### Features
+
+* Settings dialog, Page Defaults, Lane Order, Arrange View, Settings Export ([#43](https://github.com/M4ss1ck/calibre-tierlist/issues/43)) ([4be38d8](https://github.com/M4ss1ck/calibre-tierlist/commit/4be38d895fa418fa5b762c3d6d00455401ca93c4)), closes [#37](https://github.com/M4ss1ck/calibre-tierlist/issues/37)
+
 ## [0.3.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.2.0...v0.3.0) (2026-11-12)
 
 
