@@ -14,6 +14,11 @@
         {
           "type": "generic",
           "path": "plugin/calibre_entry.py"
+        },
+        {
+          "type": "toml",
+          "path": "plugin/uv.lock",
+          "jsonpath": "$.package[?(@.name.value==='tierlist')].version"
         }
       ]
     }
