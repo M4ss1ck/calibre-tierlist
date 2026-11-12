@@ -64,6 +64,11 @@ def parse_config(text: str) -> TierConfig:
         data: Any = json.loads(text)
     except json.JSONDecodeError as exc:
         raise TierConfigError(_('Not valid JSON: %s') % exc) from exc
+    return parse_config_data(data)
+
+
+def parse_config_data(data: object) -> TierConfig:
+    """Parse and validate a Tier Config already decoded from JSON."""
     if not isinstance(data, dict):
         raise TierConfigError(_('Tier Config must be a JSON object'))
     try:

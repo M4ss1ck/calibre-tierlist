@@ -19,7 +19,9 @@ function seriesOf(name: string): Series {
 /** Every Stack the fixture places on the board, with the Lane index that names it. */
 function placed(): { name: string; lane: number }[] {
   return data.lanes.flatMap((lane, index) =>
-    lane.stacks.filter((name) => name in data.series).map((name) => ({ name, lane: index })),
+    lane.items.flatMap((item) =>
+      'stack' in item && item.stack in data.series ? [{ name: item.stack, lane: index }] : [],
+    ),
   );
 }
 

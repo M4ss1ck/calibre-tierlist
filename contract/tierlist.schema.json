@@ -5,13 +5,14 @@
   "description": "The versioned payload the plugin embeds in the compiled tier list HTML.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "generated", "tiers", "lanes", "books", "series", "covers"],
+  "required": ["schemaVersion", "pageDefaults", "generated", "tiers", "lanes", "books", "series", "covers"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 6,
+      "const": 8,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
+    "pageDefaults": { "$ref": "#/$defs/PageDefaults" },
     "generated": { "$ref": "#/$defs/Generated" },
     "tiers": {
       "type": "array",
@@ -40,6 +41,26 @@
     }
   },
   "$defs": {
+    "PageDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["theme", "title", "unrankedLabel", "showUnranked", "showCounts", "showLibrary"],
+      "properties": {
+        "theme": {
+          "type": "string",
+          "enum": ["system", "light", "dark"],
+          "description": "The palette the page opens with; system follows the reader's operating system."
+        },
+        "title": { "type": "string", "description": "The Sheet title the page opens with." },
+        "unrankedLabel": { "type": "string", "description": "The Unranked Lane label the page opens with." },
+        "showUnranked": { "type": "boolean", "description": "Whether the Unranked Lane starts shown." },
+        "showCounts": { "type": "boolean", "description": "Whether the header line shows the book and series counts." },
+        "showLibrary": {
+          "type": "boolean",
+          "description": "Whether the header line and footer show the library name."
+        }
+      }
+    },
     "Generated": {
       "type": "object",
       "additionalProperties": false,
@@ -65,23 +86,44 @@
     "Lane": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["tier", "cards", "stacks"],
+      "required": ["tier", "items"],
       "properties": {
         "tier": {
           "type": ["string", "null"],
           "description": "The Tier id of this Lane, or null for the Unranked Lane."
         },
-        "cards": {
+        "items": {
           "type": "array",
-          "description": "Book ids (keys of books) of the standalone Cards in this Lane, ordered by date read ascending, undated last, then title.",
-          "items": { "type": "string" }
-        },
-        "stacks": {
-          "type": "array",
-          "description": "Series names (keys of series) whose Stack sits in this Lane, ordered by earliest date read, undated last, then name.",
-          "items": { "type": "string" }
+          "description": "The Stacks and Cards in this Lane, in Lane Order: stored places first, then unplaced items by date read ascending, undated last, then name or title, then id.",
+          "items": { "$ref": "#/$defs/LaneItem" }
         }
       }
+    },
+    "LaneItem": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["stack"],
+          "properties": {
+            "stack": {
+              "type": "string",
+              "description": "Series name (key of series) of a Stack in this Lane."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["card"],
+          "properties": {
+            "card": {
+              "type": "string",
+              "description": "Book id (key of books) of a standalone Card in this Lane."
+            }
+          }
+        }
+      ]
     },
     "Book": {
       "type": "object",

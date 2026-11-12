@@ -5,7 +5,7 @@ from .config import (
     Tier,
     TierConfig,
 )
-from .validate import TierConfigError, dump_config, parse_config, validate
+from .validate import TierConfigError, dump_config, parse_config, parse_config_data, validate
 
 __all__ = [
     'DEFAULT_TIER_CONFIG',
@@ -14,5 +14,6 @@ __all__ = [
     'TierConfigError',
     'dump_config',
     'parse_config',
+    'parse_config_data',
     'validate',
 ]

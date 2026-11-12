@@ -1,6 +1,9 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
+  import { footerMeta, shownLanes } from './board/page';
+  import { resolvePageDefaults } from './board/query';
   import SeriesPanel from './board/SeriesPanel.svelte';
   import SheetHeader from './board/SheetHeader.svelte';
   import type { StackPick } from './board/stack';
@@ -17,20 +20,19 @@
   let sheet = $state<HTMLElement>();
   let selection = $state<Selection | undefined>();
   let opened = $state<string | undefined>();
-  let unranked = $state(true);
-  let theme = $state<ThemeChoice>('system');
-  let title = $state('Tier List');
-  let labels = $state<Record<string, string>>({});
+  const defaults = untrack(() => resolvePageDefaults(data.pageDefaults, location.search));
+  let unranked = $state(defaults.showUnranked);
+  let theme = $state<ThemeChoice>(defaults.theme);
+  let title = $state(defaults.title);
+  let labels = $state<Record<string, string>>({ unranked: defaults.unrankedLabel });
   let filters = $state<Filters>({ query: '', author: null, tag: null, year: null });
 
   const lanes = $derived(
-    data.lanes
-      .filter((lane) => unranked || lane.tier !== null)
-      .map((lane) => {
-        const id = lane.tier ?? 'unranked';
-        const tier = data.tiers.find((candidate) => candidate.id === lane.tier);
-        return { id, lane, label: labels[id] ?? tier?.label ?? 'Unranked', colour: tier?.colour ?? '#8a8a94' };
-      }),
+    shownLanes(data.lanes, unranked).map((lane) => {
+      const id = lane.tier ?? 'unranked';
+      const tier = data.tiers.find((candidate) => candidate.id === lane.tier);
+      return { id, lane, label: labels[id] ?? tier?.label ?? 'Unranked', colour: tier?.colour ?? '#8a8a94' };
+    }),
   );
   const compiled = $derived(new Date(data.generated.at).toLocaleDateString(undefined, { dateStyle: 'medium' }));
 
@@ -43,7 +45,7 @@
 <main class="board">
   <div class="sheet" bind:this={sheet}>
     <header>
-      <SheetHeader {data} bind:title />
+      <SheetHeader {data} bind:title showCounts={defaults.showCounts} showLibrary={defaults.showLibrary} />
       <div class="controls">
         <div class="group">
           <span class="caption">View</span>
@@ -78,7 +80,7 @@
       {/each}
     </div>
     <footer>
-      <span>{data.generated.libraryName} · compiled {compiled}</span>
+      <span>{footerMeta(data.generated.libraryName, defaults.showLibrary, compiled)}</span>
       <span>Calibre Tier List</span>
     </footer>
   </div>

@@ -1,9 +1,9 @@
 """Compile: turn the books the library holds into Tier List Data."""
 
 from ..ports import Cover
-from .build import READ_COLUMN_TYPES, compile_data, count_series
+from .build import READ_COLUMN_TYPES, build_data, compile_data, count_series
 from .covers import COVER_WIDTH, choose_format, cover_thumbs, dominant_colour
-from .data import Book, CompileRequest, Generated, Lane, Scope, TierListData
+from .data import Book, CompileRequest, Generated, Lane, LaneItem, Scope, TierListData
 from .series import Position, Series
 
 __all__ = [
@@ -14,10 +14,12 @@ __all__ = [
     'Cover',
     'Generated',
     'Lane',
+    'LaneItem',
     'Position',
     'Scope',
     'Series',
     'TierListData',
+    'build_data',
     'choose_format',
     'compile_data',
     'count_series',

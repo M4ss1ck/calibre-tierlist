@@ -74,7 +74,7 @@ A row on the board. Each Tier is a Lane, plus the Unranked Lane.
 Avoid: row, section, column.
 
 **Lane Order**
-The reader's hand-set order of the Stacks and Cards inside each Lane, kept per library. A Stack or Card with no place yet (a new series, a book newly tiered, or a series Auto moved to another Tier) goes at the end of its Lane; several at once go earliest date read first, then by name. A renamed series loses its place.
+The reader's hand-set order of the Stacks and Cards inside each Lane, kept per library. A Stack or Card with no place yet (a new series, a book newly tiered, or a series Auto moved to another Tier) goes at the end of its Lane; several at once go earliest date read first, then by name or title, then id. A renamed series loses its place, and stale places are pruned when Settings saves.
 Avoid: sort, stack order, ranking.
 
 **Arrange View**

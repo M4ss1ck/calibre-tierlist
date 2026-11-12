@@ -1,5 +1,19 @@
 /* Generated from contract/tierlist.schema.json by pnpm gen:types. Do not edit. */
 
+export type LaneItem =
+  | {
+      /**
+       * Series name (key of series) of a Stack in this Lane.
+       */
+      stack: string;
+    }
+  | {
+      /**
+       * Book id (key of books) of a standalone Card in this Lane.
+       */
+      card: string;
+    };
+
 /**
  * The versioned payload the plugin embeds in the compiled tier list HTML.
  */
@@ -7,7 +21,8 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 6;
+  schemaVersion: 8;
+  pageDefaults: PageDefaults;
   generated: Generated;
   /**
    * Every Tier in Tier Config order.
@@ -36,6 +51,32 @@ export interface TierListData {
     [k: string]: Cover;
   };
 }
+export interface PageDefaults {
+  /**
+   * The palette the page opens with; system follows the reader's operating system.
+   */
+  theme: "system" | "light" | "dark";
+  /**
+   * The Sheet title the page opens with.
+   */
+  title: string;
+  /**
+   * The Unranked Lane label the page opens with.
+   */
+  unrankedLabel: string;
+  /**
+   * Whether the Unranked Lane starts shown.
+   */
+  showUnranked: boolean;
+  /**
+   * Whether the header line shows the book and series counts.
+   */
+  showCounts: boolean;
+  /**
+   * Whether the header line and footer show the library name.
+   */
+  showLibrary: boolean;
+}
 export interface Generated {
   /**
    * When the compile ran, ISO 8601 with offset.
@@ -57,13 +98,9 @@ export interface Lane {
    */
   tier: string | null;
   /**
-   * Book ids (keys of books) of the standalone Cards in this Lane, ordered by date read ascending, undated last, then title.
+   * The Stacks and Cards in this Lane, in Lane Order: stored places first, then unplaced items by date read ascending, undated last, then name or title, then id.
    */
-  cards: string[];
-  /**
-   * Series names (keys of series) whose Stack sits in this Lane, ordered by earliest date read, undated last, then name.
-   */
-  stacks: string[];
+  items: LaneItem[];
 }
 export interface Book {
   title: string;

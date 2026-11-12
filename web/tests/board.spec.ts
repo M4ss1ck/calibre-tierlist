@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import type { TierListData } from '../src/contract/tierlist';
+import type { Lane, TierListData } from '../src/contract/tierlist';
 import { fixtureBoardUrl, loadFixture } from './page';
 
 let data: TierListData;
@@ -20,8 +20,12 @@ function titles(ids: string[]): string[] {
   });
 }
 
+function cardIds(lane: Lane): string[] {
+  return lane.items.flatMap((item) => ('card' in item ? [item.card] : []));
+}
+
 function onBoard(): string[] {
-  return data.lanes.flatMap((lane) => lane.cards);
+  return data.lanes.flatMap(cardIds);
 }
 
 test('shows one Lane per Tier in config order, then the Unranked Lane', async ({ page }) => {
@@ -41,7 +45,7 @@ test('shows each Lane its own Card titles in order', async ({ page }) => {
   await expect(sections).toHaveCount(data.lanes.length);
 
   for (const [index, lane] of data.lanes.entries()) {
-    const expected = titles(lane.cards);
+    const expected = titles(cardIds(lane));
     const cards = sections.nth(index).locator('article');
 
     await expect(cards).toHaveCount(expected.length);

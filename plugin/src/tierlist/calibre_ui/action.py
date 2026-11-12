@@ -16,6 +16,7 @@ from .compile_dialog import CompileDialog
 from .compile_job import scope_book_ids, start_compile
 from .icons import plugin_icon
 from .menu import TierMenu
+from .settings_dialog import SettingsDialog
 
 load_translations()
 
@@ -85,6 +86,14 @@ class TierListAction(InterfaceAction):
 
     def mark_unread(self) -> None:
         self._on_selection(TierList.mark_unread)
+
+    def open_settings(self, *args: Any) -> None:
+        """Open Settings over the current library, from the toolbar menu or the book list context menu."""
+        SettingsDialog(self.gui).exec()
+
+    def open_arrange(self, *args: Any) -> None:
+        """Open Settings on the Arrange tab, from the toolbar menu."""
+        SettingsDialog(self.gui, tab='arrange').exec()
 
     def _on_selection(self, use_case: Callable[[TierList, list[int]], None]) -> None:
         ids = self.gui.library_view.get_selected_ids()

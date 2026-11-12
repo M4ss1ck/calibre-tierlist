@@ -59,7 +59,8 @@ class ErrorDialog:
 
 def widget_for(db: Any) -> Any:
     config_io.QMessageBox, config_widget.error_dialog = YesBox, ErrorDialog()
-    return ConfigWidget(FakeGui(db, []))
+    widget = ConfigWidget(FakeGui(db, []))
+    return widget, widget.tiers
 
 
 def cell(table: Any, row: int, column: int) -> Any:
@@ -78,12 +79,12 @@ def row_of(table: Any, tier_id: str) -> int:
 def check_fresh(tmp: str) -> None:
     db = open_db(tmp + '/fresh')
     try:
-        widget = widget_for(db)
-        expect(len(widget.table.tiers()) == 6, f'fresh library shows {len(widget.table.tiers())} Tiers')
+        widget, tiers = widget_for(db)
+        expect(len(tiers.table.tiers()) == 6, f'fresh library shows {len(tiers.table.tiers())} Tiers')
         expect(widget.build_config() == DEFAULT_TIER_CONFIG, f'fresh config: {widget.build_config()}')
-        expect(widget.tier_column.currentData() == '#tier', f'tier column {widget.tier_column.currentData()!r}')
-        expect(widget.read_column.currentData() == '#date_read', f'read column {widget.read_column.currentData()!r}')
-        expect(widget.total_column.currentData() == '', f'total column {widget.total_column.currentData()!r}')
+        expect(tiers.tier_column.currentData() == '#tier', f'tier column {tiers.tier_column.currentData()!r}')
+        expect(tiers.read_column.currentData() == '#date_read', f'read column {tiers.read_column.currentData()!r}')
+        expect(tiers.total_column.currentData() == '', f'total column {tiers.total_column.currentData()!r}')
     finally:
         db.close()
 
@@ -99,17 +100,16 @@ def check_mapped(tmp: str) -> None:
         read = datetime(2021, 4, 5, 12, tzinfo=local_tz)
         db.new_api.set_field('#tier', {book: 'f'})
         db.new_api.set_field('#date_read', {book: read})
-        stored = replace(
-            config_admin(db).tier_config(), tier_column='#tier', read_column='#date_read', series_total_column='#total'
-        )
+        config = config_admin(db).tier_config()
+        stored = replace(config, tier_column='#tier', read_column='#date_read', series_total_column='#total')
         config_admin(db).save(stored)
 
-        widget = widget_for(db)
-        expect(widget.tier_column.currentData() == '#tier', 'the Tier column was not preselected')
-        expect(widget.read_column.currentData() == '#date_read', 'the Read column was not preselected')
-        expect(widget.total_column.currentData() == '#total', 'the Series total column was not preselected')
+        widget, tiers = widget_for(db)
+        expect(tiers.tier_column.currentData() == '#tier', 'the Tier column was not preselected')
+        expect(tiers.read_column.currentData() == '#date_read', 'the Read column was not preselected')
+        expect(tiers.total_column.currentData() == '#total', 'the Series total column was not preselected')
 
-        table = widget.table
+        table = tiers.table
         cell(table, row_of(table, 's'), LABEL).setText('Top')
         expect(widget.validate(), 'a valid Tier Config was rejected')
         widget.save()
@@ -125,7 +125,7 @@ def check_mapped(tmp: str) -> None:
         cell(table, row_of(table, 's'), LABEL).setText('Top')
 
         table.selectRow(row_of(table, 'f'))
-        widget.remove_tier()
+        tiers.remove_tier()
         expect('f' not in {tier.id for tier in table.tiers()}, 'the removed Tier stayed in the table')
         expect('1 book holds this Tier' in YesBox.asked[-1], YesBox.asked)
         widget.save()

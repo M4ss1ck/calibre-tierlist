@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from datetime import UTC, date, datetime
 from pathlib import Path
 
-from fakes import FakeLibrary, FakePrefs
+from fakes import FakeLibrary, FakePrefs, lane_cards
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
 from tierlist.compile import CompileRequest
@@ -35,7 +35,7 @@ def test_lanes_follow_tier_config_order_then_unranked() -> None:
     data = app.compile(request(1))
 
     assert [lane.tier for lane in data.lanes] == ['s', 'a', 'b', 'c', 'd', 'f', None]
-    assert data.lanes[-1].cards == (1,)
+    assert lane_cards(data.lanes[-1]) == (1,)
     assert data.books[0].tier is None
 
 
@@ -47,8 +47,8 @@ def test_read_untiered_books_go_to_the_unranked_lane() -> None:
 
     data = app.compile(request(1))
 
-    assert data.lanes[-1].cards == (1,)
-    assert all(lane.cards == () for lane in data.lanes[:-1])
+    assert lane_cards(data.lanes[-1]) == (1,)
+    assert all(lane_cards(lane) == () for lane in data.lanes[:-1])
 
 
 def test_unread_books_are_excluded() -> None:
@@ -59,7 +59,7 @@ def test_unread_books_are_excluded() -> None:
     data = app.compile(request(1, 2))
 
     assert [book.id for book in data.books] == [1]
-    assert all(2 not in lane.cards for lane in data.lanes)
+    assert all(2 not in lane_cards(lane) for lane in data.lanes)
 
 
 def test_a_tiered_book_without_a_read_date_is_included() -> None:
@@ -69,7 +69,7 @@ def test_a_tiered_book_without_a_read_date_is_included() -> None:
 
     data = app.compile(request(1))
 
-    assert data.lanes[1].cards == (1,)
+    assert lane_cards(data.lanes[1]) == (1,)
     assert data.books[0].date_read is None
 
 
@@ -81,7 +81,7 @@ def test_an_unknown_tier_id_goes_to_the_unranked_lane() -> None:
     data = app.compile(request(1))
 
     assert data.books[0].tier is None
-    assert data.lanes[-1].cards == (1,)
+    assert lane_cards(data.lanes[-1]) == (1,)
 
 
 def test_cards_order_by_date_read_then_undated_then_title_then_id() -> None:
@@ -92,7 +92,7 @@ def test_cards_order_by_date_read_then_undated_then_title_then_id() -> None:
 
     data = app.compile(request(1, 2, 3, 4))
 
-    assert data.lanes[0].cards == (2, 1, 3, 4)
+    assert lane_cards(data.lanes[0]) == (2, 1, 3, 4)
 
 
 def test_bool_read_column_yields_no_date_and_honours_false() -> None:

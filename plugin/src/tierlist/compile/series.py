@@ -5,8 +5,11 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date
 
+from ..lane_order import Place
 from ..tiers import Tier, TierConfig
 from .covers import EMPTY_COLOUR
+
+Rank = tuple[date | None, str, int]
 
 
 @dataclass(frozen=True)
@@ -50,10 +53,18 @@ def build_series(
     )
 
 
-def stacks_for(series: Mapping[str, tuple[str | None, date | None]], tier: str | None) -> tuple[str, ...]:
-    """The series names whose Stack sits in this Lane, ordered by earliest date read, undated last, then name."""
-    chosen = [(date_read, name) for name, (lane, date_read) in series.items() if lane == tier]
-    return tuple(name for _, name in sorted(chosen, key=_stack_key))
+def ordered_lane(present: Mapping[Place, Rank], stored: Iterable[Place]) -> list[Place]:
+    """The Lane's places: stored ones first in stored order, then unplaced ones by date read, undated last,
+    then name or title, then id."""
+    known = set(present)
+    placed: list[Place] = []
+    seen: set[Place] = set()
+    for place in stored:
+        if place in known and place not in seen:
+            placed.append(place)
+            seen.add(place)
+    fresh = sorted((place for place in present if place not in seen), key=lambda place: _lane_key(present[place]))
+    return [*placed, *fresh]
 
 
 def auto_tier(tier_ids: Iterable[str | None], tiers: tuple[Tier, ...]) -> str | None:
@@ -118,6 +129,6 @@ def display_number(index: float) -> str:
     return f'{index:g}'
 
 
-def _stack_key(item: tuple[date | None, str]) -> tuple[bool, date, str]:
-    date_read, name = item
-    return (date_read is None, date_read or date.min, name.casefold())
+def _lane_key(rank: Rank) -> tuple[bool, date, str, int]:
+    date_read, text, order_id = rank
+    return (date_read is None, date_read or date.min, text.casefold(), order_id)

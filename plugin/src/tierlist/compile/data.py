@@ -6,11 +6,12 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, Literal
 
+from ..page_defaults import DEFAULT_PAGE_DEFAULTS, PageDefaults
 from ..ports import Cover
 from ..tiers import Tier
 from .series import Series
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 8
 
 Scope = Literal['library', 'virtual_library', 'selection']
 
@@ -50,12 +51,19 @@ class Book:
 
 
 @dataclass(frozen=True)
+class LaneItem:
+    """One item in a Lane, in Lane Order: a Stack's series name or a Card's book id, exactly one set."""
+
+    stack: str | None = None
+    card: int | None = None
+
+
+@dataclass(frozen=True)
 class Lane:
-    """One row of the board: a Tier id, or None for the Unranked Lane, its cards in order, and its Stacks."""
+    """One row of the board: a Tier id, or None for the Unranked Lane, and its Stacks and Cards in order."""
 
     tier: str | None
-    cards: tuple[int, ...]
-    stacks: tuple[str, ...] = ()
+    items: tuple[LaneItem, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -78,11 +86,13 @@ class TierListData:
     books: tuple[Book, ...]
     covers: Mapping[int, Cover] = field(default_factory=dict[int, Cover])
     series: Mapping[str, Series] = field(default_factory=dict[str, Series])
+    page_defaults: PageDefaults = DEFAULT_PAGE_DEFAULTS
 
     def to_dict(self) -> dict[str, Any]:
         """Serialise to the schema's camelCase JSON shape."""
         return {
             'schemaVersion': SCHEMA_VERSION,
+            'pageDefaults': self.page_defaults.to_dict(),
             'generated': {
                 'at': self.generated.at.isoformat(),
                 'libraryName': self.generated.library_name,
@@ -94,7 +104,13 @@ class TierListData:
                 for tier in self.tiers
             ],
             'lanes': [
-                {'tier': lane.tier, 'cards': [str(card) for card in lane.cards], 'stacks': list(lane.stacks)}
+                {
+                    'tier': lane.tier,
+                    'items': [
+                        {'stack': item.stack} if item.stack is not None else {'card': str(item.card)}
+                        for item in lane.items
+                    ],
+                }
                 for lane in self.lanes
             ],
             'books': {

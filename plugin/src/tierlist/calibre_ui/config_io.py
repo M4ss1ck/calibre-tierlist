@@ -1,4 +1,4 @@
-"""Importing and exporting Tier Config as JSON from the config dialog."""
+"""Importing and exporting Settings as JSON from the config dialog."""
 
 from pathlib import Path
 
@@ -6,26 +6,32 @@ from calibre.gui2 import error_dialog
 from qt.core import QFileDialog, QMessageBox, QWidget
 
 from ..config_admin import ConfigAdmin
-from ..tiers import Tier, TierConfig, TierConfigError, dump_config
+from ..page_defaults import PageDefaults
+from ..settings_export import SettingsExport
+from ..tiers import Tier, TierConfig, TierConfigError
 
 
-def import_config(parent: QWidget, admin: ConfigAdmin) -> TierConfig | None:
-    """Ask for a JSON file and return the Tier Config it holds; None on cancel or error."""
-    path = QFileDialog.getOpenFileName(parent, _('Import Tier Config'), '', _('JSON files (*.json)'))[0]
+def import_settings(parent: QWidget, admin: ConfigAdmin) -> SettingsExport | None:
+    """Ask for a Settings Export or old Tier Config file and return what it holds; None on cancel or error."""
+    path = QFileDialog.getOpenFileName(parent, _('Import Settings'), '', _('JSON files (*.json)'))[0]
     if not path:
         return None
     try:
-        return admin.import_json(Path(path).read_text(encoding='utf-8'))
+        return admin.parse_settings_export(Path(path).read_text(encoding='utf-8'))
     except (OSError, UnicodeDecodeError, TierConfigError) as exc:
         error_dialog(parent, _('Tier List'), str(exc), show=True)
         return None
 
 
-def export_config(parent: QWidget, config: TierConfig) -> None:
-    """Write this Tier Config to the JSON file the user picks."""
-    path = QFileDialog.getSaveFileName(parent, _('Export Tier Config'), 'tier-config.json', _('JSON files (*.json)'))[0]
+def export_settings(
+    parent: QWidget, admin: ConfigAdmin, config: TierConfig, defaults: PageDefaults, include: bool
+) -> None:
+    """Write these settings to the JSON file the user picks, with Overrides and Lane Order when asked."""
+    path = QFileDialog.getSaveFileName(
+        parent, _('Export Settings'), 'tierlist-settings.json', _('JSON files (*.json)')
+    )[0]
     if path:
-        Path(path).write_text(dump_config(config), encoding='utf-8')
+        Path(path).write_text(admin.export_settings(config, defaults, include), encoding='utf-8')
 
 
 def confirm_import(parent: QWidget, admin: ConfigAdmin, shown: tuple[Tier, ...], incoming: TierConfig) -> bool:
@@ -43,6 +49,36 @@ def confirm_import(parent: QWidget, admin: ConfigAdmin, shown: tuple[Tier, ...],
         % count
     )
     return QMessageBox.question(parent, _('Import Tier Config'), question) == QMessageBox.StandardButton.Yes
+
+
+def confirm_replace(parent: QWidget, admin: ConfigAdmin, export: SettingsExport) -> bool:
+    """True when this import may replace stored Overrides or Lane Order, asking first only when it would."""
+    stored = admin.stored_extras()
+    count = len(stored.overrides or {}) if export.overrides is not None else 0
+    order = export.lane_order is not None and bool(stored.lane_order)
+    if count and order:
+        question = (
+            ngettext(
+                'This replaces %d series override and the board order. Import anyway?',
+                'This replaces %d series overrides and the board order. Import anyway?',
+                count,
+            )
+            % count
+        )
+    elif count:
+        question = (
+            ngettext(
+                'This replaces %d series override. Import anyway?',
+                'This replaces %d series overrides. Import anyway?',
+                count,
+            )
+            % count
+        )
+    elif order:
+        question = _('This replaces the board order. Import anyway?')
+    else:
+        return True
+    return QMessageBox.question(parent, _('Import Settings'), question) == QMessageBox.StandardButton.Yes
 
 
 def confirm_remove(parent: QWidget, count: int) -> bool:

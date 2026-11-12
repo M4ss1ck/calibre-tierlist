@@ -1,7 +1,7 @@
 """File length gate: WARN past the soft cap, ERROR past the hard cap.
 
-Walks the given roots for *.py, *.ts and *.svelte files, skipping vendored and
-generated trees. Exits 1 when any file is over the hard cap.
+Walks the given roots for *.py, *.ts and *.svelte files, skipping vendored trees
+and the generated contract file. Exits 1 when any file is over the hard cap.
 """
 
 from __future__ import annotations
@@ -15,6 +15,8 @@ HARD = 150
 SUFFIXES = {'.py', '.ts', '.svelte'}
 SKIP_DIRS = {'node_modules', '.venv', 'dist', '__pycache__', 'typings', '.git'}
 SKIP_NAMES = ('.d.ts',)
+GENERATED_MARKERS = ('Generated from', 'Do not edit')
+GENERATED_PATH = ('web', 'src', 'contract', 'tierlist.ts')
 
 
 def source_files(roots: Iterable[str]) -> Iterator[Path]:
@@ -31,7 +33,17 @@ def source_files(roots: Iterable[str]) -> Iterator[Path]:
                 continue
             if path.name.endswith(SKIP_NAMES):
                 continue
+            if _is_generated(path):
+                continue
             yield path
+
+
+def _is_generated(path: Path) -> bool:
+    """True for the contract file pnpm generates: the one generated path, whose first line says not to edit it."""
+    if path.parts[-len(GENERATED_PATH) :] != GENERATED_PATH:
+        return False
+    first = path.read_text(encoding='utf-8').partition('\n')[0]
+    return all(marker in first for marker in GENERATED_MARKERS)
 
 
 def main(argv: list[str] | None = None) -> int:

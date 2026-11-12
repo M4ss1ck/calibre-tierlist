@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Tier List 0.2.0\n"
+"Project-Id-Version: Tier List 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 21:40-0300\n"
+"POT-Creation-Date: 2026-11-12 00:36-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,11 +24,11 @@ msgid ""
 "of your series."
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:28
+#: plugin/src/tierlist/calibre_ui/action.py:29
 msgid "Compile a tier list of your series"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:108
+#: plugin/src/tierlist/calibre_ui/action.py:117
 msgid ""
 "This plugin was built without the web template, so it cannot compile a tier "
 "list."
@@ -43,8 +43,8 @@ msgstr ""
 #: plugin/src/tierlist/calibre_ui/column.py:54
 #: plugin/src/tierlist/calibre_ui/column.py:58
 #: plugin/src/tierlist/calibre_ui/column.py:60
-#: plugin/src/tierlist/calibre_ui/config_io.py:20
-#: plugin/src/tierlist/calibre_ui/config_widget.py:114
+#: plugin/src/tierlist/calibre_ui/config_io.py:22
+#: plugin/src/tierlist/calibre_ui/config_widget.py:44
 msgid "Tier List"
 msgstr ""
 
@@ -139,6 +139,28 @@ msgstr ""
 msgid "Compile tier list"
 msgstr ""
 
+#: plugin/src/tierlist/calibre_ui/config_arrange.py:39
+msgid ""
+"Drag covers between Lanes; OK saves the new order. Save and reopen Settings "
+"after changing Tiers."
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_arrange.py:64
+msgid "Unranked"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_export.py:24
+msgid "Include series Overrides and Lane Order"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_export.py:29
+msgid "Export JSON…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_export.py:29
+msgid "Import JSON…"
+msgstr ""
+
 #: plugin/src/tierlist/calibre_ui/config_extras.py:49
 msgid "No orphaned series overrides"
 msgstr ""
@@ -163,21 +185,21 @@ msgstr ""
 msgid "Reattach Override"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_io.py:14
-#: plugin/src/tierlist/calibre_ui/config_io.py:45
-msgid "Import Tier Config"
+#: plugin/src/tierlist/calibre_ui/config_io.py:16
+#: plugin/src/tierlist/calibre_ui/config_io.py:81
+msgid "Import Settings"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_io.py:14
-#: plugin/src/tierlist/calibre_ui/config_io.py:26
+#: plugin/src/tierlist/calibre_ui/config_io.py:16
+#: plugin/src/tierlist/calibre_ui/config_io.py:31
 msgid "JSON files (*.json)"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_io.py:26
-msgid "Export Tier Config"
+#: plugin/src/tierlist/calibre_ui/config_io.py:31
+msgid "Export Settings"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_io.py:39
+#: plugin/src/tierlist/calibre_ui/config_io.py:45
 #, python-format
 msgid ""
 "%d book holds a Tier this import removes. It will lose its Book Tier and "
@@ -188,7 +210,30 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: plugin/src/tierlist/calibre_ui/config_io.py:54
+#: plugin/src/tierlist/calibre_ui/config_io.py:51
+msgid "Import Tier Config"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:62
+#, python-format
+msgid "This replaces %d series override and the board order. Import anyway?"
+msgid_plural ""
+"This replaces %d series overrides and the board order. Import anyway?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:71
+#, python-format
+msgid "This replaces %d series override. Import anyway?"
+msgid_plural "This replaces %d series overrides. Import anyway?"
+msgstr[0] ""
+msgstr[1] ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:78
+msgid "This replaces the board order. Import anyway?"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_io.py:90
 #, python-format
 msgid ""
 "%d book holds this Tier. It will lose its Book Tier and stay read. Remove it?"
@@ -198,52 +243,80 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: plugin/src/tierlist/calibre_ui/config_io.py:60
+#: plugin/src/tierlist/calibre_ui/config_io.py:96
 msgid "Remove Tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:39
-msgid "Tiers"
+#: plugin/src/tierlist/calibre_ui/config_page.py:23
+msgid "Show the Unranked Lane"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:45
+#: plugin/src/tierlist/calibre_ui/config_page.py:24
+msgid "Show the book and series counts"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:25
+msgid "Show the library name"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:27
+msgid "Theme"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:28
+msgid "Title"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_page.py:29
+msgid "Unranked Lane label"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:39
 msgid "Add"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:46
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:40
 msgid "Remove"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:47
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:41
 msgid "Move up"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:48
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:42
 msgid "Move down"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:55
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:49
 msgid "Tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:56
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:50
 msgid "Read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:57
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:51
 msgid "Series total column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:64
-msgid "Export JSON…"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_widget.py:64
-msgid "Import JSON…"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_widget.py:134
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:93
 msgid "None"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:30
+msgid "Tiers"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:31
+msgid "Page"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:32
+msgid "Arrange"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:33
+msgid "Export"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/menu.py:23
@@ -254,43 +327,51 @@ msgstr ""
 msgid "Set series tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:61
+#: plugin/src/tierlist/calibre_ui/menu.py:62
 msgid "Send to tier: {}"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:66
+#: plugin/src/tierlist/calibre_ui/menu.py:67
 msgid "Clear tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:70
+#: plugin/src/tierlist/calibre_ui/menu.py:71
 msgid "Mark read"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:71
+#: plugin/src/tierlist/calibre_ui/menu.py:72
 msgid "Mark unread"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:74
+#: plugin/src/tierlist/calibre_ui/menu.py:75
 msgid "Restart calibre to finish adding the read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:76
+#: plugin/src/tierlist/calibre_ui/menu.py:77
 msgid "This library has no read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:80
+#: plugin/src/tierlist/calibre_ui/menu.py:81
 msgid "Set up read column…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:97
+#: plugin/src/tierlist/calibre_ui/menu.py:87
+msgid "Arrange board…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:88
+msgid "Settings…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:104
 msgid "Restart calibre to finish adding the tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:99
+#: plugin/src/tierlist/calibre_ui/menu.py:106
 msgid "This library has no tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:102
+#: plugin/src/tierlist/calibre_ui/menu.py:109
 msgid "Create tier column…"
 msgstr ""
 
@@ -304,6 +385,10 @@ msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/series_menu.py:29
 msgid "Set series tier: Auto"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/settings_dialog.py:17
+msgid "Tier List Settings"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/tier_table.py:28
@@ -324,6 +409,49 @@ msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/tier_table.py:38
 msgid "Label"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:84
+#: plugin/src/tierlist/tiers/validate.py:66
+#, python-format
+msgid "Not valid JSON: %s"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:86
+msgid "Settings Export must be a JSON object"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:102
+#, python-format
+msgid "Not a Tier List Settings Export: unknown kind %r"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:105
+#, python-format
+msgid "Settings Export version %r is not supported"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:110
+msgid "page_defaults must be a JSON object"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:114
+#, python-format
+msgid "Invalid page_defaults: %s"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:119
+#: plugin/src/tierlist/settings_export.py:123
+msgid "overrides must map series names to Tier ids"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:130
+#: plugin/src/tierlist/settings_export.py:134
+msgid "lane_order must map each Lane to a list of places"
+msgstr ""
+
+#: plugin/src/tierlist/settings_export.py:137
+msgid "Lane Order places must be {\"series\": name} or {\"book\": id}"
 msgstr ""
 
 #: plugin/src/tierlist/tiers/validate.py:28
@@ -355,21 +483,16 @@ msgstr ""
 msgid "Duplicate Tier label: %r"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:66
-#, python-format
-msgid "Not valid JSON: %s"
-msgstr ""
-
-#: plugin/src/tierlist/tiers/validate.py:68
+#: plugin/src/tierlist/tiers/validate.py:73
 msgid "Tier Config must be a JSON object"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:72
+#: plugin/src/tierlist/tiers/validate.py:77
 #, python-format
 msgid "Missing field: %s"
 msgstr ""
 
-#: plugin/src/tierlist/tiers/validate.py:74
+#: plugin/src/tierlist/tiers/validate.py:79
 #, python-format
 msgid "Not a valid Tier Config: %s"
 msgstr ""

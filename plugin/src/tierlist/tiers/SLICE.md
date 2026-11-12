@@ -13,12 +13,13 @@ Holds the Tier Config: the ordered Tiers for one library, the custom column that
 - `TierConfigError`: a rejected Tier Config, with a message a reader can act on.
 - `validate(config) -> None`: raise `TierConfigError` for no Tiers, duplicate or empty ids, empty labels, or a colour that is not `#rrggbb`.
 - `parse_config(text) -> TierConfig` / `dump_config(config) -> str`: JSON import and export; every parse failure becomes a `TierConfigError` with a human message.
+- `parse_config_data(data) -> TierConfig`: the same parsing and validation for a Tier Config already decoded from JSON, used inside a Settings Export.
 - `DEFAULT_TIER_CONFIG`: S, A, B, C, D, F with conventional colours.
 
 ## Files
 
 - `config.py`: `Tier`, `TierConfig`, and the default Tier Config.
-- `validate.py`: `TierConfigError`, `validate`, `parse_config`, and `dump_config`.
+- `validate.py`: `TierConfigError`, `validate`, `parse_config`, `parse_config_data`, and `dump_config`.
 
 ## Depends on
 

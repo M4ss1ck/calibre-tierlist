@@ -63,7 +63,8 @@ def compiled(app: TierList, ids: list[int]) -> TierListData:
 
 
 def stacks(data: TierListData, tier: str) -> tuple[str, ...]:
-    return next(lane.stacks for lane in data.lanes if lane.tier == tier)
+    lane = next(lane for lane in data.lanes if lane.tier == tier)
+    return tuple(item.stack for item in lane.items if item.stack is not None)
 
 
 def check_menu(db: Any, dune: list[int], others: list[int]) -> None:
