@@ -1,6 +1,6 @@
 [project]
 name = "tierlist"
-version = "0.4.2"
+version = "0.5.0"
 description = "Calibre Tier List plugin (development only; ships zero runtime dependencies)"
 license = "GPL-3.0-only"
 requires-python = ">=3.14"

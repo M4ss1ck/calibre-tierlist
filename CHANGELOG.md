@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.4.2...v0.5.0) (2026-11-12)
+
+
+### Features
+
+* page display options and an on-page View Panel ([#49](https://github.com/M4ss1ck/calibre-tierlist/issues/49)) ([97272d8](https://github.com/M4ss1ck/calibre-tierlist/commit/97272d89334ca86b6287128d9905c95e935360be))
+
 ## [0.4.2](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.4.1...v0.4.2) (2026-11-12)
 
 
