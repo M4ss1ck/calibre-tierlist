@@ -47,6 +47,9 @@ class LaneList(QListWidget):
         self.setSpacing(2)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
+        # setMovement(Static) turned the viewport's drops off, and drops land on the viewport:
+        # the view itself ignores drag events, so without this every drop is refused.
+        self.viewport().setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self.setDragDropMode(QAbstractItemView.DragDropMode.DragDrop)
         self.setDefaultDropAction(Qt.DropAction.MoveAction)
