@@ -1,4 +1,4 @@
-"""The Tier List action's menu: Send to tier items, Clear tier, Set series tier, and Read State."""
+"""The Tier List action's menu: Send to tier, Clear tier, Set series tier, Read State, and Settings."""
 
 from collections.abc import Iterable
 from functools import partial
@@ -50,6 +50,7 @@ class TierMenu:
         # Overrides live in prefs, so this submenu does not need the tier column.
         add_series_items(self._series_submenu, app.tier_config().tiers, self._action, self._register)
         self._add_read_state(app, db)
+        self._add_settings()
         keyboard.finalize()
 
     def _add_tiers(self, tiers: Iterable[Tier]) -> None:
@@ -79,6 +80,11 @@ class TierMenu:
             self._unregistered.append(explanation)
             setup = self._menu.addAction(_('Set up read column…'), self._action.setup_read_column)
             self._unregistered.append(setup)
+
+    def _add_settings(self) -> None:
+        """A Settings… item at the bottom: the dialog over this library's config."""
+        self._unregistered.append(self._menu.addSeparator())
+        self._unregistered.append(self._menu.addAction(_('Settings…'), self._action.open_settings))
 
     def _send(self, tier_id: str, *_: Any) -> None:
         self._action.send_to_tier(tier_id)

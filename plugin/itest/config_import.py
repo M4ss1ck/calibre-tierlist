@@ -87,24 +87,25 @@ def check_import(tmp: str) -> None:
         OpenDialog.path = str(path)
 
         widget = ConfigWidget(FakeGui(db, []))
-        expect({tier.id for tier in widget.table.tiers()} == DEFAULT_IDS, 'the widget did not start on the defaults')
+        tiers = widget.tiers
+        expect({tier.id for tier in tiers.table.tiers()} == DEFAULT_IDS, 'the widget did not start on the defaults')
 
         no = Answer(Answer.StandardButton.No)
         config_io.QMessageBox = no
-        widget.import_json()
+        widget.backup.import_json()
         expect(bool(no.asked) and '1 book holds a Tier this import removes' in no.asked[-1], no.asked)
-        expect({tier.id for tier in widget.table.tiers()} == DEFAULT_IDS, 'declining the import changed the table')
-        expect({tier.id: tier.label for tier in widget.table.tiers()}['s'] == 'S', 'declining renamed a Tier')
+        expect({tier.id for tier in tiers.table.tiers()} == DEFAULT_IDS, 'declining the import changed the table')
+        expect({tier.id: tier.label for tier in tiers.table.tiers()}['s'] == 'S', 'declining renamed a Tier')
 
         yes = Answer(Answer.StandardButton.Yes)
         config_io.QMessageBox = yes
-        widget.import_json()
+        widget.backup.import_json()
         expect(len(yes.asked) == 1, yes.asked)
-        labels = {tier.id: tier.label for tier in widget.table.tiers()}
+        labels = {tier.id: tier.label for tier in tiers.table.tiers()}
         expect('f' not in labels and labels['s'] == 'Top', f'the import did not load: {labels}')
-        expect(widget.tier_column.currentData() == '#tier', 'the import changed the Tier column')
-        expect(widget.read_column.currentData() == '#date_read', 'the import changed the Read column')
-        expect(widget.total_column.currentData() == '', 'the import changed the Series total column')
+        expect(tiers.tier_column.currentData() == '#tier', 'the import changed the Tier column')
+        expect(tiers.read_column.currentData() == '#date_read', 'the import changed the Read column')
+        expect(tiers.total_column.currentData() == '', 'the import changed the Series total column')
         expect(db.new_api.field_for('#tier', book) == 'f', 'the import touched the book before save')
     finally:
         db.close()

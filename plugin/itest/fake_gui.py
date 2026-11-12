@@ -34,6 +34,7 @@ class FakeGui(QMainWindow):
         super().__init__()
         self.keyboard = Manager(self)
         self.current_db = db
+        self.iactions: dict[str, Any] = {}
         self.library_view = FakeLibraryView(db, ids)
 
 

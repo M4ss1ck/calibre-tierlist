@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Adapts the calibre-free core to calibre's GUI: it registers the Tier List action, sends books to a Tier, marks books read or unread, offers to create the Tier and Read columns, and hosts the Tier Config dialog calibre shows under Preferences > Plugins. It is separate so the core stays importable, and testable, without calibre or Qt.
+Adapts the calibre-free core to calibre's GUI: it registers the Tier List action, sends books to a Tier, marks books read or unread, offers to create the Tier and Read columns, and hosts the Settings dialog, which opens from the Tier List menu and from calibre's Preferences > Plugins. It is separate so the core stays importable, and testable, without calibre or Qt.
 
 ## Public API
 
@@ -12,7 +12,7 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `CalibreLibrary`, `CalibrePrefs`: the `Library` and `Prefs` port adapters.
 - `CalibreSavedSearches`: the `SavedSearches` port adapter over calibre's saved searches.
 - `CalibreCovers`: the `Covers` port adapter, encoding cover thumbnails as AVIF, WebP, or JPEG.
-- `TierMenu(action)`: the "Send to tier" and "Set series tier" submenus and the Read State menu items, rebuilt on demand; each Tier item carries a swatch of its colour.
+- `TierMenu(action)`: the "Send to tier" and "Set series tier" submenus, the Read State menu items, and a closing "Settings…" item, rebuilt on demand; each Tier item carries a swatch of its colour.
 - `plugin_icon(plugin_name)`: the plugin's toolbar and context menu icon, `images/icon.png` in the zip, read through calibre's `get_icons`.
 - `tier_swatch(colour) -> QIcon`: a square of a Tier's colour for menu items.
 - `offer_tier_column(gui, app) -> bool`: the first-run Tier offer, and whether a column was created.
@@ -20,7 +20,10 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `create_column(gui, lookup, heading, datatype) -> bool`: creates any custom column; True means restart calibre.
 - `create_tier_column(gui, lookup) -> bool`: creates the Text Tier column; True means restart calibre.
 - `CompileDialog(gui, db, app)`: the Compile dialog; `scope()` returns `'library'`, `'virtual_library'`, or `'selection'`, and `path()` the output file.
-- `ConfigWidget(gui)`: the plugin config dialog's widget; `build_config()` reads the Tier Config the widgets show, `validate()` returns False after showing why an invalid one cannot be saved, `import_json()` asks first when an import drops Tiers books still hold, and `save()` stores it and refreshes saved searches and the Tier menu.
+- `ConfigWidget(gui)`: the tabbed Settings widget calibre shows under Customize and the Settings dialog hosts; its `tiers` and `backup` tabs hold the widgets; `build_config()` reads the Tier Config they show, `validate()` returns False after showing why an invalid one cannot be saved, and `save()` stores it and refreshes saved searches and the Tier menu.
+- `SettingsDialog(gui, parent=None)`: the Settings dialog, OK and Cancel; `accept()` validates then saves, and Cancel writes nothing.
+- `TiersTab(admin, parent)`: the Tier table, its buttons, the column mapping and the Orphaned Overrides; `build_config()` reads them, `load()` and `load_tiers()` show them.
+- `BackupTab(admin, tiers, parent)`: the Import JSON… and Export JSON… buttons; an import asks first when it drops Tiers books still hold, and only loads the Tiers tab until Settings is saved.
 - `TierTable(parent)`: the Tier rows; `tiers()` and `set_tiers()` convert to and from `Tier`s, `add()`, `remove(row)`, and `move(row, offset)` edit them.
 - `OrphanPanel(admin, series_names, parent)`: the Orphaned Overrides list, reattaching and deleting immediately.
 - `scope_book_ids(gui, scope) -> tuple[int, ...]`: the sorted book ids a Compile Scope covers.
@@ -29,16 +32,19 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 
 ## Files
 
-- `action.py`: the action and its icon, its toolbar dialog, the layout claim, and the send, clear, and mark read/unread handlers.
+- `action.py`: the action and its icon, its toolbar dialog, its Settings dialog opener, the layout claim, and the send, clear, and mark read/unread handlers.
 - `adapters.py`: `CalibreLibrary` (including date conversion), `CalibrePrefs`, and `CalibreSavedSearches` over calibre's database, plus the `tier_list` and `config_admin` factories.
 - `covers.py`: `CalibreCovers`, the cover thumbnails and their dominant colour.
 - `icons.py`: the plugin icon and the Tier colour swatches.
-- `menu.py`: the `TierMenu` submenus, Read State items, and their shortcut registration.
+- `menu.py`: the `TierMenu` submenus, Read State items, the Settings item, and their shortcut registration.
 - `series_menu.py`: the Set series tier submenu's Override and Auto items.
 - `column.py`: the first-run offers and the column creation flow.
 - `compile_dialog.py`: the Compile Scope and output path dialog.
 - `compile_job.py`: Compile Scope book ids, the background job, and opening the written file.
-- `config_widget.py`: the plugin config dialog widget: Tier table wiring, column mapping, orphaned Overrides, and saving.
+- `config_widget.py`: the tabbed Settings widget: its tabs and the validating save.
+- `settings_dialog.py`: the Settings dialog the Tier List menu opens, with OK and Cancel.
+- `config_tiers.py`: the Tiers tab: the Tier table, the column mapping, and the Orphaned Overrides.
+- `config_backup.py`: the Backup tab: importing and exporting Tier Config JSON.
 - `tier_table.py`: the Tier table rows and their colour swatch button.
 - `config_extras.py`: the column mapping combos and the Orphaned Overrides panel.
 - `config_form.py`: the button row and mapping form layout pieces.

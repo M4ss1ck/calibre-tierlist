@@ -1,0 +1,1 @@
+from tierlist.calibre_ui.settings_dialog import SettingsDialog as SettingsDialog

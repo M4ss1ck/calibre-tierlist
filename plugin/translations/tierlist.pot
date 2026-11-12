@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Tier List 0.2.0\n"
+"Project-Id-Version: Tier List 0.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 21:40-0300\n"
+"POT-Creation-Date: 2026-11-11 22:40-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,11 +24,11 @@ msgid ""
 "of your series."
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:28
+#: plugin/src/tierlist/calibre_ui/action.py:29
 msgid "Compile a tier list of your series"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/action.py:108
+#: plugin/src/tierlist/calibre_ui/action.py:113
 msgid ""
 "This plugin was built without the web template, so it cannot compile a tier "
 "list."
@@ -44,7 +44,7 @@ msgstr ""
 #: plugin/src/tierlist/calibre_ui/column.py:58
 #: plugin/src/tierlist/calibre_ui/column.py:60
 #: plugin/src/tierlist/calibre_ui/config_io.py:20
-#: plugin/src/tierlist/calibre_ui/config_widget.py:114
+#: plugin/src/tierlist/calibre_ui/config_widget.py:38
 msgid "Tier List"
 msgstr ""
 
@@ -139,6 +139,14 @@ msgstr ""
 msgid "Compile tier list"
 msgstr ""
 
+#: plugin/src/tierlist/calibre_ui/config_backup.py:24
+msgid "Export JSON…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_backup.py:24
+msgid "Import JSON…"
+msgstr ""
+
 #: plugin/src/tierlist/calibre_ui/config_extras.py:49
 msgid "No orphaned series overrides"
 msgstr ""
@@ -202,48 +210,44 @@ msgstr[1] ""
 msgid "Remove Tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:39
-msgid "Tiers"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_widget.py:45
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:39
 msgid "Add"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:46
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:40
 msgid "Remove"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:47
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:41
 msgid "Move up"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:48
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:42
 msgid "Move down"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:55
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:49
 msgid "Tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:56
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:50
 msgid "Read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:57
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:51
 msgid "Series total column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/config_widget.py:64
-msgid "Export JSON…"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_widget.py:64
-msgid "Import JSON…"
-msgstr ""
-
-#: plugin/src/tierlist/calibre_ui/config_widget.py:134
+#: plugin/src/tierlist/calibre_ui/config_tiers.py:93
 msgid "None"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:26
+msgid "Tiers"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/config_widget.py:27
+msgid "Backup"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/menu.py:23
@@ -254,43 +258,47 @@ msgstr ""
 msgid "Set series tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:61
+#: plugin/src/tierlist/calibre_ui/menu.py:62
 msgid "Send to tier: {}"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:66
+#: plugin/src/tierlist/calibre_ui/menu.py:67
 msgid "Clear tier"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:70
+#: plugin/src/tierlist/calibre_ui/menu.py:71
 msgid "Mark read"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:71
+#: plugin/src/tierlist/calibre_ui/menu.py:72
 msgid "Mark unread"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:74
+#: plugin/src/tierlist/calibre_ui/menu.py:75
 msgid "Restart calibre to finish adding the read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:76
+#: plugin/src/tierlist/calibre_ui/menu.py:77
 msgid "This library has no read column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:80
+#: plugin/src/tierlist/calibre_ui/menu.py:81
 msgid "Set up read column…"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:97
+#: plugin/src/tierlist/calibre_ui/menu.py:87
+msgid "Settings…"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/menu.py:103
 msgid "Restart calibre to finish adding the tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:99
+#: plugin/src/tierlist/calibre_ui/menu.py:105
 msgid "This library has no tier column"
 msgstr ""
 
-#: plugin/src/tierlist/calibre_ui/menu.py:102
+#: plugin/src/tierlist/calibre_ui/menu.py:108
 msgid "Create tier column…"
 msgstr ""
 
@@ -304,6 +312,10 @@ msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/series_menu.py:29
 msgid "Set series tier: Auto"
+msgstr ""
+
+#: plugin/src/tierlist/calibre_ui/settings_dialog.py:17
+msgid "Tier List Settings"
 msgstr ""
 
 #: plugin/src/tierlist/calibre_ui/tier_table.py:28

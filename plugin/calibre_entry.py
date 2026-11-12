@@ -19,11 +19,11 @@ class TierListPlugin(InterfaceActionBase):
     actual_plugin = 'calibre_plugins.tierlist.calibre_ui.action:TierListAction'
 
     def is_customizable(self) -> bool:
-        """True: Preferences > Plugins > Tier List > Customize opens the Tier Config dialog."""
+        """True: Preferences > Plugins > Tier List > Customize opens the Settings widget."""
         return True
 
     def config_widget(self) -> Any:
-        """The Tier Config dialog widget, over the library the running calibre window shows."""
+        """The Settings widget, over the library the running calibre window shows."""
         from calibre.gui2.ui import get_gui
         from calibre_plugins.tierlist.calibre_ui.config_widget import ConfigWidget
 
