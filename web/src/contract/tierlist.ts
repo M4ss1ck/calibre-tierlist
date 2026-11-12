@@ -114,7 +114,7 @@ export interface Series {
    */
   positions: Position[];
   /**
-   * How many trailing positions the collapsed Stack cuts (Stack Depth); the expanded Stack shows them all.
+   * How many trailing positions Stack Depth would cut; the board no longer uses it and lists every position in the Series Panel.
    */
   more: number;
   /**
