@@ -3,6 +3,7 @@
   import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
   import { footerMeta, initialView, shownLanes } from './board/page';
+  import { resolvePageDefaults } from './board/query';
   import SeriesPanel from './board/SeriesPanel.svelte';
   import SheetHeader from './board/SheetHeader.svelte';
   import type { StackPick } from './board/stack';
@@ -19,7 +20,7 @@
   let sheet = $state<HTMLElement>();
   let selection = $state<Selection | undefined>();
   let opened = $state<string | undefined>();
-  const view = untrack(() => initialView(data.pageDefaults));
+  const view = untrack(() => initialView(resolvePageDefaults(data.pageDefaults, location.search)));
   let unranked = $state(view.showUnranked);
   let theme = $state<ThemeChoice>(view.theme);
   let title = $state(view.title);
