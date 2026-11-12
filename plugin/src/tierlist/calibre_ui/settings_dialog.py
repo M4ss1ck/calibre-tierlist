@@ -12,10 +12,12 @@ load_translations()
 class SettingsDialog(QDialog):
     """Hosts the config widget for the current library; OK validates then saves, Cancel writes nothing."""
 
-    def __init__(self, gui: Any, parent: Any = None) -> None:
+    def __init__(self, gui: Any, parent: Any = None, tab: str | None = None) -> None:
         super().__init__(parent or gui)
         self.setWindowTitle(_('Tier List Settings'))
         self.widget = ConfigWidget(gui)
+        if tab is not None:
+            self.widget.select(tab)
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel, self)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)

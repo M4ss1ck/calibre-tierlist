@@ -3,11 +3,12 @@
 from typing import Any
 
 from calibre.gui2 import error_dialog
-from qt.core import QTabWidget
+from qt.core import QTabWidget, QWidget
 
 from ..config_admin import ConfigAdmin
 from ..tiers import TierConfig, TierConfigError, validate
 from .adapters import config_admin
+from .config_arrange import ArrangeTab
 from .config_backup import BackupTab
 from .config_page import PageTab
 from .config_tiers import TiersTab
@@ -24,9 +25,11 @@ class ConfigWidget(QTabWidget):
         self.admin: ConfigAdmin = config_admin(gui.current_db)
         self.tiers = TiersTab(self.admin, self)
         self.page = PageTab(self.admin, self)
+        self.arrange = ArrangeTab(gui, self)
         self.backup = BackupTab(self.admin, self.tiers, self)
         self.addTab(self.tiers, _('Tiers'))
         self.addTab(self.page, _('Page'))
+        self.addTab(self.arrange, _('Arrange'))
         self.addTab(self.backup, _('Backup'))
 
     def build_config(self) -> TierConfig:
@@ -42,10 +45,17 @@ class ConfigWidget(QTabWidget):
             return False
         return True
 
+    def select(self, name: str) -> None:
+        """Show the tab held by this attribute, when the widget has one."""
+        widget = getattr(self, name, None)
+        if isinstance(widget, QWidget):
+            self.setCurrentWidget(widget)
+
     def save(self) -> None:
-        """Store the Tier Config and Page Defaults the widgets show, then refresh the library view and Tier menu."""
+        """Store the Tier Config, Page Defaults, and staged Arrange drops, then refresh the library view and menu."""
         self.admin.save(self.build_config())
         self.admin.save_page_defaults(self.page.build_defaults())
+        self.arrange.save()
         changed = getattr(self.gui, 'saved_searches_changed', None)
         if callable(changed):
             changed()

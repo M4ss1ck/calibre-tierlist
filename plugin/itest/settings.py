@@ -102,13 +102,13 @@ def check_ok(path: str) -> None:
         gui.iactions = {'Tier List': action}
         dialog = SettingsDialog(gui)
         widget = dialog.widget
-        expect([widget.tabText(index) for index in range(widget.count())] == ['Tiers', 'Page', 'Backup'], 'tabs')
+        tabs = [widget.tabText(index) for index in range(widget.count())]
+        expect(tabs == ['Tiers', 'Page', 'Arrange', 'Backup'], 'tabs')
         backup: Any = widget.backup
         texts = {button.text() for button in backup.findChildren(QPushButton)}
         expect(texts == {'Import JSON…', 'Export JSON…'}, f'the Backup tab holds {sorted(texts)}')
         page: Any = widget.page
         page.theme.setCurrentIndex(page.theme.findData('light'))
-
         table = widget.tiers.table
         expect(len(table.tiers()) == 6, f'the Tiers tab shows {len(table.tiers())} Tiers')
         cell(table, row_of(table, 's'), LABEL).setText('Top')

@@ -82,8 +82,9 @@ class TierMenu:
             self._unregistered.append(setup)
 
     def _add_settings(self) -> None:
-        """A Settings… item at the bottom: the dialog over this library's config."""
+        """An Arrange board… item and a Settings… item at the bottom: the dialog over this library's config."""
         self._unregistered.append(self._menu.addSeparator())
+        self._unregistered.append(self._menu.addAction(_('Arrange board…'), self._action.open_arrange))
         self._unregistered.append(self._menu.addAction(_('Settings…'), self._action.open_settings))
 
     def _send(self, tier_id: str, *_: Any) -> None:

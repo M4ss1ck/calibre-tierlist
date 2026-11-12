@@ -29,6 +29,32 @@ def compile_data(
     page_defaults: PageDefaults = DEFAULT_PAGE_DEFAULTS,
 ) -> TierListData:
     """Read these books from the library, build their Tier List Data, then attach their covers."""
+    board, read_is_bool = _board(library, config, book_ids, overrides)
+    shots = cover_thumbs(covers, (row.id for row in board), fmt, COVER_WIDTH)
+    colours = {book_id: cover.colour for book_id, cover in shots.items()}
+    data = build(generated, config, board, read_is_bool, colours, overrides, order)
+    return replace(data, covers=shots, page_defaults=page_defaults)
+
+
+def build_data(
+    generated: Generated,
+    library: Library,
+    config: TierConfig,
+    book_ids: Iterable[int],
+    overrides: Mapping[str, str],
+    order: Mapping[str, Sequence[Place]] | None = None,
+    page_defaults: PageDefaults = DEFAULT_PAGE_DEFAULTS,
+) -> TierListData:
+    """Build the board for these books without reading covers, for the Arrange View."""
+    board, read_is_bool = _board(library, config, book_ids, overrides)
+    data = build(generated, config, board, read_is_bool, {}, overrides, order)
+    return replace(data, page_defaults=page_defaults)
+
+
+def _board(
+    library: Library, config: TierConfig, book_ids: Iterable[int], overrides: Mapping[str, str]
+) -> tuple[list[Row], bool]:
+    """The rows of these books that belong on the board, and whether Read State is a Yes/No column."""
     ids = list(book_ids)
     titles = library.read_field('title', ids)
     tiers = library.read_field(config.tier_column, ids) if library.has_column(config.tier_column) else {}
@@ -52,14 +78,7 @@ def compile_data(
         )
         for i in ids
     ]
-    board = on_board(rows, datatype == 'bool', _overridden(config, overrides))
-    shots = cover_thumbs(covers, (row.id for row in board), fmt, COVER_WIDTH)
-    colours = {book_id: cover.colour for book_id, cover in shots.items()}
-    return replace(
-        build(generated, config, board, datatype == 'bool', colours, overrides, order),
-        covers=shots,
-        page_defaults=page_defaults,
-    )
+    return on_board(rows, datatype == 'bool', _overridden(config, overrides)), datatype == 'bool'
 
 
 def count_series(library: Library, book_ids: Iterable[int]) -> int:
@@ -114,9 +133,7 @@ def build(
 
 
 def _stored(order: Mapping[str, Sequence[Place]] | None, tier: str | None) -> Sequence[Place]:
-    if order is None:
-        return ()
-    return order.get(tier or UNRANKED_LANE, ())
+    return () if order is None else order.get(tier or UNRANKED_LANE, ())
 
 
 def _items(present: Mapping[Place, Rank], stored: Iterable[Place]) -> tuple[LaneItem, ...]:

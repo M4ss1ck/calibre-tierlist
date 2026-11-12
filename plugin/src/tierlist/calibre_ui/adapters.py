@@ -92,4 +92,4 @@ class CalibreSavedSearches(SavedSearches):
 
 def config_admin(db: Any) -> ConfigAdmin:
     """The config-dialog use cases over one calibre library database and its prefs."""
-    return ConfigAdmin(CalibreLibrary(db), CalibrePrefs(db), CalibreSavedSearches(db))
+    return ConfigAdmin(CalibreLibrary(db), CalibrePrefs(db), CalibreSavedSearches(db), CalibreCovers(db))

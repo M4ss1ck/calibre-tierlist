@@ -28,6 +28,11 @@ def set_overrides(prefs: Prefs, names: Iterable[str], tier_id: str) -> None:
     prefs.set(SERIES_TIER_OVERRIDES_KEY, overrides)
 
 
+def save_overrides(prefs: Prefs, overrides: Mapping[str, str]) -> None:
+    """Store the whole Override map, dropping empty names and Tier ids."""
+    prefs.set(SERIES_TIER_OVERRIDES_KEY, {name: tier for name, tier in overrides.items() if name and tier})
+
+
 def clear_overrides(prefs: Prefs, names: Iterable[str]) -> None:
     """Return each of these series to Auto by dropping its Override."""
     overrides = load_overrides(prefs)
