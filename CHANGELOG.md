@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.4.0...v0.4.1) (2026-11-12)
+
+
+### Bug Fixes
+
+* open Settings at a usable size and remember the size the user leaves ([#45](https://github.com/M4ss1ck/calibre-tierlist/issues/45)) ([295b6e8](https://github.com/M4ss1ck/calibre-tierlist/commit/295b6e83a6dec3de894308064f599cb9855cebb0))
+
 ## [0.4.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.3.0...v0.4.0) (2026-11-12)
 
 
