@@ -2,7 +2,7 @@
   import { untrack } from 'svelte';
   import Detail, { type Selection } from './board/Detail.svelte';
   import Lane from './board/Lane.svelte';
-  import { footerMeta, initialView, shownLanes } from './board/page';
+  import { footerMeta, shownLanes } from './board/page';
   import { resolvePageDefaults } from './board/query';
   import SeriesPanel from './board/SeriesPanel.svelte';
   import SheetHeader from './board/SheetHeader.svelte';
@@ -20,11 +20,11 @@
   let sheet = $state<HTMLElement>();
   let selection = $state<Selection | undefined>();
   let opened = $state<string | undefined>();
-  const view = untrack(() => initialView(resolvePageDefaults(data.pageDefaults, location.search)));
-  let unranked = $state(view.showUnranked);
-  let theme = $state<ThemeChoice>(view.theme);
-  let title = $state(view.title);
-  let labels = $state<Record<string, string>>({ unranked: view.unrankedLabel });
+  const defaults = untrack(() => resolvePageDefaults(data.pageDefaults, location.search));
+  let unranked = $state(defaults.showUnranked);
+  let theme = $state<ThemeChoice>(defaults.theme);
+  let title = $state(defaults.title);
+  let labels = $state<Record<string, string>>({ unranked: defaults.unrankedLabel });
   let filters = $state<Filters>({ query: '', author: null, tag: null, year: null });
 
   const lanes = $derived(
@@ -45,7 +45,7 @@
 <main class="board">
   <div class="sheet" bind:this={sheet}>
     <header>
-      <SheetHeader {data} bind:title showCounts={view.showCounts} showLibrary={view.showLibrary} />
+      <SheetHeader {data} bind:title showCounts={defaults.showCounts} showLibrary={defaults.showLibrary} />
       <div class="controls">
         <div class="group">
           <span class="caption">View</span>
@@ -80,7 +80,7 @@
       {/each}
     </div>
     <footer>
-      <span>{footerMeta(data.generated.libraryName, view.showLibrary, compiled)}</span>
+      <span>{footerMeta(data.generated.libraryName, defaults.showLibrary, compiled)}</span>
       <span>Calibre Tier List</span>
     </footer>
   </div>

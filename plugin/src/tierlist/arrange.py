@@ -6,7 +6,7 @@ from typing import Literal
 
 from .compile import TierListData
 from .compile.covers import EMPTY_COLOUR
-from .lane_order import UNRANKED_LANE, Place
+from .lane_order import UNRANKED_LANE, Place, place_for
 from .tiers import Tier
 
 Kind = Literal['series', 'book']
@@ -25,7 +25,7 @@ class ArrangeItem:
 
     @property
     def place(self) -> Place:
-        return ('series', str(self.key)) if self.kind == 'series' else ('book', int(self.key))
+        return place_for(self.kind, self.key)
 
 
 class Arrange:
@@ -71,7 +71,7 @@ class Arrange:
         A Stack dropped on another Tier's Lane takes that Override, or loses it on the Unranked Lane; a Card
         dropped on another Lane takes that Book Tier, or loses it on the Unranked Lane.
         """
-        place = _place(kind, key)
+        place = place_for(kind, key)
         source, old = self._locate(place)
         target_key = _key(target)
         item = self._lanes[source].pop(old)
@@ -115,7 +115,3 @@ class Arrange:
 
 def _key(tier: str | None) -> str:
     return tier or UNRANKED_LANE
-
-
-def _place(kind: Kind, key: str | int) -> Place:
-    return ('series', str(key)) if kind == 'series' else ('book', int(key))

@@ -22,12 +22,13 @@ class ConfigAdmin:
         searches: SavedSearches,
         covers: Covers = NULL_COVERS,
         today: Callable[[], date] = date.today,
+        now: Callable[[], datetime] = lambda: datetime.now().astimezone(),
     ) -> None:
         self._library = library
         self._prefs = prefs
         self._searches = searches
         self._covers = covers
-        self._today = today
+        self._today, self._now = today, now
 
     def tier_config(self) -> TierConfig:
         """The Tier Config stored for this library, or the default when absent."""
@@ -43,12 +44,11 @@ class ConfigAdmin:
 
     def arrange(self) -> Arrange:
         """The whole-library board the Arrange View shows, built without reading cover images."""
-        generated = Generated(datetime.now().astimezone(), '', 'library', '')
+        stored = self.stored_extras()
         ids = tuple(sorted(self._library.all_book_ids()))
-        overrides = series_tiers.load_overrides(self._prefs)
-        order = lane_order.load_order(self._prefs)
-        data = build_data(generated, self._library, self.tier_config(), ids, overrides, order)
-        return Arrange.from_data(data, overrides)
+        generated = Generated(self._now(), '', 'library', '')
+        data = build_data(generated, self._library, self.tier_config(), ids, stored.overrides or {}, stored.lane_order)
+        return Arrange.from_data(data, stored.overrides or {})
 
     def save_arrange(self, staged: Arrange) -> None:
         """Write staged Book Tiers, Overrides, and Lane Order, then prune Lane Order."""
@@ -68,8 +68,7 @@ class ConfigAdmin:
 
     def book_count(self, tier_id: str) -> int:
         """How many books hold this Tier id, zero when the tier column is missing."""
-        values = self._column_values(self.tier_config().tier_column)
-        return sum(1 for value in values.values() if value == tier_id)
+        return sum(1 for value in self._column_values(self.tier_config().tier_column).values() if value == tier_id)
 
     def column_types(self) -> Mapping[str, str]:
         """Every custom column lookup name mapped to its datatype."""
@@ -91,6 +90,10 @@ class ConfigAdmin:
     def export_settings(self, config: TierConfig, defaults: PageDefaults, include: bool) -> str:
         """The Settings Export JSON for these settings, with Overrides and Lane Order when asked."""
         return settings_export.export_settings(self._prefs, config, defaults, include)
+
+    def stored_extras(self) -> settings_export.SettingsExport:
+        """The Overrides and Lane Order stored now, which an import of them would replace."""
+        return settings_export.stored_extras(self._prefs)
 
     def parse_settings_export(self, text: str) -> settings_export.SettingsExport:
         """Parse an imported Settings Export without storing it."""
@@ -141,8 +144,7 @@ class ConfigAdmin:
             if name in labels and name not in target:
                 self._searches.remove(name)
         for name, query in target.items():
-            if self._searches.query(name) == query:
-                continue
-            if name in existing:
-                self._searches.remove(name)
-            self._searches.add(name, query)
+            if self._searches.query(name) != query:
+                if name in existing:
+                    self._searches.remove(name)
+                self._searches.add(name, query)

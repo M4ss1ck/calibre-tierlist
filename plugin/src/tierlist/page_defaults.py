@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Literal, cast
 
 from .ports import Prefs
+from .tiers import TierConfigError
 
 PAGE_DEFAULTS_KEY = 'page_defaults'
 Theme = Literal['system', 'light', 'dark']
@@ -42,27 +43,51 @@ class PageDefaults:
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> PageDefaults:
-        """Rebuild Page Defaults from their JSON shape, filling missing keys with the built-in defaults and
-        ignoring keys this version does not know."""
+        """Rebuild Page Defaults from their JSON shape, filling missing keys with the built-in defaults, ignoring
+        keys this version does not know, and raising TierConfigError for a value that is not one it can show."""
         return cls(
-            theme=cast('Theme', data.get('theme', 'system')),
-            title=cast(str, data.get('title', 'Tier List')),
-            unranked_label=cast(str, data.get('unrankedLabel', 'Unranked')),
-            show_unranked=bool(data.get('showUnranked', True)),
-            show_counts=bool(data.get('showCounts', True)),
-            show_library=bool(data.get('showLibrary', True)),
+            theme=_theme(data),
+            title=_text(data, 'title', 'Tier List'),
+            unranked_label=_text(data, 'unrankedLabel', 'Unranked'),
+            show_unranked=_flag(data, 'showUnranked'),
+            show_counts=_flag(data, 'showCounts'),
+            show_library=_flag(data, 'showLibrary'),
         )
+
+
+def _theme(data: Mapping[str, Any]) -> Theme:
+    value = data.get('theme', 'system')
+    if value not in THEMES:
+        raise TierConfigError(f'unknown theme: {value!r}')
+    return value
+
+
+def _text(data: Mapping[str, Any], key: str, default: str) -> str:
+    value = data.get(key, default)
+    if not isinstance(value, str):
+        raise TierConfigError(f'{key} must be a string')
+    return value
+
+
+def _flag(data: Mapping[str, Any], key: str) -> bool:
+    value = data.get(key, True)
+    if not isinstance(value, bool):
+        raise TierConfigError(f'{key} must be true or false')
+    return value
 
 
 DEFAULT_PAGE_DEFAULTS = PageDefaults()
 
 
 def load_defaults(prefs: Prefs) -> PageDefaults:
-    """The Page Defaults stored for this library, or the built-in ones when absent."""
+    """The Page Defaults stored for this library, or the built-in ones when absent or too corrupt to read."""
     stored = prefs.get(PAGE_DEFAULTS_KEY)
-    if stored is None:
+    if not isinstance(stored, Mapping):
         return DEFAULT_PAGE_DEFAULTS
-    return PageDefaults.from_dict(cast('Mapping[str, Any]', stored))
+    try:
+        return PageDefaults.from_dict(cast('Mapping[str, Any]', stored))
+    except TierConfigError:
+        return DEFAULT_PAGE_DEFAULTS
 
 
 def save_defaults(prefs: Prefs, defaults: PageDefaults) -> None:

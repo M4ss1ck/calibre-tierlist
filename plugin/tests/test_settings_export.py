@@ -47,6 +47,14 @@ def test_export_without_the_checkbox_leaves_out_overrides_and_lane_order() -> No
     assert export == SettingsExport(CONFIG, DEFAULTS)
 
 
+def test_stored_extras_are_the_override_map_and_lane_order_to_be_replaced() -> None:
+    admin, _, _ = make({SERIES_TIER_OVERRIDES_KEY: OVERRIDES, LANE_ORDER_KEY: PREF_ORDER})
+    empty, _, _ = make()
+
+    assert admin.stored_extras() == SettingsExport(overrides=OVERRIDES, lane_order=ORDER)
+    assert empty.stored_extras() == SettingsExport(overrides={}, lane_order={})
+
+
 def test_an_old_bare_tier_config_still_imports() -> None:
     assert parse_export(dump_config(CONFIG)) == SettingsExport(CONFIG)
 

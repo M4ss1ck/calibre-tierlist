@@ -1,4 +1,4 @@
-"""The Settings widget: the Tiers and Backup tabs, shared by Customize and the Tier List menu."""
+"""The Settings widget: the Tiers, Page, Arrange and Export tabs, shared by Customize and the Tier List menu."""
 
 from typing import Any
 
@@ -9,7 +9,7 @@ from ..config_admin import ConfigAdmin
 from ..tiers import TierConfig, TierConfigError, validate
 from .adapters import config_admin
 from .config_arrange import ArrangeTab
-from .config_backup import BackupTab
+from .config_export import ExportTab
 from .config_page import PageTab
 from .config_tiers import TiersTab
 
@@ -26,11 +26,11 @@ class ConfigWidget(QTabWidget):
         self.tiers = TiersTab(self.admin, self)
         self.page = PageTab(self.admin, self)
         self.arrange = ArrangeTab(gui, self)
-        self.backup = BackupTab(self.admin, self.tiers, self.page, self)
+        self.export = ExportTab(self.admin, self.tiers, self.page, self)
         self.addTab(self.tiers, _('Tiers'))
         self.addTab(self.page, _('Page'))
         self.addTab(self.arrange, _('Arrange'))
-        self.addTab(self.backup, _('Backup'))
+        self.addTab(self.export, _('Export'))
 
     def build_config(self) -> TierConfig:
         """The Tier Config the widgets currently show."""
@@ -56,7 +56,7 @@ class ConfigWidget(QTabWidget):
         self.admin.save(self.build_config())
         self.admin.save_page_defaults(self.page.build_defaults())
         self.arrange.save()
-        self.backup.apply_import()
+        self.export.apply_import()
         changed = getattr(self.gui, 'saved_searches_changed', None)
         if callable(changed):
             changed()

@@ -34,8 +34,16 @@ def test_node_modules_is_skipped(tmp_path: Path, capsys: pytest.CaptureFixture[s
     assert 'ERROR' not in capsys.readouterr().out
 
 
-def test_a_generated_file_is_skipped(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    generated = tmp_path / 'types.ts'
+def test_the_generated_contract_file_is_skipped(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    generated = tmp_path / 'web' / 'src' / 'contract' / 'tierlist.ts'
+    generated.parent.mkdir(parents=True)
     generated.write_text('/* Generated from a schema. Do not edit. */\n' + 'x\n' * 400, encoding='utf-8')
     assert main([str(tmp_path)]) == 0
     assert 'ERROR' not in capsys.readouterr().out
+
+
+def test_a_generated_marker_does_not_exempt_another_file(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    marked = tmp_path / 'types.ts'
+    marked.write_text('/* Generated from a schema. Do not edit. */\n' + 'x\n' * 400, encoding='utf-8')
+    assert main([str(tmp_path)]) == 1
+    assert 'ERROR' in capsys.readouterr().out

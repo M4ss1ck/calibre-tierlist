@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, cast
 
-from .lane_order import Place, load_order, place_from_dict, prune, save_order
+from .lane_order import Place, load_order, place_from_dict, place_to_dict, prune, save_order
 from .page_defaults import PageDefaults
 from .ports import Library, Prefs
 from .series_tiers import load_overrides, save_overrides
@@ -44,13 +44,13 @@ class SettingsExport:
             data['overrides'] = dict(self.overrides)
         if self.lane_order is not None:
             data['lane_order'] = {
-                lane: [{kind: key} for kind, key in places] for lane, places in self.lane_order.items()
+                lane: [place_to_dict(place) for place in places] for lane, places in self.lane_order.items()
             }
         return data
 
 
 def dump_export(export: SettingsExport) -> str:
-    """Serialise a Settings Export as the indented JSON the Backup tab writes."""
+    """Serialise a Settings Export as the indented JSON the Export tab writes."""
     return json.dumps(export.to_dict(), indent=2)
 
 
@@ -59,6 +59,11 @@ def export_settings(prefs: Prefs, config: TierConfig, defaults: PageDefaults, in
     overrides = load_overrides(prefs) if include else None
     order = load_order(prefs) if include else None
     return dump_export(SettingsExport(config, defaults, overrides, order))
+
+
+def stored_extras(prefs: Prefs) -> SettingsExport:
+    """The Overrides and Lane Order stored now, which an import of them would replace."""
+    return SettingsExport(overrides=load_overrides(prefs), lane_order=load_order(prefs))
 
 
 def apply_import(prefs: Prefs, library: Library, export: SettingsExport) -> None:

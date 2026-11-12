@@ -51,14 +51,12 @@ def confirm_import(parent: QWidget, admin: ConfigAdmin, shown: tuple[Tier, ...],
     return QMessageBox.question(parent, _('Import Tier Config'), question) == QMessageBox.StandardButton.Yes
 
 
-def confirm_replace(parent: QWidget, export: SettingsExport) -> bool:
-    """True when this import may replace existing Overrides and Lane Order, asking first."""
-    if export.overrides is None and export.lane_order is None:
-        return True
-    if export.overrides is None:
-        question = _('This replaces the board order. Import anyway?')
-    else:
-        count = len(export.overrides)
+def confirm_replace(parent: QWidget, admin: ConfigAdmin, export: SettingsExport) -> bool:
+    """True when this import may replace stored Overrides or Lane Order, asking first only when it would."""
+    stored = admin.stored_extras()
+    count = len(stored.overrides or {}) if export.overrides is not None else 0
+    order = export.lane_order is not None and bool(stored.lane_order)
+    if count and order:
         question = (
             ngettext(
                 'This replaces %d series override and the board order. Import anyway?',
@@ -67,6 +65,19 @@ def confirm_replace(parent: QWidget, export: SettingsExport) -> bool:
             )
             % count
         )
+    elif count:
+        question = (
+            ngettext(
+                'This replaces %d series override. Import anyway?',
+                'This replaces %d series overrides. Import anyway?',
+                count,
+            )
+            % count
+        )
+    elif order:
+        question = _('This replaces the board order. Import anyway?')
+    else:
+        return True
     return QMessageBox.question(parent, _('Import Settings'), question) == QMessageBox.StandardButton.Yes
 
 

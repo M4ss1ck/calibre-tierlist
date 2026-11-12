@@ -95,9 +95,9 @@ def widget_for(db: Any) -> Any:
 def export_settings(db: Any, path: str) -> None:
     widget = widget_for(db)
     cell(widget.tiers.table, row_of(widget.tiers.table, 's'), 1).setText('Top')
-    widget.backup.include.setChecked(True)
+    widget.export.include.setChecked(True)
     Dialog.path = path
-    widget.backup.export_json()
+    widget.export.export_json()
 
 
 def cell(table: Any, row: int, column: int) -> Any:
@@ -125,15 +125,15 @@ def check_round_trip(tmp: str) -> None:
     try:
         widget = widget_for(target)
         Dialog.path = path
-        widget.backup.import_json()
-        expect(bool(Answer.asked) and 'series override' in Answer.asked[-1], Answer.asked)
+        widget.export.import_json()
+        expect(Answer.asked == [], f'asked a library holding no Overrides or Lane Order: {Answer.asked}')
         widget.save()
-        labels = {tier.id: tier.label for tier in config_admin(target).tier_config().tiers}
-        expect(labels.get('s') == 'Top', f'Tiers did not carry over: {labels}')
-        defaults = config_admin(target).page_defaults()
-        expect((defaults.theme, defaults.title) == ('light', 'My shelf'), defaults)
+        expect({tier.id: tier.label for tier in config_admin(target).tier_config().tiers}.get('s') == 'Top', 'Tiers')
+        expect(config_admin(target).page_defaults() == PageDefaults(theme='light', title='My shelf'), 'Defaults')
         expect(tier_list(target).series_tier_overrides() == {'Dune': 'a'}, 'Overrides')
         expect(target.prefs.get_namespaced(PREF_NS, LANE_ORDER_KEY, None) == ORDER, 'Lane Order')
+        widget.export.import_json()
+        expect(Answer.asked[-1].startswith('This replaces 1 series override and'), Answer.asked)
     finally:
         target.close()
 

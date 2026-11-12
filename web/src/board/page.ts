@@ -1,27 +1,4 @@
-import type { Lane, PageDefaults } from '../contract/tierlist';
-import type { ThemeChoice } from '../theme/theme';
-
-/** The view a compiled page opens with, taken from the Page Defaults baked into its payload. */
-export type InitialView = {
-  theme: ThemeChoice;
-  title: string;
-  unrankedLabel: string;
-  showUnranked: boolean;
-  showCounts: boolean;
-  showLibrary: boolean;
-};
-
-/** The page-only choices a compiled page starts from. */
-export function initialView(defaults: PageDefaults): InitialView {
-  return {
-    theme: defaults.theme,
-    title: defaults.title,
-    unrankedLabel: defaults.unrankedLabel,
-    showUnranked: defaults.showUnranked,
-    showCounts: defaults.showCounts,
-    showLibrary: defaults.showLibrary,
-  };
-}
+import type { Lane } from '../contract/tierlist';
 
 /** The Lanes the page shows: every Lane except the Unranked one when it is off. */
 export function shownLanes(lanes: Lane[], showUnranked: boolean): Lane[] {

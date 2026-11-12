@@ -1,46 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import type { Lane, PageDefaults } from '../contract/tierlist';
-import { footerMeta, headerMeta, initialView, shownLanes } from './page';
-
-const defaults: PageDefaults = {
-  theme: 'system',
-  title: 'Tier List',
-  unrankedLabel: 'Unranked',
-  showUnranked: true,
-  showCounts: true,
-  showLibrary: true,
-};
+import type { Lane } from '../contract/tierlist';
+import { footerMeta, headerMeta, shownLanes } from './page';
 
 const lanes: Lane[] = [
   { tier: 's', items: [] },
   { tier: null, items: [] },
 ];
-
-describe('initialView', () => {
-  it('opens in the baked theme', () => {
-    expect(initialView({ ...defaults, theme: 'light' }).theme).toBe('light');
-  });
-
-  it('uses the baked title and Unranked Lane label', () => {
-    const view = initialView({ ...defaults, title: 'My shelf', unrankedLabel: 'Someday' });
-
-    expect(view.title).toBe('My shelf');
-    expect(view.unrankedLabel).toBe('Someday');
-  });
-
-  it('keeps the baked header choices', () => {
-    const view = initialView({ ...defaults, showUnranked: false, showCounts: false, showLibrary: false });
-
-    expect(view).toEqual({
-      theme: 'system',
-      title: 'Tier List',
-      unrankedLabel: 'Unranked',
-      showUnranked: false,
-      showCounts: false,
-      showLibrary: false,
-    });
-  });
-});
 
 describe('shownLanes', () => {
   it('drops the Unranked Lane when it is off', () => {

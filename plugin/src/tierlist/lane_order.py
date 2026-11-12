@@ -31,7 +31,7 @@ def save_order(prefs: Prefs, order: Mapping[str, Sequence[Place]]) -> None:
     """Store each Lane's places in order, dropping empty Lanes."""
     prefs.set(
         LANE_ORDER_KEY,
-        {lane: [{kind: key} for kind, key in places] for lane, places in order.items() if lane and places},
+        {lane: [place_to_dict(place) for place in places] for lane, places in order.items() if lane and places},
     )
 
 
@@ -58,6 +58,17 @@ def place_from_dict(item: object) -> Place | None:
     if isinstance(book, int) and not isinstance(book, bool):
         return ('book', book)
     return None
+
+
+def place_to_dict(place: Place) -> dict[str, str | int]:
+    """One place in the dict shape Lane Order and a Settings Export store it."""
+    kind, key = place
+    return {kind: key}
+
+
+def place_for(kind: str, key: str | int) -> Place:
+    """The place a Stack (by series name) or a Card (by book id) names."""
+    return ('series', str(key)) if kind == 'series' else ('book', int(key))
 
 
 def _exists(place: Place, series_names: frozenset[str], book_ids: frozenset[int]) -> bool:

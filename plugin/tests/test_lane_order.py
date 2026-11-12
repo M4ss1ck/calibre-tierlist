@@ -3,8 +3,24 @@
 from fakes import FakeLibrary, FakePrefs, FakeSavedSearches
 
 from tierlist.config_admin import ConfigAdmin
-from tierlist.lane_order import LANE_ORDER_KEY, UNRANKED_LANE, load_order, prune, save_order
+from tierlist.lane_order import (
+    LANE_ORDER_KEY,
+    UNRANKED_LANE,
+    load_order,
+    place_for,
+    place_from_dict,
+    place_to_dict,
+    prune,
+    save_order,
+)
 from tierlist.tiers import DEFAULT_TIER_CONFIG
+
+
+def test_a_place_is_built_and_stored_in_either_shape() -> None:
+    assert place_for('series', 'Dune') == ('series', 'Dune')
+    assert place_for('book', 7) == ('book', 7)
+    assert place_to_dict(('book', 7)) == {'book': 7}
+    assert place_from_dict({'series': 'Dune'}) == ('series', 'Dune')
 
 
 def test_save_and_load_round_trip_each_place() -> None:

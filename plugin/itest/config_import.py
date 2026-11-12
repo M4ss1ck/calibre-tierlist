@@ -92,14 +92,14 @@ def check_import(tmp: str) -> None:
 
         no = Answer(Answer.StandardButton.No)
         config_io.QMessageBox = no
-        widget.backup.import_json()
+        widget.export.import_json()
         expect(bool(no.asked) and '1 book holds a Tier this import removes' in no.asked[-1], no.asked)
         expect({tier.id for tier in tiers.table.tiers()} == DEFAULT_IDS, 'declining the import changed the table')
         expect({tier.id: tier.label for tier in tiers.table.tiers()}['s'] == 'S', 'declining renamed a Tier')
 
         yes = Answer(Answer.StandardButton.Yes)
         config_io.QMessageBox = yes
-        widget.backup.import_json()
+        widget.export.import_json()
         expect(len(yes.asked) == 1, yes.asked)
         labels = {tier.id: tier.label for tier in tiers.table.tiers()}
         expect('f' not in labels and labels['s'] == 'Top', f'the import did not load: {labels}')

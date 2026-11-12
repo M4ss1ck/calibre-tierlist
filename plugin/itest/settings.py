@@ -103,10 +103,10 @@ def check_ok(path: str) -> None:
         dialog = SettingsDialog(gui)
         widget = dialog.widget
         tabs = [widget.tabText(index) for index in range(widget.count())]
-        expect(tabs == ['Tiers', 'Page', 'Arrange', 'Backup'], 'tabs')
-        backup: Any = widget.backup
-        texts = {button.text() for button in backup.findChildren(QPushButton)}
-        expect(texts == {'Import JSON…', 'Export JSON…'}, f'the Backup tab holds {sorted(texts)}')
+        expect(tabs == ['Tiers', 'Page', 'Arrange', 'Export'], 'tabs')
+        export: Any = widget.export
+        texts = {button.text() for button in export.findChildren(QPushButton)}
+        expect(texts == {'Import JSON…', 'Export JSON…'}, f'the Export tab holds {sorted(texts)}')
         page: Any = widget.page
         page.theme.setCurrentIndex(page.theme.findData('light'))
         table = widget.tiers.table

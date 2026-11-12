@@ -1,4 +1,4 @@
-"""The Backup tab of Settings: importing and exporting Settings JSON."""
+"""The Export tab of Settings: importing and exporting Settings JSON."""
 
 from typing import Any
 
@@ -12,7 +12,7 @@ from .config_page import PageTab
 from .config_tiers import TiersTab
 
 
-class BackupTab(QWidget):
+class ExportTab(QWidget):
     """The Import and Export Settings buttons, an opt-in for Overrides and Lane Order, and a staged import."""
 
     def __init__(self, admin: ConfigAdmin, tiers: TiersTab, page: PageTab, parent: Any = None) -> None:
@@ -40,7 +40,7 @@ class BackupTab(QWidget):
             shown = self._tiers.table.tiers()
             if not confirm_import(self, self._admin, shown, export.tier_config):
                 return
-        if not confirm_replace(self, export):
+        if not confirm_replace(self, self._admin, export):
             return
         if export.tier_config is not None:
             self._tiers.load_tiers(export.tier_config)

@@ -12,7 +12,7 @@ from tierlist.page_defaults import (
     load_defaults,
     save_defaults,
 )
-from tierlist.tiers import Tier, TierConfig
+from tierlist.tiers import Tier, TierConfig, TierConfigError
 
 CONFIG = TierConfig(tiers=(Tier('s', 'S', '#ff7f7f'),))
 
@@ -58,8 +58,24 @@ def test_from_dict_ignores_unknown_keys() -> None:
 
 @pytest.mark.parametrize('theme', ['neon', '', 'Light', None])
 def test_an_invalid_theme_is_rejected(theme: object) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(TierConfigError, match='theme'):
         PageDefaults.from_dict({'theme': theme})
+
+
+@pytest.mark.parametrize('flag', ['showUnranked', 'showCounts', 'showLibrary'])
+def test_a_non_bool_flag_is_rejected(flag: str) -> None:
+    with pytest.raises(TierConfigError, match=flag):
+        PageDefaults.from_dict({flag: 'false'})
+
+
+def test_a_non_string_title_or_label_is_rejected() -> None:
+    with pytest.raises(TierConfigError, match='title'):
+        PageDefaults.from_dict({'title': 5})
+
+
+def test_corrupt_stored_defaults_read_as_the_built_in_ones() -> None:
+    assert load_defaults(FakePrefs({PAGE_DEFAULTS_KEY: {'theme': 'neon'}})) == DEFAULT_PAGE_DEFAULTS
+    assert load_defaults(FakePrefs({PAGE_DEFAULTS_KEY: ['not', 'a', 'mapping']})) == DEFAULT_PAGE_DEFAULTS
 
 
 def test_a_blank_title_or_label_falls_back_to_its_default() -> None:
