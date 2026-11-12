@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Book, Cover, Series } from '../contract/tierlist';
-import { frontOf, readCount, resolve, sheetsBehind } from './stack';
+import { frontOf, readCount, resolve } from './stack';
 
 function book(title: string, read = true): Book {
   return {
@@ -68,19 +68,6 @@ describe('frontOf', () => {
 
   it('has no front for an empty series', () => {
     expect(frontOf([])).toBeUndefined();
-  });
-});
-
-describe('sheetsBehind', () => {
-  it.each([
-    [0, 0],
-    [1, 0],
-    [2, 1],
-    [3, 2],
-    [12, 2],
-  ])('shows %i positions with %i sheets behind the front', (count, expected) => {
-    const ids = Array.from({ length: count }, () => null);
-    expect(sheetsBehind(resolve(series(...ids), books, {}))).toBe(expected);
   });
 });
 

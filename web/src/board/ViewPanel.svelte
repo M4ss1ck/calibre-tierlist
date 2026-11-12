@@ -69,7 +69,6 @@
         <legend>Covers</legend>
         <Switch label="Captions" bind:on={view.showCaptions} />
         <Switch label="Read count" bind:on={view.showReadCount} />
-        <Switch label="Sheets behind series" bind:on={view.showSheets} />
         <div class="row"><span>Size</span>
           <Segmented label="Cover size" options={COVER_SIZE_OPTIONS} bind:value={view.coverSize} />
         </div>

@@ -18,7 +18,6 @@ FLAGS = (
     'showDescriptions',
     'showCaptions',
     'showReadCount',
-    'showSheets',
 )
 TEXTS = ('title', 'unrankedLabel', 'emptyLaneText')
 

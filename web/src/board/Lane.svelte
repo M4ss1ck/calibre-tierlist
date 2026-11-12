@@ -17,7 +17,6 @@
     showLabel: boolean;
     showCaption: boolean;
     showReadCount: boolean;
-    showSheets: boolean;
     books: Record<string, Book>;
     covers: Record<string, Cover>;
     series: Record<string, Series>;
@@ -34,7 +33,6 @@
     showLabel,
     showCaption,
     showReadCount,
-    showSheets,
     books,
     covers,
     series,
@@ -64,7 +62,6 @@
           series={entry.series}
           {showCaption}
           {showReadCount}
-          {showSheets}
           {books}
           {covers}
           {onopen}

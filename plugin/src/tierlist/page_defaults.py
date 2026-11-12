@@ -30,7 +30,7 @@ PAGE_DEFAULTS_KEY = 'page_defaults'
 class PageDefaults:
     """The choices a compiled page opens with: theme, Sheet title and Page Width; the header's counts and library
     name; the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message; and the covers'
-    Captions, Read Count, peeking sheets, Cover Size and Cover Gap."""
+    Captions, Read Count, Cover Size and Cover Gap."""
 
     theme: Theme = 'system'
     title: str = 'Tier List'
@@ -46,7 +46,6 @@ class PageDefaults:
     empty_lane_text: str = ''
     show_captions: bool = True
     show_read_count: bool = True
-    show_sheets: bool = True
     cover_size: CoverSize = 'normal'
     cover_gap: Gap = 'normal'
 
@@ -78,7 +77,6 @@ class PageDefaults:
             'emptyLaneText': self.empty_lane_text,
             'showCaptions': self.show_captions,
             'showReadCount': self.show_read_count,
-            'showSheets': self.show_sheets,
             'coverSize': self.cover_size,
             'coverGap': self.cover_gap,
         }
@@ -102,7 +100,6 @@ class PageDefaults:
             empty_lane_text=text(data, 'emptyLaneText', ''),
             show_captions=flag(data, 'showCaptions', True),
             show_read_count=flag(data, 'showReadCount', True),
-            show_sheets=flag(data, 'showSheets', True),
             cover_size=choice(data, 'coverSize', COVER_SIZES, 'normal'),
             cover_gap=choice(data, 'coverGap', GAPS, 'normal'),
         )

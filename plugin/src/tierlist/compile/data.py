@@ -11,7 +11,7 @@ from ..ports import Cover
 from ..tiers import Tier
 from .series import Series
 
-SCHEMA_VERSION = 9
+SCHEMA_VERSION = 10
 
 Scope = Literal['library', 'virtual_library', 'selection']
 

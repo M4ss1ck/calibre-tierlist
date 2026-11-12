@@ -18,7 +18,6 @@ const baked: PageDefaults = {
   emptyLaneText: 'Nothing here',
   showCaptions: false,
   showReadCount: false,
-  showSheets: false,
   coverSize: 'large',
   coverGap: 'small',
 };
@@ -64,9 +63,8 @@ describe('resolvePageDefaults, the board view keys', () => {
     expect(resolvePageDefaults(baked, '?read_count=yes').showReadCount).toBe(false);
   });
 
-  it('overrides whether the peeking sheets show, ignoring an invalid switch', () => {
-    expect(resolvePageDefaults(baked, '?sheets=true').showSheets).toBe(true);
-    expect(resolvePageDefaults(baked, '?sheets=yes').showSheets).toBe(false);
+  it('ignores the retired sheets switch', () => {
+    expect(resolvePageDefaults(baked, '?sheets=true')).toEqual(baked);
   });
 
   it('overrides the Cover Size, ignoring an invalid one', () => {

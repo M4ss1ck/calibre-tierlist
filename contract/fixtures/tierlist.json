@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 9,
+  "schemaVersion": 10,
   "pageDefaults": {
     "theme": "system",
     "title": "Tier List",
@@ -15,7 +15,6 @@
     "emptyLaneText": "",
     "showCaptions": true,
     "showReadCount": true,
-    "showSheets": true,
     "coverSize": "normal",
     "coverGap": "normal"
   },

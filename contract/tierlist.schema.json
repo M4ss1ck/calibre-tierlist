@@ -9,7 +9,7 @@
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 9,
+      "const": 10,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "pageDefaults": { "$ref": "#/$defs/PageDefaults" },
@@ -59,7 +59,6 @@
         "emptyLaneText",
         "showCaptions",
         "showReadCount",
-        "showSheets",
         "coverSize",
         "coverGap"
       ],
@@ -99,7 +98,6 @@
         },
         "showCaptions": { "type": "boolean", "description": "Whether Stacks and Cards show their Caption." },
         "showReadCount": { "type": "boolean", "description": "Whether Stacks show their Read Count." },
-        "showSheets": { "type": "boolean", "description": "Whether Stacks show the sheets peeking out behind them." },
         "coverSize": {
           "type": "string",
           "enum": ["small", "normal", "large"],

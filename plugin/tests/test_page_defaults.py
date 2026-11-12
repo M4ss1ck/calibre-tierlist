@@ -34,7 +34,6 @@ def test_built_in_defaults_match_todays_page() -> None:
         '',
         True,
         True,
-        True,
         'normal',
         'normal',
     )
@@ -56,7 +55,6 @@ def test_to_dict_uses_the_contract_camel_case_keys() -> None:
         'emptyLaneText': '',
         'showCaptions': True,
         'showReadCount': True,
-        'showSheets': True,
         'coverSize': 'normal',
         'coverGap': 'normal',
     }
@@ -78,7 +76,6 @@ def test_round_trip_through_dict() -> None:
         empty_lane_text='Nothing yet',
         show_captions=False,
         show_read_count=False,
-        show_sheets=False,
         cover_size='large',
         cover_gap='none',
     )
@@ -93,6 +90,12 @@ def test_from_dict_fills_missing_fields_with_defaults() -> None:
 
 def test_from_dict_ignores_unknown_keys() -> None:
     assert PageDefaults.from_dict({'theme': 'light', 'retired': 3}) == PageDefaults(theme='light')
+
+
+def test_the_retired_sheets_switch_is_ignored_and_never_written() -> None:
+    defaults = PageDefaults.from_dict({'showSheets': False, 'showCaptions': False})
+    assert defaults == PageDefaults(show_captions=False)
+    assert 'showSheets' not in defaults.to_dict()
 
 
 def test_defaults_stored_before_the_new_fields_load_with_their_defaults() -> None:

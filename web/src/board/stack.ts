@@ -31,11 +31,6 @@ export function frontOf(resolved: Resolved[]): Resolved | undefined {
   );
 }
 
-/** How many sheets peek out behind the front: one per other position, at most two. */
-export function sheetsBehind(resolved: Resolved[]): number {
-  return Math.min(2, Math.max(0, resolved.length - 1));
-}
-
 /** How many of the series' books in the library are read, out of how many are in it. */
 export function readCount(resolved: Resolved[]): { read: number; total: number } {
   const owned = resolved.filter((entry) => entry.book !== undefined);

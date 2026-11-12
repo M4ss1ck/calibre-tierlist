@@ -4,7 +4,7 @@ A Calibre 9.0+ plugin that assigns books a tier from the right-click menu and co
 
 ## Usage
 
-Compile a Tier List from the plugin's toolbar menu and open the generated HTML file in your browser. The **Page** tab in Settings sets the Page Defaults a compiled page opens with: theme, title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, peeking sheets, Cover Size and Cover Gap.
+Compile a Tier List from the plugin's toolbar menu and open the generated HTML file in your browser. The **Page** tab in Settings sets the Page Defaults a compiled page opens with: theme, title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, Cover Size and Cover Gap.
 
 The **Customize view** button on the page opens the View Panel, which changes those Page Defaults for that opening only — Lanes, Covers and Page, grouped as in Settings, with nothing saved. Its switch shows or hides the Unranked Lane. The theme picker beside it is not saved either.
 
@@ -26,7 +26,6 @@ You can override any Page Default for one opening with a query in the page's add
 | `empty_text` | any text, URL-encoded | the `custom` Empty Lane Message |
 | `captions` | `1`/`0`, `true`/`false` | show Stacks' and Cards' Captions |
 | `read_count` | `1`/`0`, `true`/`false` | show each Stack's Read Count |
-| `sheets` | `1`/`0`, `true`/`false` | show the sheets peeking out behind Stacks |
 | `cover_size` | `small`, `normal`, `large` | Cover Size |
 | `cover_gap` | `none`, `small`, `normal`, `large` | Cover Gap |
 

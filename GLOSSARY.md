@@ -46,7 +46,7 @@ An Override whose series name matches no series in the library, usually after a 
 ## Board
 
 **Stack**
-The visual group for one series inside a Tier row: a single front cover (the first owned book with a cover, else the series colour) with up to two sheets peeking out behind it, a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
+The visual group for one series inside a Tier row: a single front cover (the first owned book with a cover, else the series colour), a Read Count and a Caption. Clicking it opens the Series Panel, which lists every position.
 Avoid: pile, deck.
 
 **Card**
@@ -82,7 +82,7 @@ The part of Settings that shows the board as Lanes of covers so the reader can d
 Avoid: board editor, sorter, drag mode.
 
 **Page Defaults**
-The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, peeking sheets, Cover Size and Cover Gap. A query in the page's address can override any of them for that one opening, and the View Panel changes them for the session; neither is ever saved.
+The choices a compiled page opens with, set in Settings and written into the page: theme, Sheet title, Page Width, the header's counts and library name, the Lanes' labels, Tier descriptions, Lane Gap, Unranked Lane and Empty Lane Message, and the covers' Captions, Read Count, Cover Size and Cover Gap. A query in the page's address can override any of them for that one opening, and the View Panel changes them for the session; neither is ever saved.
 Avoid: page settings, view options, preferences.
 
 **Unranked Lane**

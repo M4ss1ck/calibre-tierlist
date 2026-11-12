@@ -72,7 +72,6 @@ class PageTab(QWidget):
             empty_lane_text=self.lanes.empty_lane_text.text(),
             show_captions=self.covers.show_captions.isChecked(),
             show_read_count=self.covers.show_read_count.isChecked(),
-            show_sheets=self.covers.show_sheets.isChecked(),
             cover_size=self.covers.cover_size.currentData(),
             cover_gap=self.covers.cover_gap.currentData(),
         )

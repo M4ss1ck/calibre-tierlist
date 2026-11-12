@@ -1,4 +1,4 @@
-"""The Covers group of the Page tab: Captions, Read Count, peeking sheets, Cover Size and Cover Gap."""
+"""The Covers group of the Page tab: Captions, Read Count, Cover Size and Cover Gap."""
 
 from typing import Any
 
@@ -16,13 +16,11 @@ class CoversSection(QGroupBox):
         super().__init__(_('Covers'), parent)
         self.show_captions = QCheckBox(_('Show captions'), self)
         self.show_read_count = QCheckBox(_('Show the read count'), self)
-        self.show_sheets = QCheckBox(_('Show the sheets behind series'), self)
         self.cover_size = choice_combo(self, cover_size_choices())
         self.cover_gap = choice_combo(self, gap_choices())
         form = right_form(self)
         form.addRow(self.show_captions)
         form.addRow(self.show_read_count)
-        form.addRow(self.show_sheets)
         form.addRow(_('Cover size'), self.cover_size)
         form.addRow(_('Cover gap'), self.cover_gap)
 
@@ -30,6 +28,5 @@ class CoversSection(QGroupBox):
         """Show these Page Defaults' cover choices."""
         self.show_captions.setChecked(defaults.show_captions)
         self.show_read_count.setChecked(defaults.show_read_count)
-        self.show_sheets.setChecked(defaults.show_sheets)
         self.cover_size.setCurrentIndex(max(self.cover_size.findData(defaults.cover_size), 0))
         self.cover_gap.setCurrentIndex(max(self.cover_gap.findData(defaults.cover_gap), 0))

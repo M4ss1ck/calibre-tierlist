@@ -71,7 +71,6 @@
           showLabel={view.showLabels}
           showCaption={view.showCaptions}
           showReadCount={view.showReadCount}
-          showSheets={view.showSheets}
           books={data.books}
           covers={data.covers}
           series={data.series}

@@ -21,7 +21,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 9;
+  schemaVersion: 10;
   pageDefaults: PageDefaults;
   generated: Generated;
   /**
@@ -108,10 +108,6 @@ export interface PageDefaults {
    * Whether Stacks show their Read Count.
    */
   showReadCount: boolean;
-  /**
-   * Whether Stacks show the sheets peeking out behind them.
-   */
-  showSheets: boolean;
   /**
    * How large Stacks and Cards are drawn.
    */
