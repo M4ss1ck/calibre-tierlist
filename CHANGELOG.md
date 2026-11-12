@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.5.0...v0.6.0) (2026-11-12)
+
+
+### Features
+
+* pick a Series Cover in the Series Panel, back from Detail, drop the peeking sheets ([#53](https://github.com/M4ss1ck/calibre-tierlist/issues/53)) ([f0f9421](https://github.com/M4ss1ck/calibre-tierlist/commit/f0f9421567a28c770ab4b7c12a13fb2db6490025))
+
 ## [0.5.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.4.2...v0.5.0) (2026-11-12)
 
 
