@@ -17,6 +17,9 @@ from calibre_plugins.tierlist.calibre_ui.config_tiers import TiersTab
 from calibre_plugins.tierlist.calibre_ui.emblem_toggle import EmblemToggle, emblems_hidden, show_emblems
 from settings import open_library
 
+# The gprefs switch this calibre has: emblem_style on 9.4+, show_emblems on 9.0 to 9.3.
+MODERN = 'emblem_style' in gprefs.defaults
+KEY, HIDDEN, SHOWN = ('emblem_style', 'none', 'emboss') if MODERN else ('show_emblems', False, True)
 ASKED: list[Any] = []
 ANSWER: list[bool] = [True]
 
@@ -41,23 +44,23 @@ def tick(toggle: EmblemToggle, answer: bool = True) -> None:
 
 def check_toggle() -> None:
     """A tick asks once while calibre hides emblems: yes turns them on, no notes it; nothing else asks."""
-    gprefs['emblem_style'] = 'none'
+    gprefs[KEY] = HIDDEN
     yes = EmblemToggle()
     tick(yes)
-    expect(gprefs['emblem_style'] == 'emboss', f'yes stored {gprefs["emblem_style"]!r}')
+    expect(gprefs[KEY] == SHOWN, f'yes stored {gprefs[KEY]!r}')
     expect(len(ASKED) == 1, f'{len(ASKED)} prompts on the first tick')
     expect(yes.checked() and yes.note.isHidden(), 'the note shows although emblems are on')
-    gprefs['emblem_style'] = 'none'
+    gprefs[KEY] = HIDDEN
     no = EmblemToggle()
     tick(no, False)
-    expect(gprefs['emblem_style'] == 'none', f'no stored {gprefs["emblem_style"]!r}')
+    expect(gprefs[KEY] == HIDDEN, f'no stored {gprefs[KEY]!r}')
     expect(len(ASKED) == 1, f'{len(ASKED)} prompts on a refused tick')
     expect(not no.note.isHidden(), 'the note is hidden although calibre hides the emblems')
-    gprefs['emblem_style'] = 'emboss'
+    gprefs[KEY] = SHOWN
     already = EmblemToggle()
     tick(already, False)
     expect(already.checked() and not ASKED, f'{len(ASKED)} prompts with emblems already on')
-    gprefs['emblem_style'] = 'none'
+    gprefs[KEY] = HIDDEN
     stored = EmblemToggle()
     stored.set_checked(True)
     expect(stored.checked() and not ASKED, f'{len(ASKED)} prompts on set_checked')
@@ -97,15 +100,14 @@ def check_tiers_tab(path: str) -> None:
 
 def main() -> int:
     Application([])
-    expect('emblem_style' in gprefs.defaults, 'this calibre has no emblem_style pref, so it predates 9.4')
-    original = gprefs.get('emblem_style')
+    original = gprefs.get(KEY, HIDDEN)
     toggle_module.question_dialog = ask
     try:
         check_toggle()
         with tempfile.TemporaryDirectory() as tmp:
             check_tiers_tab(tmp + '/tiers')
     finally:
-        gprefs['emblem_style'] = 'none' if original is None else original
+        gprefs[KEY] = original
     print('EMBLEM TOGGLE OK')
     return 0
 
