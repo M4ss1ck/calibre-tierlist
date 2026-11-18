@@ -32,3 +32,13 @@ You can override any Page Default for one opening with a query in the page's add
 For example, `tierlist.html?theme=dark&counts=0` opens the page dark and without counts. Unknown keys and invalid values are ignored, and a repeated key uses its last value.
 
 Calibre opens the compiled file without a query, so this is for bookmarks and links you open yourself.
+
+### Cover grid emblems
+
+With this on, every tiered book's Tier label, in its Tier's colour, is drawn on its cover in calibre's cover grid and Bookshelf view. Turn it on in Settings > Tiers with "Show tiers as cover grid emblems". It is off by default and kept per library.
+
+When calibre is set to hide cover emblems, ticking the box asks once whether to show them. If you answered no, or calibre still hides them, turn them on under Preferences > Look & feel > Cover grid.
+
+The icons are PNG files named `tierlist_*.png` in calibre's `cc_icons/` folder inside its config directory. They are never deleted automatically, as another library may still use them; delete them by hand to clean up. Calibre has no uninstall hook, so turn the feature off before uninstalling the plugin, or remove the "Advanced rule" under Look & feel > Cover grid emblems, to take the rule back out of calibre.
+
+To see the Tier as text under covers instead, set calibre's field under covers to the Tier column, for example `#tier`.

@@ -12,6 +12,10 @@ Avoid: rank, grade, bucket, category.
 The ordered list of Tiers for one library, plus plugin settings (column mapping). Stored in per-library prefs and carried between libraries by a Settings Export.
 Avoid: tier scheme, tier list (that is the compiled board).
 
+**Emblem**
+The Tier label drawn on a book's cover in calibre's cover grid, in the Tier's colour, from the one rule marked "tierlist-emblem" in that library's cover icon rules.
+Avoid: badge, sticker.
+
 **Settings**
 The one dialog that edits everything the plugin keeps per library: Tier Config, Page Defaults, Lane Order (through the Arrange View) and Settings Export. It opens from the Tier List toolbar menu and from calibre's plugin preferences.
 Avoid: config dialog, preferences, options.
