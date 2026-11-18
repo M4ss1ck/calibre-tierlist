@@ -32,6 +32,10 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `scope_book_ids(gui, scope) -> tuple[int, ...]`: the sorted book ids a Compile Scope covers.
 - `run_compile(app, request, template, path, log) -> str`: compiles to a file through the facade; shared by the job and the integration test.
 - `start_compile(action, request, template, path)`: runs `run_compile` in a calibre background job, then opens the HTML.
+- `sync_library(gui, db)`: syncs one library's emblems, then resets calibre's book model so they show without a restart.
+- `sync_emblems(db, config) -> bool`: puts the one marked rule in both of calibre's cover icon rule prefs and writes the Tier icons it names; True means a pref or an icon changed.
+- `emblem_png(tier) -> bytes`: one Tier's emblem as a transparent 256 pixel PNG.
+- `EmblemToggle(parent)`: the "Show tiers as cover grid emblems" checkbox and the note about calibre's own switch; `checked()` and `set_checked(on)` read and show the stored choice, a user tick asks once before `show_emblems(prefs)` makes calibre show the emblems, and `emblems_hidden(prefs)` says whether it hides them.
 
 ## Files
 
@@ -58,6 +62,9 @@ Adapts the calibre-free core to calibre's GUI: it registers the Tier List action
 - `config_extras.py`: the column mapping combos and the Orphaned Overrides panel.
 - `config_form.py`: the button row and mapping form layout pieces.
 - `config_io.py`: importing and exporting Settings JSON, and the import and Tier removal confirmations.
+- `emblem_icon.py`: the emblem PNG, one Tier's label drawn in its colour with an outline.
+- `emblem_sync.py`: the marked rule in calibre's cover grid and Bookshelf rule prefs, the Tier icons in `cc_icons/`, and the model reset after a change.
+- `emblem_toggle.py`: the Settings checkbox, the ask-once consent prompt, and the reads and writes of calibre's own hidden-emblem prefs.
 
 ## Depends on
 

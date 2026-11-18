@@ -10,6 +10,7 @@ from ..tiers import TierConfig
 from .config_extras import OrphanPanel, fill_column_combo
 from .config_form import button_row, mapping_form
 from .config_io import confirm_remove
+from .emblem_toggle import EmblemToggle
 from .tier_table import TierTable
 
 TOTAL_COLUMN_TYPES = ('int',)
@@ -26,6 +27,7 @@ class TiersTab(QWidget):
         self.read_column = QComboBox(self)
         self.total_column = QComboBox(self)
         self.orphans = OrphanPanel(admin, admin.series_names, self)
+        self.emblems = EmblemToggle(self)
         self._build_layout()
         self.load(admin.tier_config())
 
@@ -52,6 +54,7 @@ class TiersTab(QWidget):
                 ),
             )
         )
+        layout.addWidget(self.emblems)
         layout.addWidget(self.orphans)
 
     def remove_tier(self) -> None:
@@ -82,6 +85,7 @@ class TiersTab(QWidget):
             tier_column=self.tier_column.currentData(),
             read_column=self.read_column.currentData(),
             series_total_column=self.total_column.currentData() or '',
+            emblems=self.emblems.checked(),
         )
 
     def load(self, config: TierConfig) -> None:
@@ -93,5 +97,6 @@ class TiersTab(QWidget):
         fill_column_combo(self.total_column, types, TOTAL_COLUMN_TYPES, config.series_total_column, _('None'))
 
     def load_tiers(self, config: TierConfig) -> None:
-        """Show this Tier Config's Tiers only, leaving the column mapping alone."""
+        """Show this Tier Config's Tiers and its emblem choice, leaving the column mapping alone."""
         self.table.set_tiers(config.tiers)
+        self.emblems.set_checked(config.emblems)

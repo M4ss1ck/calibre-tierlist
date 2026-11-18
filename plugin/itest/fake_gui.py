@@ -12,9 +12,16 @@ class FakeModel:
     def __init__(self, db: Any) -> None:
         self.db = db
         self.refreshed: list[list[int]] = []
+        self.resets: int = 0
 
     def refresh_ids(self, ids: list[int]) -> None:
         self.refreshed.append(list(ids))
+
+    def beginResetModel(self) -> None:
+        self.resets += 1
+
+    def endResetModel(self) -> None:
+        pass
 
 
 class FakeLibraryView:
