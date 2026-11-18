@@ -14,6 +14,7 @@ from . import column
 from .adapters import tier_list
 from .compile_dialog import CompileDialog
 from .compile_job import scope_book_ids, start_compile
+from .emblem_sync import sync_library
 from .icons import plugin_icon
 from .menu import TierMenu
 from .settings_dialog import SettingsDialog
@@ -41,11 +42,13 @@ class TierListAction(InterfaceAction):
         self.rebuild_menu()
         self.offer_tier_column(self.gui.current_db)
         self.offer_read_column(self.gui.current_db)
+        sync_library(self.gui, self.gui.current_db)
 
     def library_changed(self, db: Any) -> None:
         self.rebuild_menu(db)
         self.offer_tier_column(db)
         self.offer_read_column(db)
+        sync_library(self.gui, db)
 
     def rebuild_menu(self, db: Any = None) -> None:
         self.tier_menu.rebuild(db)

@@ -68,6 +68,9 @@ itest: build
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/settings_export.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/settings.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/settings_size.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/emblems.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/emblem_icon.py
+    "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/emblem_wiring.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/arrange.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/arrange_drag.py
     "{{calibre_bin_dir}}/calibre-debug" -e plugin/itest/compile.py

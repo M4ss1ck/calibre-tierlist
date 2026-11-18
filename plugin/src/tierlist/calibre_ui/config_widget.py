@@ -12,6 +12,7 @@ from .config_arrange import ArrangeTab
 from .config_export import ExportTab
 from .config_page import PageTab
 from .config_tiers import TiersTab
+from .emblem_sync import sync_library
 
 load_translations()
 
@@ -57,6 +58,7 @@ class ConfigWidget(QTabWidget):
         self.admin.save_page_defaults(self.page.build_defaults())
         self.arrange.save()
         self.export.apply_import()
+        sync_library(self.gui, self.gui.current_db)
         changed = getattr(self.gui, 'saved_searches_changed', None)
         if callable(changed):
             changed()
