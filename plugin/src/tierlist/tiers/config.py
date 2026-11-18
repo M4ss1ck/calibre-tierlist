@@ -21,12 +21,13 @@ class Tier:
 @dataclass(frozen=True)
 class TierConfig:
     """The ordered Tiers for one library, plus the lookup names of the column holding Book Tier and of the column
-    holding Read State, and the optional numeric column holding each series' total."""
+    holding Read State, the optional numeric column holding each series' total, and whether covers show Tier emblems."""
 
     tiers: tuple[Tier, ...]
     tier_column: str = DEFAULT_TIER_COLUMN
     read_column: str = DEFAULT_READ_COLUMN
     series_total_column: str = ''
+    emblems: bool = False
 
     def tier(self, tier_id: str) -> Tier | None:
         """Return the Tier with this id, or None when Tier Config holds none."""
@@ -42,6 +43,7 @@ class TierConfig:
             'tier_column': self.tier_column,
             'read_column': self.read_column,
             'series_total_column': self.series_total_column,
+            'emblems': self.emblems,
         }
 
     @classmethod
@@ -53,6 +55,7 @@ class TierConfig:
             tier_column=data.get('tier_column', DEFAULT_TIER_COLUMN),
             read_column=data.get('read_column', DEFAULT_READ_COLUMN),
             series_total_column=data.get('series_total_column', ''),
+            emblems=data.get('emblems', False),
         )
 
 

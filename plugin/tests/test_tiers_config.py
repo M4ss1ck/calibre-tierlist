@@ -52,6 +52,18 @@ def test_from_dict_defaults_the_series_total_column() -> None:
     assert TierConfig.from_dict({'tiers': []}).series_total_column == ''
 
 
+def test_emblems_default_off() -> None:
+    assert DEFAULT_TIER_CONFIG.emblems is False
+    assert DEFAULT_TIER_CONFIG.to_dict()['emblems'] is False
+    assert TierConfig.from_dict({'tiers': []}).emblems is False
+
+
+def test_emblems_round_trip_through_dict() -> None:
+    config = TierConfig(tiers=(Tier('s', 'S', '#ff7f7f'),), emblems=True)
+    assert TierConfig.from_dict(config.to_dict()) == config
+    assert TierConfig.from_dict(config.to_dict()).emblems is True
+
+
 @pytest.mark.parametrize('depth', [3, 3.0, 99, -2, 'deep', None])
 def test_from_dict_ignores_a_stack_depth_from_an_older_version(depth: object) -> None:
     older = {**DEFAULT_TIER_CONFIG.to_dict(), 'stack_depth': depth}
