@@ -97,6 +97,6 @@ class TiersTab(QWidget):
         fill_column_combo(self.total_column, types, TOTAL_COLUMN_TYPES, config.series_total_column, _('None'))
 
     def load_tiers(self, config: TierConfig) -> None:
-        """Show this Tier Config's Tiers only, leaving the column mapping alone."""
+        """Show this Tier Config's Tiers and its emblem choice, leaving the column mapping alone."""
         self.table.set_tiers(config.tiers)
         self.emblems.set_checked(config.emblems)

@@ -7,7 +7,7 @@ Holds the Tier Config: the ordered Tiers for one library, the custom column that
 ## Public API
 
 - `Tier`: one rank, with a stable id, the label a reader sees, a colour, and an optional description.
-- `TierConfig`: the ordered Tiers plus the lookup names of the Text column holding Book Tier, the Date or Yes/No column holding Read State (default `#date_read`), and the optional Integer column holding each series' total (`series_total_column`).
+- `TierConfig`: the ordered Tiers plus the lookup names of the Text column holding Book Tier, the Date or Yes/No column holding Read State (default `#date_read`), and the optional Integer column holding each series' total (`series_total_column`), and whether covers show Tier Emblems (`emblems`, off by default).
 - `TierConfig.tier(tier_id) -> Tier | None`: the Tier that id names, in glossary terms a Book Tier resolved to its Tier.
 - `TierConfig.to_dict()` / `TierConfig.from_dict(data)`: the JSON shape imported and exported between libraries; `from_dict` ignores keys it does not know, so prefs and exports that still carry the retired `stack_depth` load unchanged.
 - `TierConfigError`: a rejected Tier Config, with a message a reader can act on.
