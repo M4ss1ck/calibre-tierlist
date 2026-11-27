@@ -79,10 +79,7 @@ def library(path: str) -> Any:
 
 
 def first_library(db: Any) -> None:
-    """A library with Page Defaults, an Override, and Lane Order."""
-    app = tier_list(db)
-    dune = next(book_id for book_id in db.new_api.all_book_ids() if db.new_api.field_for('title', book_id) == 'Dune')
-    app.set_series_tier([dune], 'a')
+    """A library with Page Defaults and Lane Order."""
     config_admin(db).save_page_defaults(PageDefaults(theme='light', title='My shelf'))
     db.prefs.set_namespaced(PREF_NS, LANE_ORDER_KEY, ORDER)
 
@@ -126,14 +123,13 @@ def check_round_trip(tmp: str) -> None:
         widget = widget_for(target)
         Dialog.path = path
         widget.export.import_json()
-        expect(Answer.asked == [], f'asked a library holding no Overrides or Lane Order: {Answer.asked}')
+        expect(Answer.asked == [], f'asked a library holding no Lane Order: {Answer.asked}')
         widget.save()
         expect({tier.id: tier.label for tier in config_admin(target).tier_config().tiers}.get('s') == 'Top', 'Tiers')
         expect(config_admin(target).page_defaults() == PageDefaults(theme='light', title='My shelf'), 'Defaults')
-        expect(tier_list(target).series_tier_overrides() == {'Dune': 'a'}, 'Overrides')
         expect(target.prefs.get_namespaced(PREF_NS, LANE_ORDER_KEY, None) == ORDER, 'Lane Order')
         widget.export.import_json()
-        expect(Answer.asked[-1].startswith('This replaces 1 series override and'), Answer.asked)
+        expect(Answer.asked[-1] == 'This replaces the board order. Import anyway?', Answer.asked)
     finally:
         target.close()
 

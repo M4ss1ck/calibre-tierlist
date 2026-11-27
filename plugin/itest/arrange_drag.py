@@ -89,7 +89,12 @@ def press_and_move(lane: Any) -> None:
     mouse(viewport, QEvent.Type.MouseButtonRelease, start + QPoint(step * 3, step * 3), Qt.MouseButton.NoButton)
 
 
+def lane_keys(lane: Any) -> list[Any]:
+    return [lane.item(i).data(arrange_lane.ITEM_ROLE) for i in range(lane.count())]
+
+
 def check_drag(path: str) -> None:
+    """A cover dragged onto another Lane is refused: nothing moves and nothing is saved (ADR 0011)."""
     db, _, other, _ = library(path)
     tier_list(db).set_book_tier([other], 'a')
     original = arrange_lane.QDrag
@@ -103,13 +108,15 @@ def check_drag(path: str) -> None:
         target = next(other for other in tab._lanes if other.count() and other is not lane)
         TARGET.append(target)
         moved = lane.item(0).data(arrange_lane.ITEM_ROLE)
+        before = lane_keys(lane)
         expect(lane.isVisible() and lane.viewport().width() > 0, 'the lane is not laid out')
         expect(bool(lane.item(0).flags() & Qt.ItemFlag.ItemIsDragEnabled), 'covers are not drag enabled')
         press_and_move(lane)
         expect(len(STARTED) == 1, f'pressing a cover and moving started {len(STARTED)} drags, not one')
         staged = [item.data(arrange_lane.ITEM_ROLE) for item in (target.item(i) for i in range(target.count()))]
-        expect(staged[:1] == [moved], f'the drop did not stage {moved} first in its Lane: {staged}')
-        expect(tab._dirty, 'the drop left nothing to save')
+        expect(moved not in staged, f'a drop on another Lane staged {moved} there: {staged}')
+        expect(lane_keys(lane) == before, f'a drop on another Lane changed its own Lane: {lane_keys(lane)}')
+        expect(not tab._dirty, 'a refused drop left something to save')
         dialog.reject()
     finally:
         arrange_lane.QDrag = original

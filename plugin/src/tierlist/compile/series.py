@@ -1,12 +1,10 @@
 """Series Stacks: the ordered positions one series occupies on the board."""
 
-from collections import Counter
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 
 from ..lane_order import Place
-from ..tiers import Tier, TierConfig
 from .covers import EMPTY_COLOUR
 
 Rank = tuple[date | None, str, int]
@@ -22,26 +20,29 @@ class Position:
 
 @dataclass(frozen=True)
 class Series:
-    """One series on the board: its Placeholder colour, every position, and whether it is an Override."""
+    """One series on the board: its Placeholder colour, every position, and its Deciding Book's id, if any."""
 
     colour: str
     positions: tuple[Position, ...]
-    override: bool
+    deciding: int | None
 
 
 @dataclass(frozen=True)
-class SeriesTier:
-    """The Tier a series is shown in, and whether that Tier comes from an Override."""
+class Member:
+    """One owned book of a series as the Deciding Book rule sees it: tier is a known Book Tier or None."""
 
-    tier_id: str | None
-    override: bool
+    id: int
+    index: object | None
+    modified: object | None
+    tier: str | None
+    read: bool
 
 
 def build_series(
     indexes: Mapping[int, object | None],
     totals: Iterable[object | None],
     colours: Mapping[int, str],
-    override: bool,
+    deciding: int | None,
 ) -> Series:
     """Build the Stack for one series from each member's series index and colour."""
     owned = {book: _index(index) for book, index in indexes.items()}
@@ -49,7 +50,7 @@ def build_series(
     return Series(
         _colour(ordered, colours),
         tuple(Position(display_number(index), book) for index, book in ordered),
-        override,
+        deciding,
     )
 
 
@@ -67,21 +68,11 @@ def ordered_lane(present: Mapping[Place, Rank], stored: Iterable[Place]) -> list
     return [*placed, *fresh]
 
 
-def auto_tier(tier_ids: Iterable[str | None], tiers: tuple[Tier, ...]) -> str | None:
-    """The most common Book Tier among these ids, ties going to the lower Tier; None when none is ranked."""
-    order = {tier.id: index for index, tier in enumerate(tiers)}
-    counts = Counter(tier_id for tier_id in tier_ids if tier_id is not None)
-    return max(counts, key=lambda tier_id: (counts[tier_id], order[tier_id])) if counts else None
-
-
-def series_tier(
-    name: str, tier_ids: Iterable[str | None], config: TierConfig, overrides: Mapping[str, str]
-) -> SeriesTier:
-    """This series' Series Tier and whether it is an Override: an Override naming a missing Tier falls back to Auto."""
-    override = overrides.get(name)
-    if override is not None and config.tier(override) is not None:
-        return SeriesTier(override, True)
-    return SeriesTier(auto_tier(tier_ids, config.tiers), False)
+def deciding_book(members: Iterable[Member]) -> Member | None:
+    """The member that is both read and tiered with the highest series index; a tie goes to the most recently
+    modified, then the higher id. None when no member is both read and tiered."""
+    candidates = [member for member in members if member.read and member.tier is not None]
+    return max(candidates, key=lambda m: (_index(m.index), _stamp(m.modified), m.id), default=None)
 
 
 def earliest(dates: Iterable[date | None]) -> date | None:
@@ -92,6 +83,10 @@ def earliest(dates: Iterable[date | None]) -> date | None:
 
 def _index(value: object) -> float:
     return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else 1.0
+
+
+def _stamp(value: object) -> float:
+    return value.timestamp() if isinstance(value, datetime) else float('-inf')
 
 
 def _total(totals: Iterable[object | None]) -> int | None:

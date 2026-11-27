@@ -12,7 +12,6 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 from tierlist.app import TIER_CONFIG_KEY, TierList
 from tierlist.compile import CompileRequest
-from tierlist.series_tiers import SERIES_TIER_OVERRIDES_KEY
 from tierlist.tiers import Tier, TierConfig
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -60,7 +59,7 @@ def fixture_payload() -> dict[str, Any]:
     library.values['rating'] = {1: 9, 2: 10}
     library.values['tags'] = {1: ('mystery', 'classic'), 2: ('magical realism',)}
     library.values['comments'] = {1: '<p>A <b>tense</b> tale &amp; more.</p><script>x()</script>'}
-    prefs = FakePrefs({TIER_CONFIG_KEY: CONFIG.to_dict(), SERIES_TIER_OVERRIDES_KEY: {'Dune': 'b'}})
+    prefs = FakePrefs({TIER_CONFIG_KEY: CONFIG.to_dict()})
     app = TierList(
         library,
         prefs,

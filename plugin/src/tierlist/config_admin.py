@@ -1,9 +1,9 @@
-"""The use cases behind the config dialog: Tier Config edits, saved-search sync, and orphaned Overrides."""
+"""The use cases behind the config dialog: Tier Config edits, saved-search sync, Arrange, and Settings Export."""
 
-from collections.abc import Callable, Iterable, Mapping
+from collections.abc import Callable, Mapping
 from datetime import date, datetime
 
-from . import lane_order, page_defaults, series_tiers, settings_export
+from . import lane_order, page_defaults, settings_export
 from .app import TIER_CONFIG_KEY, TierList
 from .arrange import THUMB_WIDTH, Arrange
 from .compile import Generated, build_data, choose_format
@@ -47,18 +47,11 @@ class ConfigAdmin:
         stored = self.stored_extras()
         ids = tuple(sorted(self._library.all_book_ids()))
         generated = Generated(self._now(), '', 'library', '')
-        data = build_data(generated, self._library, self.tier_config(), ids, stored.overrides or {}, stored.lane_order)
-        return Arrange.from_data(data, stored.overrides or {})
+        data = build_data(generated, self._library, self.tier_config(), ids, stored.lane_order)
+        return Arrange.from_data(data)
 
     def save_arrange(self, staged: Arrange) -> None:
-        """Write staged Book Tiers, Overrides, and Lane Order, then prune Lane Order."""
-        app = TierList(self._library, self._prefs, self._today, covers=self._covers)
-        for book_id, tier_id in staged.book_tiers().items():
-            if tier_id is None:
-                app.clear_book_tier([book_id])
-            else:
-                app.set_book_tier([book_id], tier_id)
-        series_tiers.save_overrides(self._prefs, staged.overrides())
+        """Write the staged Lane Order, then prune stale places."""
         lane_order.save_order(self._prefs, staged.order())
         lane_order.prune(self._prefs, self._library.series_names(), self._library.all_book_ids())
 
@@ -85,14 +78,15 @@ class ConfigAdmin:
         self._clear_removed(old, new)
         self._prefs.set(TIER_CONFIG_KEY, new.to_dict())
         self._sync_searches(old, new)
+        self._prefs.set(settings_export.LEGACY_OVERRIDES_KEY, None)
         lane_order.prune(self._prefs, self._library.series_names(), self._library.all_book_ids())
 
     def export_settings(self, config: TierConfig, defaults: PageDefaults, include: bool) -> str:
-        """The Settings Export JSON for these settings, with Overrides and Lane Order when asked."""
+        """The Settings Export JSON for these settings, with Lane Order when asked."""
         return settings_export.export_settings(self._prefs, config, defaults, include)
 
     def stored_extras(self) -> settings_export.SettingsExport:
-        """The Overrides and Lane Order stored now, which an import of them would replace."""
+        """The Lane Order stored now, which an import of them would replace."""
         return settings_export.stored_extras(self._prefs)
 
     def parse_settings_export(self, text: str) -> settings_export.SettingsExport:
@@ -100,27 +94,8 @@ class ConfigAdmin:
         return settings_export.parse_export(text)
 
     def apply_import(self, export: settings_export.SettingsExport) -> None:
-        """Replace the stored Overrides and Lane Order the export carries, then prune stale places."""
+        """Replace the stored Lane Order the export carries, then prune stale places."""
         settings_export.apply_import(self._prefs, self._library, export)
-
-    def orphans(self) -> list[str]:
-        """The Override series names that match no series in the library, sorted."""
-        return series_tiers.orphans(series_tiers.load_overrides(self._prefs), self._library.series_names())
-
-    def reattach_orphan(self, old_name: str, new_series: str) -> None:
-        """Move an orphaned Override to a series that exists, dropping the old name."""
-        overrides = series_tiers.load_overrides(self._prefs)
-        tier_id = overrides.get(old_name)
-        if tier_id is None or not new_series:
-            return
-        series_tiers.clear_overrides(self._prefs, [old_name])
-        series_tiers.set_overrides(self._prefs, [new_series], tier_id)
-
-    def delete_orphans(self, names: Iterable[str]) -> None:
-        """Drop these orphaned Overrides."""
-        names = list(names)
-        if names:
-            series_tiers.clear_overrides(self._prefs, names)
 
     def _column_values(self, lookup_name: str) -> dict[int, object | None]:
         if not self._library.has_column(lookup_name):

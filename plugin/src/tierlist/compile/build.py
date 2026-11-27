@@ -11,10 +11,11 @@ from ..tiers import TierConfig
 from .covers import COVER_WIDTH, cover_thumbs
 from .data import Book, Generated, Lane, LaneItem, TierListData
 from .rows import Row, book_of, on_board, series_name
-from .series import Rank, build_series, earliest, ordered_lane, series_tier
+from .series import Member, Rank, build_series, deciding_book, earliest, ordered_lane
 
 READ_COLUMN_TYPES = ('datetime', 'bool')
 DETAIL_FIELDS = ('authors', 'rating', 'tags', 'comments')
+_ROW_FIELD = {'last_modified': 'modified'}
 
 
 def compile_data(
@@ -24,15 +25,14 @@ def compile_data(
     fmt: str,
     config: TierConfig,
     book_ids: Iterable[int],
-    overrides: Mapping[str, str],
     order: Mapping[str, Sequence[Place]] | None = None,
     page_defaults: PageDefaults = DEFAULT_PAGE_DEFAULTS,
 ) -> TierListData:
     """Read these books from the library, build their Tier List Data, then attach their covers."""
-    board, read_is_bool = _board(library, config, book_ids, overrides)
+    board, read_is_bool = _board(library, config, book_ids)
     shots = cover_thumbs(covers, (row.id for row in board), fmt, COVER_WIDTH)
     colours = {book_id: cover.colour for book_id, cover in shots.items()}
-    data = build(generated, config, board, read_is_bool, colours, overrides, order)
+    data = build(generated, config, board, read_is_bool, colours, order)
     return replace(data, covers=shots, page_defaults=page_defaults)
 
 
@@ -41,19 +41,16 @@ def build_data(
     library: Library,
     config: TierConfig,
     book_ids: Iterable[int],
-    overrides: Mapping[str, str],
     order: Mapping[str, Sequence[Place]] | None = None,
     page_defaults: PageDefaults = DEFAULT_PAGE_DEFAULTS,
 ) -> TierListData:
     """Build the board for these books without reading covers, for the Arrange View."""
-    board, read_is_bool = _board(library, config, book_ids, overrides)
-    data = build(generated, config, board, read_is_bool, {}, overrides, order)
+    board, read_is_bool = _board(library, config, book_ids)
+    data = build(generated, config, board, read_is_bool, {}, order)
     return replace(data, page_defaults=page_defaults)
 
 
-def _board(
-    library: Library, config: TierConfig, book_ids: Iterable[int], overrides: Mapping[str, str]
-) -> tuple[list[Row], bool]:
+def _board(library: Library, config: TierConfig, book_ids: Iterable[int]) -> tuple[list[Row], bool]:
     """The rows of these books that belong on the board, and whether Read State is a Yes/No column."""
     ids = list(book_ids)
     titles = library.read_field('title', ids)
@@ -64,7 +61,7 @@ def _board(
     indexes = library.read_field('series_index', ids)
     column = config.series_total_column
     totals = library.read_field(column, ids) if library.column_types().get(column) == 'int' else {}
-    extra = {name: library.read_field(name, ids) for name in DETAIL_FIELDS}
+    extra = {name: library.read_field(name, ids) for name in (*DETAIL_FIELDS, 'last_modified')}
     rows = [
         Row(
             i,
@@ -74,11 +71,11 @@ def _board(
             series.get(i),
             indexes.get(i),
             totals.get(i),
-            **{name: values.get(i) for name, values in extra.items()},
+            **{_ROW_FIELD.get(name, name): values.get(i) for name, values in extra.items()},
         )
         for i in ids
     ]
-    return on_board(rows, datatype == 'bool', _overridden(config, overrides)), datatype == 'bool'
+    return on_board(rows, datatype == 'bool'), datatype == 'bool'
 
 
 def count_series(library: Library, book_ids: Iterable[int]) -> int:
@@ -92,7 +89,6 @@ def build(
     board: Iterable[Row],
     read_is_bool: bool,
     colours: Mapping[int, str],
-    overrides: Mapping[str, str],
     order: Mapping[str, Sequence[Place]] | None = None,
 ) -> TierListData:
     """Resolve the board rows into Books and place them in ordered Lanes and Series Stacks."""
@@ -108,14 +104,15 @@ def build(
         else:
             groups.setdefault(name, []).append((row, book))
     resolved = {
-        name: series_tier(name, [book.tier for _, book in group], config, overrides) for name, group in groups.items()
+        name: deciding_book(Member(row.id, row.index, row.modified, book.tier, book.read) for row, book in group)
+        for name, group in groups.items()
     }
     series = {
         name: build_series(
             {row.id: row.index for row, _ in group},
             (row.total for row, _ in group),
             colours,
-            resolved[name].override,
+            _id_of(resolved[name]),
         )
         for name, group in groups.items()
     }
@@ -123,7 +120,8 @@ def build(
     members: dict[str, dict[Place, Rank]] = {tier.id: {} for tier in config.tiers}
     members[UNRANKED_LANE] = {}
     for name in groups:
-        key = resolved[name].tier_id or UNRANKED_LANE
+        winner = resolved[name]
+        key = UNRANKED_LANE if winner is None or winner.tier is None else winner.tier
         members[key][('series', name)] = (read_dates[name], name, 0)
     for book in standalone:
         members[book.tier or UNRANKED_LANE][('book', book.id)] = (book.date_read, book.title, book.id)
@@ -145,5 +143,5 @@ def _lane_item(place: Place) -> LaneItem:
     return LaneItem(stack=cast(str, key)) if kind == 'series' else LaneItem(card=cast(int, key))
 
 
-def _overridden(config: TierConfig, overrides: Mapping[str, str]) -> set[str]:
-    return {name for name, tier_id in overrides.items() if config.tier(tier_id) is not None}
+def _id_of(member: Member | None) -> int | None:
+    return None if member is None else member.id

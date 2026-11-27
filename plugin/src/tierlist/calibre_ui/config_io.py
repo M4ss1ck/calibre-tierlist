@@ -26,7 +26,7 @@ def import_settings(parent: QWidget, admin: ConfigAdmin) -> SettingsExport | Non
 def export_settings(
     parent: QWidget, admin: ConfigAdmin, config: TierConfig, defaults: PageDefaults, include: bool
 ) -> None:
-    """Write these settings to the JSON file the user picks, with Overrides and Lane Order when asked."""
+    """Write these settings to the JSON file the user picks, with Lane Order when asked."""
     path = QFileDialog.getSaveFileName(
         parent, _('Export Settings'), 'tierlist-settings.json', _('JSON files (*.json)')
     )[0]
@@ -52,32 +52,10 @@ def confirm_import(parent: QWidget, admin: ConfigAdmin, shown: tuple[Tier, ...],
 
 
 def confirm_replace(parent: QWidget, admin: ConfigAdmin, export: SettingsExport) -> bool:
-    """True when this import may replace stored Overrides or Lane Order, asking first only when it would."""
-    stored = admin.stored_extras()
-    count = len(stored.overrides or {}) if export.overrides is not None else 0
-    order = export.lane_order is not None and bool(stored.lane_order)
-    if count and order:
-        question = (
-            ngettext(
-                'This replaces %d series override and the board order. Import anyway?',
-                'This replaces %d series overrides and the board order. Import anyway?',
-                count,
-            )
-            % count
-        )
-    elif count:
-        question = (
-            ngettext(
-                'This replaces %d series override. Import anyway?',
-                'This replaces %d series overrides. Import anyway?',
-                count,
-            )
-            % count
-        )
-    elif order:
-        question = _('This replaces the board order. Import anyway?')
-    else:
+    """True when this import may replace the stored Lane Order, asking first only when it would."""
+    if export.lane_order is None or not admin.stored_extras().lane_order:
         return True
+    question = _('This replaces the board order. Import anyway?')
     return QMessageBox.question(parent, _('Import Settings'), question) == QMessageBox.StandardButton.Yes
 
 

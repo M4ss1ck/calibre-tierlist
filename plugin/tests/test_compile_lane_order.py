@@ -30,6 +30,7 @@ def test_stored_order_is_honoured() -> None:
     library.values['#tier'] = {1: 's', 2: 's'}
     library.values['series'] = {2: 'Dune'}
     library.values['series_index'] = {2: 1.0}
+    library.values['#date_read'] = {2: date(2026, 1, 1)}
     app = facade(library, {'s': [{'book': 1}, {'series': 'Dune'}]})
 
     data = app.compile(CompileRequest('library', (1, 2), 'Lib', '0.1.0'))
@@ -57,12 +58,13 @@ def test_unplaced_items_are_appended_by_date_read_then_name_or_title() -> None:
     ]
 
 
-def test_a_series_whose_auto_tier_changed_lands_at_the_end_of_its_new_lane() -> None:
+def test_a_series_whose_deciding_book_changed_tier_lands_at_the_end_of_its_new_lane() -> None:
     library = FakeLibrary(types={'#date_read': 'datetime'})
     library.values['title'] = {1: 'Card S', 2: 'Dune One', 3: 'Card B'}
     library.values['#tier'] = {1: 's', 2: 'b', 3: 'b'}
     library.values['series'] = {2: 'Dune'}
     library.values['series_index'] = {2: 1.0}
+    library.values['#date_read'] = {2: date(2026, 1, 1)}
     app = facade(library, {'s': [{'book': 1}, {'series': 'Dune'}], 'b': [{'book': 3}]})
 
     data = app.compile(CompileRequest('library', (1, 2, 3), 'Lib', '0.1.0'))

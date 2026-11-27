@@ -13,7 +13,7 @@ from .config_tiers import TiersTab
 
 
 class ExportTab(QWidget):
-    """The Import and Export Settings buttons, an opt-in for Overrides and Lane Order, and a staged import."""
+    """The Import and Export Settings buttons, an opt-in for Lane Order, and a staged import."""
 
     def __init__(self, admin: ConfigAdmin, tiers: TiersTab, page: PageTab, parent: Any = None) -> None:
         super().__init__(parent)
@@ -21,7 +21,7 @@ class ExportTab(QWidget):
         self._tiers = tiers
         self._page = page
         self._imported: SettingsExport | None = None
-        self.include = QCheckBox(_('Include series Overrides and Lane Order'), self)
+        self.include = QCheckBox(_('Include Lane Order'), self)
         layout = QVBoxLayout(self)
         layout.addLayout(
             button_row(
@@ -54,8 +54,7 @@ class ExportTab(QWidget):
         export_settings(self, self._admin, config, defaults, self.include.isChecked())
 
     def apply_import(self) -> None:
-        """Write the imported Overrides and Lane Order, when the import carried any."""
+        """Write the imported Lane Order, when the import carried any."""
         if self._imported is not None:
             self._admin.apply_import(self._imported)
-            self._tiers.orphans.refresh()
             self._imported = None

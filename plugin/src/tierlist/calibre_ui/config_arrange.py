@@ -36,7 +36,9 @@ class ArrangeTab(QWidget):
         column = QVBoxLayout(body)
         column.addWidget(
             QLabel(
-                _('Drag covers between Lanes; OK saves the new order. Save and reopen Settings after changing Tiers.'),
+                _(
+                    'Drag covers to reorder them in their Lane. OK saves the order. Reopen Settings after changing Tiers.'
+                ),
                 body,
             )
         )
@@ -106,8 +108,8 @@ class ArrangeTab(QWidget):
 
     def drop(self, kind: Kind, key: str | int, target: str | None, index: int = -1) -> None:
         """Stage one drag, as a drop on a Lane translates it."""
-        self._staged.move(kind, key, target, index)
-        self._dirty = True
+        if self._staged.move(kind, key, target, index):
+            self._dirty = True
         self._refresh()
 
     def _on_drop(self, kind: str, key: str | int, target: str | None, index: int) -> None:

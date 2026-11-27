@@ -1,4 +1,4 @@
-"""The Tiers tab of Settings: the Tier table, the column mapping, and the Orphaned Overrides."""
+"""The Tiers tab of Settings: the Tier table and the column mapping."""
 
 from typing import Any
 
@@ -7,7 +7,7 @@ from qt.core import QComboBox, QVBoxLayout, QWidget
 from ..compile import READ_COLUMN_TYPES
 from ..config_admin import ConfigAdmin
 from ..tiers import TierConfig
-from .config_extras import OrphanPanel, fill_column_combo
+from .config_extras import fill_column_combo
 from .config_form import button_row, mapping_form
 from .config_io import confirm_remove
 from .emblem_toggle import EmblemToggle
@@ -17,7 +17,7 @@ TOTAL_COLUMN_TYPES = ('int',)
 
 
 class TiersTab(QWidget):
-    """One library's Tiers, their columns and its Orphaned Overrides."""
+    """One library's Tiers, their columns and emblem choice."""
 
     def __init__(self, admin: ConfigAdmin, parent: Any = None) -> None:
         super().__init__(parent)
@@ -26,7 +26,6 @@ class TiersTab(QWidget):
         self.tier_column = QComboBox(self)
         self.read_column = QComboBox(self)
         self.total_column = QComboBox(self)
-        self.orphans = OrphanPanel(admin, admin.series_names, self)
         self.emblems = EmblemToggle(self)
         self._build_layout()
         self.load(admin.tier_config())
@@ -55,7 +54,6 @@ class TiersTab(QWidget):
             )
         )
         layout.addWidget(self.emblems)
-        layout.addWidget(self.orphans)
 
     def remove_tier(self) -> None:
         """Remove the selected Tier, asking first when books still hold it."""

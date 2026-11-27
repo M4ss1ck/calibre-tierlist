@@ -19,7 +19,6 @@ from calibre_plugins.tierlist.calibre_ui.adapters import tier_list
 from fake_gui import FakeGui, load_action, menu_shortcuts
 
 TIER_NAMES = (*(f'Send to tier: {label}' for label in 'SABCDF'), 'Clear tier')
-SERIES_NAMES = (*(f'Set series tier: {label}' for label in 'SABCDF'), 'Set series tier: Auto')
 
 
 def expect(ok: bool, message: object) -> None:
@@ -59,7 +58,7 @@ def check_missing_column(path: str) -> None:
     gui = FakeGui(db, [])
     action = load_action(gui)
     names = {item['name'] for item in menu_shortcuts(gui, action).values()}
-    expect(names == set(SERIES_NAMES), f'shortcuts without a tier column were {sorted(names)}')
+    expect(names == set(), f'shortcuts without a tier column were {sorted(names)}')
     items = action.tier_menu._submenu.actions()
     expect([a.isEnabled() for a in items] == [False, True], [a.text() for a in items])
     db.close()
@@ -69,9 +68,9 @@ def check_menu(db: Any, book_id: int) -> None:
     gui = FakeGui(db, [book_id])
     action = load_action(gui)
     shortcuts = menu_shortcuts(gui, action)
-    expect(len(shortcuts) == 14, f'expected 14 menu shortcuts, got {len(shortcuts)}')
+    expect(len(shortcuts) == len(TIER_NAMES), f'expected {len(TIER_NAMES)} menu shortcuts, got {len(shortcuts)}')
     expect(
-        sorted(item['name'] for item in shortcuts.values()) == sorted((*TIER_NAMES, *SERIES_NAMES)),
+        sorted(item['name'] for item in shortcuts.values()) == sorted(TIER_NAMES),
         'wrong shortcut names',
     )
     expect(all(item['default_keys'] == () for item in shortcuts.values()), 'a menu shortcut has a default key')
@@ -80,7 +79,7 @@ def check_menu(db: Any, book_id: int) -> None:
     expect(menu is not None, 'the action has no menu')
     for _ in range(2):
         menu.aboutToShow.emit()
-        expect(len(menu_shortcuts(gui, action)) == 14, 'rebuild left the wrong number of shortcuts')
+        expect(len(menu_shortcuts(gui, action)) == len(TIER_NAMES), 'rebuild left the wrong number of shortcuts')
         expect(len(gui.actions()) == live_actions, 'rebuild left stale actions holding shortcuts on the gui')
     shortcuts = menu_shortcuts(gui, action)
     tier_s = next(item for item in shortcuts.values() if item['name'] == 'Send to tier: S')

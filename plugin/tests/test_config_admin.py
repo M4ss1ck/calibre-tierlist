@@ -1,4 +1,4 @@
-"""The config-dialog facade: book counts, tier removal, saved-search sync, and orphans."""
+"""The config-dialog facade: book counts, tier removal, saved-search sync, and dropping old Overrides."""
 
 from datetime import date
 
@@ -7,7 +7,7 @@ from fakes import FakeLibrary, FakePrefs, FakeSavedSearches
 
 from tierlist.app import TIER_CONFIG_KEY
 from tierlist.config_admin import ConfigAdmin
-from tierlist.series_tiers import SERIES_TIER_OVERRIDES_KEY
+from tierlist.settings_export import LEGACY_OVERRIDES_KEY
 from tierlist.tiers import DEFAULT_TIER_CONFIG, Tier, TierConfig, TierConfigError, dump_config
 
 SEARCHES = {'Tier S': '#tier:"=s"', 'Tier A': '#tier:"=a"'}
@@ -127,24 +127,8 @@ def test_import_rejects_bad_json_and_reports_a_missing_field() -> None:
         admin.parse_settings_export('{}')
 
 
-def test_orphans_lists_overrides_with_no_series() -> None:
-    admin, library, prefs, _ = make()
-    library.values['series'] = {1: 'Dune'}
-    prefs.data[SERIES_TIER_OVERRIDES_KEY] = {'Dune': 's', 'Old': 'a'}
-    assert admin.orphans() == ['Old']
-
-
-def test_reattach_moves_the_override_to_the_new_series() -> None:
-    admin, library, prefs, _ = make()
-    library.values['series'] = {1: 'Dune'}
-    prefs.data[SERIES_TIER_OVERRIDES_KEY] = {'Old': 's'}
-    admin.reattach_orphan('Old', 'Dune')
-    assert prefs.data[SERIES_TIER_OVERRIDES_KEY] == {'Dune': 's'} and admin.orphans() == []
-
-
-def test_delete_orphans_drops_them_and_keeps_live_overrides() -> None:
-    admin, library, prefs, _ = make()
-    library.values['series'] = {1: 'Dune'}
-    prefs.data[SERIES_TIER_OVERRIDES_KEY] = {'Old': 's', 'Older': 'a', 'Dune': 'b'}
-    admin.delete_orphans(['Old', 'Older'])
-    assert prefs.data[SERIES_TIER_OVERRIDES_KEY] == {'Dune': 'b'}
+def test_saving_settings_drops_stored_overrides() -> None:
+    admin, _, prefs, _ = make()
+    prefs.data[LEGACY_OVERRIDES_KEY] = {'Dune': 's', 'Old': 'a'}
+    admin.save(CONFIG)
+    assert prefs.data[LEGACY_OVERRIDES_KEY] is None

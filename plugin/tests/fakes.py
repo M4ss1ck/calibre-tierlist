@@ -8,7 +8,7 @@ from time import sleep
 from tierlist.compile import Lane
 from tierlist.ports import Cover
 
-STANDARD_FIELDS = ('title', 'series', 'series_index', 'authors', 'rating', 'tags', 'comments')
+STANDARD_FIELDS = ('title', 'series', 'series_index', 'authors', 'rating', 'tags', 'comments', 'last_modified')
 TINY_WEBP = base64.b64decode('UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==')
 
 

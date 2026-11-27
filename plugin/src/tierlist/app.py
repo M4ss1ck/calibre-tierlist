@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterable
 from datetime import date, datetime
 from pathlib import Path
 
-from . import lane_order, page_defaults, read_state, series_tiers
+from . import lane_order, page_defaults, read_state
 from .compile import CompileRequest, Generated, TierListData, choose_format, compile_data, count_series
 from .ports import NULL_COVERS, Covers, Library, Prefs
 from .publish import write_html
@@ -93,24 +93,6 @@ class TierList:
         """Clear the Book Tier of every book id, in one write, keeping Read State."""
         self._write_tier(self.tier_config(), book_ids, None)
 
-    def set_series_tier(self, book_ids: Iterable[int], tier_id: str) -> None:
-        """Give every distinct series these book ids belong to this Series Tier as an Override."""
-        if self.tier_config().tier(tier_id) is None:
-            raise ValueError(f'unknown Tier id: {tier_id!r}')
-        series_tiers.set_series_tier(self._library, self._prefs, book_ids, tier_id)
-
-    def clear_series_tier(self, book_ids: Iterable[int]) -> None:
-        """Return every series these book ids belong to to Auto, by dropping its Override."""
-        series_tiers.clear_series_tier(self._library, self._prefs, book_ids)
-
-    def series_tier_overrides(self) -> dict[str, str]:
-        """Every Override in this library, by series name."""
-        return series_tiers.load_overrides(self._prefs)
-
-    def series_tier_orphans(self) -> list[str]:
-        """The Override series names that match no series in the library, sorted."""
-        return series_tiers.orphans(self.series_tier_overrides(), self._library.series_names())
-
     def _write_tier(self, config: TierConfig, book_ids: Iterable[int], tier_id: str | None) -> None:
         values: dict[int, str | None] = {book_id: tier_id for book_id in book_ids}
         if values:
@@ -120,10 +102,10 @@ class TierList:
         """Compile Tier List Data for one Compile Request."""
         generated = Generated(self._now(), request.library_name, request.scope, request.plugin_version)
         fmt = choose_format(self._covers.formats())
-        overrides, order = self.series_tier_overrides(), lane_order.load_order(self._prefs)
+        order = lane_order.load_order(self._prefs)
         baked = page_defaults.load_defaults(self._prefs)
         return compile_data(
-            generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids, overrides, order, baked
+            generated, self._library, self._covers, fmt, self.tier_config(), request.book_ids, order, baked
         )
 
     def output_path(self) -> str:
