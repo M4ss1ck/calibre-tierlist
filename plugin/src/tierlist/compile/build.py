@@ -112,7 +112,7 @@ def build(
             {row.id: row.index for row, _ in group},
             (row.total for row, _ in group),
             colours,
-            _id_of(resolved[name]),
+            None if (winner := resolved[name]) is None else winner.id,
         )
         for name, group in groups.items()
     }
@@ -121,7 +121,7 @@ def build(
     members[UNRANKED_LANE] = {}
     for name in groups:
         winner = resolved[name]
-        key = UNRANKED_LANE if winner is None or winner.tier is None else winner.tier
+        key = (None if winner is None else winner.tier) or UNRANKED_LANE
         members[key][('series', name)] = (read_dates[name], name, 0)
     for book in standalone:
         members[book.tier or UNRANKED_LANE][('book', book.id)] = (book.date_read, book.title, book.id)
@@ -141,7 +141,3 @@ def _items(present: Mapping[Place, Rank], stored: Iterable[Place]) -> tuple[Lane
 def _lane_item(place: Place) -> LaneItem:
     kind, key = place
     return LaneItem(stack=cast(str, key)) if kind == 'series' else LaneItem(card=cast(int, key))
-
-
-def _id_of(member: Member | None) -> int | None:
-    return None if member is None else member.id

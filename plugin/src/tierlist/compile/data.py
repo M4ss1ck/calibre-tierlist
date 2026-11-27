@@ -135,7 +135,7 @@ class TierListData:
                         {'number': position.number, 'book': None if position.book is None else str(position.book)}
                         for position in series.positions
                     ],
-                    'decidingBook': None if series.deciding is None else str(series.deciding),
+                    'decidingBook': None if series.deciding_book_id is None else str(series.deciding_book_id),
                 }
                 for name, series in sorted(self.series.items())
             },

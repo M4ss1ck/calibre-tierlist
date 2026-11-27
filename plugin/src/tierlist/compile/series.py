@@ -24,7 +24,7 @@ class Series:
 
     colour: str
     positions: tuple[Position, ...]
-    deciding: int | None
+    deciding_book_id: int | None
 
 
 @dataclass(frozen=True)
@@ -42,7 +42,7 @@ def build_series(
     indexes: Mapping[int, object | None],
     totals: Iterable[object | None],
     colours: Mapping[int, str],
-    deciding: int | None,
+    deciding_book_id: int | None,
 ) -> Series:
     """Build the Stack for one series from each member's series index and colour."""
     owned = {book: _index(index) for book, index in indexes.items()}
@@ -50,7 +50,7 @@ def build_series(
     return Series(
         _colour(ordered, colours),
         tuple(Position(display_number(index), book) for index, book in ordered),
-        deciding,
+        deciding_book_id,
     )
 
 

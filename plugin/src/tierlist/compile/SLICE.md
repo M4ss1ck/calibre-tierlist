@@ -13,7 +13,7 @@ Turns the books the library holds into Tier List Data: the versioned payload the
 - `blurb(comments) -> str | None`: calibre's HTML comments as plain text (no script or style contents, entities unescaped, whitespace collapsed), trimmed at a word boundary near `BLURB_LIMIT` (600) with an ellipsis.
 - `Lane(tier, items)`: one row of the board, its Tier id or None for the Unranked Lane, and its ordered `LaneItem`s.
 - `LaneItem(stack, card)`: one item in a Lane, a Stack by series name or a Card by book id; exactly one is set.
-- `Series(colour, positions, deciding)`: one series on the board, the colour its Placeholders are drawn in, every position (the Series Panel lists them all), and `deciding`, the id of its Deciding Book or None when no owned book is both read and tiered.
+- `Series(colour, positions, deciding_book_id)`: one series on the board, the colour its Placeholders are drawn in, every position (the Series Panel lists them all), and `deciding_book_id`, the id of its Deciding Book or None when no owned book is both read and tiered.
 - `Position(number, book)`: one Stack position, the series index as displayed, and the owned book id or None for a Placeholder.
 - `TierListData(generated, tiers, lanes, books, covers, series, page_defaults)`: the whole board; `books` holds every book on it, `series` maps series name to `Series`, `covers` maps book id to `Cover` for books that have one, `page_defaults` is the Page Defaults the page opens with, and `to_dict()` returns the schema's camelCase JSON shape, with each series as `decidingBook`.
 - `Cover(format, data, colour)`: one book's cover thumbnail bytes, their image format, and its dominant colour.
