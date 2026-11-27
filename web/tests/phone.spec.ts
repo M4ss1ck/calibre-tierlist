@@ -60,7 +60,7 @@ function crowded(base: TierListData): TierListData {
     ),
     series: {
       ...base.series,
-      [seriesName]: { colour: '#336699', positions, override: false },
+      [seriesName]: { colour: '#336699', positions, decidingBook: null },
     },
   };
 }

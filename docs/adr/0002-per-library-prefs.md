@@ -1,6 +1,6 @@
 # 0002 Per-library prefs for Tier Config and overrides
 
-Status: Accepted
+Status: Accepted (Overrides superseded by ADR 0011)
 Date: 2026-11-05
 
 ## Context

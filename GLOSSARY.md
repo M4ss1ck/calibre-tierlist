@@ -21,7 +21,7 @@ The one dialog that edits everything the plugin keeps per library: Tier Config, 
 Avoid: config dialog, preferences, options.
 
 **Settings Export**
-A JSON file holding a library's Tier Config and Page Defaults, plus its Overrides and Lane Order when the reader opts in. Importing one replaces those settings in another library.
+A JSON file holding a library's Tier Config and Page Defaults, plus its Lane Order when the reader opts in. Importing one replaces those settings in another library.
 Avoid: backup (Book Tiers and Read State stay in columns and are not in it), config export.
 
 **Book Tier**
@@ -33,19 +33,12 @@ Whether a book is read, and when. Held in a Date column (date read) or a mapped 
 Avoid: read flag, status.
 
 **Series Tier**
-The Tier a series is shown in. Either an Override or Auto (resolved from the series' books).
-Avoid: series rank, series placement.
+The Tier a series is shown in: the Book Tier of its Deciding Book. A series with no Deciding Book sits in the Unranked Lane. It is never set directly; changing it means changing a Book Tier.
+Avoid: series rank, series placement, override, auto.
 
-**Override**
-A Series Tier set explicitly for a series by name, from the book list menu or by dragging the series to another Lane in the Arrange View. It wins over the computed tier and applies to every book in the series, including books added later.
-Avoid: manual tier, pinned tier.
-
-**Auto**
-A Series Tier with no Override: the most common Book Tier among the series' tiered books, ties going to the lower Tier.
-Avoid: default, fallback.
-
-**Orphaned Override**
-An Override whose series name matches no series in the library, usually after a series rename. The config UI lists these so they can be reattached or deleted.
+**Deciding Book**
+The book whose Book Tier sets its series' Series Tier: the series' highest-indexed book that is both read and tiered, with the book modified most recently winning a tie on the same index. The Series Panel marks its row.
+Avoid: last read book (date read plays no part), lead book.
 
 ## Board
 
@@ -66,7 +59,7 @@ The book whose cover a Stack shows: the first owned book with a cover, unless th
 Avoid: front, thumbnail, poster.
 
 **Series Panel**
-The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier and each Placeholder as "Not in your library". Picking a row's title opens the Detail Panel; the eye on a row with a cover picks the Series Cover.
+The dialog a Stack opens: the series name, how many of its books are in the library, and one row per position in index order, each owned book with its Book Tier, the Deciding Book's row marked, and each Placeholder as "Not in your library". Picking a row's title opens the Detail Panel; the eye on a row with a cover picks the Series Cover.
 Avoid: expanded Stack, series popup.
 
 **Sheet**
@@ -82,11 +75,11 @@ A row on the board. Each Tier is a Lane, plus the Unranked Lane.
 Avoid: row, section, column.
 
 **Lane Order**
-The reader's hand-set order of the Stacks and Cards inside each Lane, kept per library. A Stack or Card with no place yet (a new series, a book newly tiered, or a series Auto moved to another Tier) goes at the end of its Lane; several at once go earliest date read first, then by name or title, then id. A renamed series loses its place, and stale places are pruned when Settings saves.
+The reader's hand-set order of the Stacks and Cards inside each Lane, kept per library. A Stack or Card with no place yet (a new series, a book newly tiered, or a series whose Deciding Book moved it to another Tier) goes at the end of its Lane; several at once go earliest date read first, then by name or title, then id. A renamed series loses its place, and stale places are pruned when Settings saves.
 Avoid: sort, stack order, ranking.
 
 **Arrange View**
-The part of Settings that shows the board as Lanes of covers so the reader can drag. Dragging within a Lane sets Lane Order; dragging a series to another Tier's Lane sets its Override, and to the Unranked Lane clears it; dragging a standalone book to another Lane sets or clears its Book Tier.
+The part of Settings that shows the board as Lanes of covers so the reader can drag Stacks and Cards within a Lane to set Lane Order. Nothing can be dragged to another Lane; Tiers change only through Book Tiers.
 Avoid: board editor, sorter, drag mode.
 
 **Page Defaults**

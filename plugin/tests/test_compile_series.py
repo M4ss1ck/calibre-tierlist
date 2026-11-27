@@ -1,4 +1,4 @@
-"""Compile Series Tiers through the facade: majorities, ties, and which books join a Stack."""
+"""Compile series through the facade: which books join a Stack and which Lane a series without a Deciding Book takes."""
 
 from datetime import UTC, date, datetime
 
@@ -28,32 +28,11 @@ def dune(library: FakeLibrary, *book_ids: int) -> None:
     library.values['series_index'] = {book_id: float(index) for index, book_id in enumerate(book_ids, 1)}
 
 
-def test_a_clear_majority_tier_wins() -> None:
-    app, library = facade()
-    dune(library, 1, 2, 3)
-    library.values['#tier'] = {1: 's', 2: 's', 3: 'a'}
-
-    data = app.compile(request(1, 2, 3))
-
-    assert lane_stacks(data.lanes[0]) == ('Dune',)
-    assert lane_stacks(data.lanes[1]) == ()
-
-
-def test_a_tie_goes_to_the_lower_tier() -> None:
-    app, library = facade()
-    dune(library, 1, 2)
-    library.values['#tier'] = {1: 's', 2: 'a'}
-
-    data = app.compile(request(1, 2))
-
-    assert lane_stacks(data.lanes[0]) == ()
-    assert lane_stacks(data.lanes[1]) == ('Dune',)
-
-
-def test_a_single_tiered_book_places_the_series() -> None:
+def test_a_single_read_tiered_book_places_the_series() -> None:
     app, library = facade()
     dune(library, 1)
     library.values['#tier'] = {1: 'b'}
+    library.values['#date_read'] = {1: TODAY}
 
     data = app.compile(request(1))
 
@@ -86,6 +65,7 @@ def test_a_standalone_book_stays_a_card_and_never_a_stack() -> None:
     app, library = facade()
     dune(library, 2)
     library.values['#tier'] = {1: 's', 2: 's'}
+    library.values['#date_read'] = {2: TODAY}
 
     data = app.compile(request(1, 2))
 

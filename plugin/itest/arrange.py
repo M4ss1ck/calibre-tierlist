@@ -85,7 +85,9 @@ def check_menu(path: str) -> None:
 
 
 def lane_items(data: Any, tier: str) -> list[tuple[str, object]]:
-    lane = next(lane for lane in data.lanes if lane.tier == tier)
+    lane = next((lane for lane in data.lanes if lane.tier == tier), None)
+    if lane is None:
+        return []
     return [('series', item.stack) if item.stack is not None else ('book', item.card) for item in lane.items]
 
 
@@ -94,6 +96,7 @@ def stored_order(db: Any) -> Any:
 
 
 def check_saving(path: str) -> None:
+    """A drop on another Lane changes nothing (ADR 0011); a drop on its own Lane reorders and OK saves it."""
     db, solo, other, _ = library(path)
     try:
         app = tier_list(db)
@@ -101,34 +104,30 @@ def check_saving(path: str) -> None:
         expect(dialog.widget.tabText(dialog.widget.currentIndex()) == 'Arrange', 'Settings did not open on Arrange')
         tab: Any = dialog.widget.arrange
         tab.drop('series', 'Dune', 'a', 0)
-        tab.drop('book', solo, 'b', 0)
-        expect(app.series_tier_overrides() == {}, 'the staged drag wrote the Override before OK')
-        expect(db.new_api.field_for('#tier', solo) == 's', 'the staged drag wrote the Book Tier before OK')
+        tab.drop('book', solo, 'a', 0)
+        tab.drop('book', other, 's', 0)
+        expect(db.new_api.field_for('#tier', solo) == 's', 'a drop changed the Book Tier before OK')
         expect(stored_order(db) is None, 'the staged drag wrote Lane Order before OK')
         dialog.accept()
-        overrides = app.series_tier_overrides()
-        expect(overrides == {'Dune': 'a'}, f'OK did not write the Override: {overrides}')
-        expect(db.new_api.field_for('#tier', solo) == 'b', 'OK did not write the Book Tier')
-        order = stored_order(db)
-        expect(order == {'s': [{'book': other}], 'a': [{'series': 'Dune'}], 'b': [{'book': solo}]}, order)
+        expect(db.new_api.field_for('#tier', solo) == 's', 'OK changed the Book Tier')
+        order: dict[str, Any] = dict(stored_order(db) or {})
+        expect(order.get('s', [None])[0] == {'book': other}, order)
+        expect('a' not in order and 'b' not in order, f'a refused drop stored a Lane: {order}')
         ids = tuple(sorted(db.new_api.all_book_ids()))
         data = app.compile(CompileRequest('library', ids, 'Lib', '0.1.0'))
-        expect(lane_items(data, 'a') == [('series', 'Dune')], lane_items(data, 'a'))
-        expect(lane_items(data, 's') == [('book', other)], lane_items(data, 's'))
-        expect(lane_items(data, 'b') == [('book', solo)], lane_items(data, 'b'))
+        expect(lane_items(data, 's')[0] == ('book', other), lane_items(data, 's'))
+        expect(lane_items(data, 'a') == [], lane_items(data, 'a'))
     finally:
         db.close()
 
 
 def check_cancel(path: str) -> None:
-    db, solo, _, _ = library(path)
+    db, solo, other, _ = library(path)
     try:
-        app = tier_list(db)
         dialog = SettingsDialog(FakeGui(db, []), tab='arrange')
         tab: Any = dialog.widget.arrange
-        tab.drop('series', 'Dune', 'b', 0)
+        tab.drop('book', other, 's', 0)
         dialog.reject()
-        expect(app.series_tier_overrides() == {}, f'Cancel wrote the Override: {app.series_tier_overrides()}')
         expect(db.new_api.field_for('#tier', solo) == 's', 'Cancel wrote the Book Tier')
         expect(stored_order(db) is None, 'Cancel wrote Lane Order')
     finally:
