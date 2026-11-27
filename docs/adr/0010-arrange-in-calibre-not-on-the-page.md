@@ -1,6 +1,6 @@
 # 0010 Arrange the board in calibre, not on the page
 
-Status: Accepted
+Status: Accepted (cross-Lane drags superseded by ADR 0011)
 Date: 2026-11-11
 
 ## Context
