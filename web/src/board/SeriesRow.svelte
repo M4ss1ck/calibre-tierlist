@@ -9,11 +9,14 @@
     eligible: boolean;
     /** Whether this book is the Series Cover now. */
     front: boolean;
+    /** Whether this book is the Deciding Book, whose Book Tier sets the series' tier. */
+    deciding: boolean;
     onopen: () => void;
     onfront: () => void;
   };
-  let { number, book, tier, eligible, front, onopen, onfront }: Props = $props();
+  let { number, book, tier, eligible, front, deciding, onopen, onfront }: Props = $props();
   const label = 'Use this cover for the series';
+  const decidingLabel = "Sets this series' tier";
   const titleId = $props.id();
 </script>
 
@@ -24,6 +27,9 @@
     <span class="tier" style:background-color={tier.colour}>{tier.label}</span>
   {:else if book}
     <span class="tier unranked">Unranked</span>
+  {/if}
+  {#if deciding}
+    <span class="deciding" role="img" aria-label={decidingLabel} title={decidingLabel}></span>
   {/if}
   {#if eligible}
     <button type="button" class="eye" aria-label={label} title={label} aria-pressed={front} aria-describedby={titleId} onclick={onfront}>
@@ -56,6 +62,7 @@
     color: var(--tier-ink); font-size: 0.8rem; font-weight: 600;
   }
   .tier.unranked { color: var(--muted); border: 1px solid var(--border-strong); }
+  .deciding { flex: none; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--fg); }
   .eye, .eye-slot { flex: none; width: 2rem; height: 2rem; }
   .eye {
     display: grid; place-items: center; padding: 0; border: 0; border-radius: 0.25rem;

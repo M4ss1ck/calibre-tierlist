@@ -31,6 +31,7 @@
       book: entry.book,
       tier: entry.book ? tiers.find((candidate) => candidate.id === entry.book?.tier) : undefined,
       eligible: canFront(entry),
+      deciding: entry.position.book !== null && entry.position.book === series?.decidingBook,
     })),
   );
   const owned = $derived(rows.filter((row) => row.book !== undefined).length);
@@ -72,6 +73,7 @@
           tier={row.tier}
           eligible={row.eligible}
           front={row.eligible && row.id === front}
+          deciding={row.deciding}
           onopen={() => name && choose(selectionOf(row, name), name, index)}
           onfront={() => name && row.id !== null && onfront(name, pickFront(resolved, chosen, row.id))}
         />

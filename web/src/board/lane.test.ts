@@ -26,7 +26,7 @@ function series(...owned: string[]): Series {
   return {
     colour: '#336699',
     positions: owned.map((id, index) => ({ number: String(index + 1), book: id })),
-    override: false,
+    decidingBook: null,
   };
 }
 

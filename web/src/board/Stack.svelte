@@ -21,7 +21,7 @@
   const shade = (amount: number) => `color-mix(in srgb, ${series.colour} ${amount}%, #000)`;
 </script>
 
-<figure class="stack" aria-label={name} data-override={series.override ? 'true' : undefined}>
+<figure class="stack" aria-label={name}>
   <button
     type="button"
     class="front"

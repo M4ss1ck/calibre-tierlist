@@ -21,7 +21,7 @@ export interface TierListData {
   /**
    * Contract version of this payload. Bumped whenever the shape changes.
    */
-  schemaVersion: 10;
+  schemaVersion: 11;
   pageDefaults: PageDefaults;
   generated: Generated;
   /**
@@ -191,9 +191,9 @@ export interface Series {
    */
   positions: Position[];
   /**
-   * True when this series' Series Tier is an Override, false when it is Auto.
+   * Book id (key of books) of the Deciding Book, the book whose Book Tier sets this series' Series Tier, or null when the Series Tier is not set by a book.
    */
-  override: boolean;
+  decidingBook: string | null;
 }
 export interface Position {
   /**

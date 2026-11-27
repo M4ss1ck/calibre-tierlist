@@ -9,7 +9,7 @@
   "properties": {
     "schemaVersion": {
       "type": "integer",
-      "const": 10,
+      "const": 11,
       "description": "Contract version of this payload. Bumped whenever the shape changes."
     },
     "pageDefaults": { "$ref": "#/$defs/PageDefaults" },
@@ -213,7 +213,7 @@
     "Series": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["colour", "positions", "override"],
+      "required": ["colour", "positions", "decidingBook"],
       "properties": {
         "colour": {
           "type": "string",
@@ -225,9 +225,9 @@
           "description": "Every position of the series, index 1 first; a position with no owned book is a Placeholder.",
           "items": { "$ref": "#/$defs/Position" }
         },
-        "override": {
-          "type": "boolean",
-          "description": "True when this series' Series Tier is an Override, false when it is Auto."
+        "decidingBook": {
+          "type": ["string", "null"],
+          "description": "Book id (key of books) of the Deciding Book, the book whose Book Tier sets this series' Series Tier, or null when the Series Tier is not set by a book."
         }
       }
     },

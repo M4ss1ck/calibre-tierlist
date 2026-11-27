@@ -117,3 +117,28 @@ test('lists the one position of a single-book series', async ({ page }) => {
   const { rows } = await openPanel(page, ...single);
   await expect(rows).toHaveCount(1);
 });
+
+const deciding = "Sets this series' tier";
+
+test("marks only the Deciding Book's row with \"Sets this series' tier\"", async ({ page }) => {
+  const [name, series] = longest();
+  const index = series.positions.findIndex(({ book }) => book === series.decidingBook);
+  expect(index).toBeGreaterThanOrEqual(0);
+  await page.goto(url);
+  const { panel, rows } = await openPanel(page, name, series);
+
+  await expect(panel.getByRole('img', { name: deciding })).toHaveCount(1);
+  await expect(rows.nth(index).getByRole('img', { name: deciding })).toHaveCount(1);
+});
+
+test('shows no Deciding Book mark when the series has none', async ({ page }) => {
+  const [name] = longest();
+  const withoutDeciding = await loadFixture();
+  const series = withoutDeciding.series[name];
+  if (!series) throw new Error('Fixture has no long series');
+  series.decidingBook = null;
+  await page.goto(await fixtureBoardUrl(withoutDeciding));
+  const { panel } = await openPanel(page, name, series);
+
+  await expect(panel.getByRole('img', { name: deciding })).toHaveCount(0);
+});

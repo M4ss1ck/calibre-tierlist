@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 10,
+  "schemaVersion": 11,
   "pageDefaults": {
     "theme": "system",
     "title": "Tier List",
@@ -60,26 +60,25 @@
       "tier": "a",
       "items": [
         {
+          "stack": "Dune"
+        },
+        {
           "card": "4"
         }
       ]
     },
     {
       "tier": "b",
-      "items": [
-        {
-          "stack": "Dune"
-        },
-        {
-          "stack": "Earthsea"
-        }
-      ]
+      "items": []
     },
     {
       "tier": null,
       "items": [
         {
           "card": "8"
+        },
+        {
+          "stack": "Earthsea"
         }
       ]
     }
@@ -226,7 +225,7 @@
           "book": null
         }
       ],
-      "override": true
+      "decidingBook": "3"
     },
     "Earthsea": {
       "colour": "#808080",
@@ -236,7 +235,7 @@
           "book": "9"
         }
       ],
-      "override": false
+      "decidingBook": null
     }
   },
   "covers": {
