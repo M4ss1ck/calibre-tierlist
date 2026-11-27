@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.6.0...v0.7.0) (2026-11-27)
+
+
+### Features
+
+* Series Tier follows its Deciding Book; remove Overrides ([#60](https://github.com/M4ss1ck/calibre-tierlist/issues/60)) ([8624776](https://github.com/M4ss1ck/calibre-tierlist/commit/8624776aea516ea5bc10d9ca53690617fdc44d12))
+* show each book's Tier as an emblem on its cover in the cover grid ([#57](https://github.com/M4ss1ck/calibre-tierlist/issues/57)) ([bcbccec](https://github.com/M4ss1ck/calibre-tierlist/commit/bcbccec1e4b48f46104a6a6436b341615eb8ee30))
+
 ## [0.6.0](https://github.com/M4ss1ck/calibre-tierlist/compare/v0.5.0...v0.6.0) (2026-11-12)
 
 
